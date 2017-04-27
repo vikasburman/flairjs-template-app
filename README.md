@@ -1,2 +1,2 @@
 # appgears
-Isomorphic application framework for JavaScript (edge)
+Isomorphic application framework for JavaScript (ECMAScript/edge)
