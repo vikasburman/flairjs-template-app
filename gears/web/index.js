@@ -16,6 +16,7 @@
         "source": {
             "sys": "gears/modules/",
             "app": "app/modules/",
+            "api": "api/modules/",
             "web": "web/modules/",
             "www": {
                 "sys": "gears/web/",
@@ -79,7 +80,7 @@
 
     // env path resolver
     config.env.path = () => {
-        const dummyJS = config.source.www.sys + 'dummy.js';
+        const dummyJS = config.source.www.system + 'dummy.js';
         const escapeRegExp = (string) => {
             return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1');
         };

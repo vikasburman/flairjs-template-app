@@ -2,6 +2,7 @@
     "source": {
         "sys": "gears/modules/",
         "app": "app/modules/",
+        "api": "api/modules/",
         "web": "web/modules/",
         "www": {
             "sys": "gears/web/",

@@ -60,7 +60,6 @@ const getSource = (root, folder, ...patterns) => {
 const cleanGlob = [
     '/**/*.pack.js', 
     '/**/*.bundle.js',
-    '/**/*.start.js',
     '/**/*.min.js', 
     '/**/*.min.css'
 ];
@@ -73,6 +72,7 @@ const cleanModules = (root) => {
 gulp.task('clean', (done) => {
     cleanModules(config.source.sys);
     cleanModules(config.source.app);
+    cleanModules(config.source.api);
     cleanModules(config.source.web);
     cleanModules(config.source.www.sys);
     done();
@@ -120,16 +120,18 @@ const processTemplates = (root, whenDone) => {
 gulp.task('processTemplates', (done) => {
     processTemplates(config.source.sys, () => {
         processTemplates(config.source.app, () => {
-            processTemplates(config.source.web, () => {
-                processTemplates(config.source.www.sys, () => {
-                    done();
+            processTemplates(config.source.api, () => {
+                processTemplates(config.source.web, () => {
+                    processTemplates(config.source.www.sys, () => {
+                        done();
+                    });
                 });
-            });
+            });     
         });
     });
 });
 
-// task: pack (to create bundled .pack.js files of all client visible modules)
+// task: pack (to create .pack.js files of all client visible modules)
 const packs = {
     paths: {},
     bundles: {}
@@ -218,7 +220,7 @@ const packModules = (root, whenDone) => {
     processModules(folders, whenDone);
 };
 gulp.task('pack', (done) => {
-    // note: server side modules (.app) are explicitely left as packing is not required/not used
+    // note: server side modules (.app and .api) are explicitely left as packing is not required/not used
     packModules(config.source.sys, () => {
         packModules(config.source.web, () => {
             done();
@@ -260,7 +262,7 @@ const compressFiles = (root, whenDone) => {
 };
 gulp.task('compress', (done) => {
     if (isProd) {
-        // note: server side modules (.app) are explicitely left as compressing is not required/not used
+        // note: server side modules (.app and .api) are explicitely left as compressing is not required/not used
         compressFiles(config.source.sys, () => {
             compressFiles(config.source.www.sys, () => {
                 compressFiles(config.source.web, () => {
