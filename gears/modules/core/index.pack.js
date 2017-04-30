@@ -19,6 +19,12 @@ define('sys.core.Base', () => {
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/gears/modules/core/members/Base.js)
 
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/gears/modules/core/members/Client.js)
+define('sys.core.Client', ['[Base]'], Base => {
+    return class Client extends Base {};
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/gears/modules/core/members/Client.js)
+
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/gears/modules/core/members/Module.js)
 define('sys.core.Module', ['[Base]'], Base => {
     return class Module extends Base {
@@ -45,3 +51,9 @@ define('sys.core.Module', ['[Base]'], Base => {
     };
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/gears/modules/core/members/Module.js)
+
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/gears/modules/core/members/Server.js)
+define('sys.core.Server', ['[Base]'], Base => {
+    return class Server extends Base {};
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/gears/modules/core/members/Server.js)

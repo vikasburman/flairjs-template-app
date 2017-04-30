@@ -44,6 +44,7 @@
     
         "catalog": {
             "Base": "sys.core.Base",
+            "Boot": "sys.core.Server | sys.core.Client",
             "Main": "app.main | web.main"
         },
     
@@ -54,8 +55,7 @@
         "settings": {
             "sys.core": {
                 "bootwares": [
-                    "sys.Server | sys.Client",
-                    "app.main | web.main"
+                    "[Main]"
                 ]
             }
         }
@@ -69,17 +69,17 @@
     // set env
     config.env = {
         isServer: isServer,
-        isProd: false,
+        isProd: true,
         require: {
             baseUrl: '/',
-            paths: JSON.parse('{"gears/modules/aop":"gears/modules/aop/index.pack.js","gears/modules/core":"gears/modules/core/index.pack.js"}'),
-            bundles: JSON.parse('{"gears/modules/aop":["sys.aop.Base"],"gears/modules/core":["sys.core.Base","sys.core.Module"]}')
+            paths: JSON.parse('{"gears/modules/aop":"gears/modules/aop/index.pack.min.js","gears/modules/core":"gears/modules/core/index.pack.min.js"}'),
+            bundles: JSON.parse('{"gears/modules/aop":["sys.aop.Base"],"gears/modules/core":["sys.core.Base","sys.core.Client","sys.core.Module","sys.core.Server"]}')
         }
-    }
+    };
 
-    // path resolver
+    // env path resolver
     config.env.path = () => {
-        const dummyJS = config.source.www.system + 'dummy.js';
+        const dummyJS = config.source.www.sys + 'dummy.js';
         const escapeRegExp = (string) => {
             return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1');
         };
@@ -106,19 +106,13 @@
             return config.catalog[key] || dummyJS;
         };
         const getRelativePath = (path, referredIn) => {
-            return path; // TODO:
+            if (isServer) {
+                referredIn = (referredIn ? replaceAll(referredIn, '\\', '/') : '');
+                path = referredIn.substr(0, referredIn.lastIndexOf('/') + 1) + path.substr(2); // after ./
+            }
+            return path; // requirejs handles relative path with baseUrl automatically
         };
         const getNamesacedPackageMemberPath = (path, nsRoot) => {
-            // for server sys/core/**/*.* becomes gears/modules/core/**/*.*
-            // for client sys/core/**/*.* becomes gears/aop
-            if (isServer) {
-                let parts = path.split('.').shift(), // remove sys
-                    moduleName = parts.shift(), // remove module name
-                path = nsRoot + moduleName + '/members/' + parts.join('/') + '.js';
-            }
-            return path;
-        };
-        const getNamesacedPackageFilePath = (path, nsRoot) => {
             // for server sys.core.Base becomes gears/modules/core/members/Base.js
             // for client it remains sys.core.Base and is loaded from corrosponding .pack file via requirejs bundle configuration
             if (isServer) {
@@ -126,6 +120,12 @@
                     moduleName = parts.shift(), // remove module name
                 path = nsRoot + moduleName + '/members/' + parts.join('/') + '.js';
             }
+            return path;            
+        };
+        const getNamesacedPackageFilePath = (path, nsRoot) => {
+            // for both server and client sys/core/**/*.* becomes gears/modules/core/**/*.*
+            let parts = path.split('/').shift(); // remove sys
+            path = nsRoot + parts.join('/');
             return path;
         };
 
@@ -137,10 +137,10 @@
             //  ./*     --> to load file relative to current path
             //  ../*    --> to load file relative to referenced path
             //  /*      --> to load file relative to root path
-            // (3) appgears packaged members path
-            //  {ns.}*  --> to load namespaced package members (e.g., sys.Core.Base, app.main, web.main.start, etc.)
-            // (4) appgears packaged files path
+            // (3) appgears packaged files path
             //  {ns/}*  --> to reference files which are placed inside appgears module folder (e.g., sys/core/assets/..., etc.)
+            // (4) appgears packaged members path
+            //  {ns.}*  --> to load namespaced package members (e.g., sys.Core.Base, app.main, web.main.start, etc.)
             // (5) cataloged path
             //  [*]     --> to load namespaced modules whose actual name is defined in catalog registry
 
@@ -160,6 +160,15 @@
             // any missing will be resolved with a null value
             path = getContextualPath(path);
 
+            // type #4: namespaced package files path
+            if (path.startsWith('sys/')) {
+                path = getNamesacedPackageFilePath(path, config.source.sys);
+            } else if (path.startsWith('app/')) {
+                path = getNamesacedPackageFilePath(path, config.source.app);
+            } else if (path.startsWith('web/')) {
+                path = getNamesacedPackageFilePath(path, config.source.web);
+            }
+
             // type #3: namespaced package members path
             if (path.startsWith('sys.')) {
                 path = getNamesacedPackageMemberPath(path, config.source.sys);
@@ -169,34 +178,24 @@
                 path = getNamesacedPackageMemberPath(path, config.source.web);
             }
 
-            // type #4: namespaced package files path
-            if (path.startsWith('sys/')) {
-
-            } else if (path.startsWith('app/')) {
-                
-            } else if (path.startsWith('web/')) {
-                
-            }
-
             // type #2: relative files path
             firstChar = path.substr(0, 1);
             if (firstChar === '.' || '/') {
                 switch(firstChar) {
                     case '.': // caters to patterns like ./, ../, ../../, etc.
                         let referredIn = (isServer ? arguments.callee.caller.arguments[2].id : '');
-                        referredIn = (referredIn ? replaceAll(referredIn, '\\', '/') : '');
                         path = getRelativePath(path, referredIn); break;
                     case '/':
                         path = getRootPath(path); break;
                 }
             }
 
-
+            // type #1, if nothing was of match OR processed result
             return path;
         };
     };
 
-    // module export
+    // module export and import
     const getDefine = (realDefine) => {
         // get proxyDefine as per context
         let proxyDefine = null;
@@ -252,16 +251,37 @@
         }
         return proxyDefine;
     };
+    const include = (deps, onSuccess, onError) => {
+        let i = 0;
+        for(let dep of deps) {
+            deps[i] = config.env.path(dep);
+            i++;
+        }
+        return require(deps, onSuccess, onError);
+    };
     if (isServer) {
         global.define = getDefine(global.define);
+        global.include = include;
     } else {
         window.define = getDefine(window.define);
+        window.include = include;
     }
 
     // start
     if (isServer) {
 
-    } else {
+    } else { // client
+        // setup require config
+        require.config(config.env.require);
 
+        // boot
+        const onError = (err) => {
+            console.log(`boot failed. (${err.toString()})`);
+        };
+        include(['[Boot]'], (boot) => {
+            boot().then(() => {
+                console.log('boot success.');
+            }).fail(onError)
+        }, onError);        
     }
 })();

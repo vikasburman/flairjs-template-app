@@ -139,7 +139,7 @@
         };
     };
 
-    // module export
+    // module export and import
     const getDefine = (realDefine) => {
         // get proxyDefine as per context
         let proxyDefine = null;
@@ -195,10 +195,20 @@
         }
         return proxyDefine;
     };
+    const include = (deps, onSuccess, onError) => {
+        let i = 0;
+        for(let dep of deps) {
+            deps[i] = config.env.path(dep);
+            i++;
+        }
+        return require(deps, onSuccess, onError);
+    };
     if (isServer) {
         global.define = getDefine(global.define);
+        global.include = include;
     } else {
         window.define = getDefine(window.define);
+        window.include = include;
     }
 
     // start
@@ -209,12 +219,13 @@
         require.config(config.env.require);
 
         // boot
-        require([config.env.resolve('[Boot]')], (boot) => {
+        const onError = (err) => {
+            console.log(`boot failed. (${err.toString()})`);
+        };
+        include(['[Boot]'], (boot) => {
             boot().then(() => {
                 console.log('boot success.');
-            })
-        }, (err) => {
-            console.log(`boot failed. (${err.toString()})`);
-        });        
+            }).fail(onError)
+        }, onError);        
     }
 })();

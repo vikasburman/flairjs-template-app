@@ -16,6 +16,7 @@ const gulpIf = require('gulp-if');
 const gulpTap = require('gulp-tap');
 const header = require('gulp-header');
 const injectFile = require('gulp-inject-file');
+const injectString = require('gulp-inject-string');
 const babel = require('gulp-babel');
 const config = JSON.parse(fs.readFileSync('config.json').toString());
 const JSBanner = `/** 
@@ -58,6 +59,8 @@ const getSource = (root, folder, ...patterns) => {
 // task: clean (to delete all generated files)
 const cleanGlob = [
     '/**/*.pack.js', 
+    '/**/*.bundle.js',
+    '/**/*.start.js',
     '/**/*.min.js', 
     '/**/*.min.css'
 ];
@@ -85,6 +88,8 @@ const processTemplates = (root, whenDone) => {
         let stream = gulp.src(getSource(root, folder, '/**/*.tmpl'))
             // inject content
             .pipe(injectFile())
+            // handle loading .min version
+            .pipe(gulpIf(isProd, injectString.replace('{.min}', '.min'), injectString.replace('{.min}', '')))
             // inject header (for .js files only)
             .pipe(gulpIf(isJSFile, header(JSBanner, { pkg : pkg } )))
             // rename by removing .tmpl and leaving name as is    
@@ -92,7 +97,7 @@ const processTemplates = (root, whenDone) => {
                 path.extname = ''; // from <name.whatever>.tmpl to <name.whatever>
             }))
             // write to output
-            .pipe(gulp.dest(root));
+            .pipe(gulp.dest(root + folder))
         stream.on('end', _done);
         stream.on('error', _done);
     }
@@ -192,16 +197,6 @@ const packModules = (root, whenDone) => {
             // concat into index.pack.js
             .pipe(concat(path.join(folder, 'index.pack.js')))
             // write to output
-            .pipe(gulp.dest(root))
-            // stop if not prod
-            .pipe(gulpIf(!isProd, gulpFail()))
-            // minify
-            .pipe(minifier(config.source.uglify.js, uglifyjs))
-            // rename to index.pack.min.js
-            .pipe(rename(path.join(folder, 'index.pack.min.js')))
-            // inject header
-            .pipe(header(JSBanner, { pkg : pkg }))
-            // write to output again
             .pipe(gulp.dest(root));
         stream.on('end', _done);
         stream.on('error', _done);
@@ -231,6 +226,53 @@ gulp.task('pack', (done) => {
     });
 });
 
+// task: compress
+const compressFiles = (root, whenDone) => {
+    let folders = getFolders(root);
+    const processFile = (folder, _done) => {
+        let stream = gulp.src(getSource(root, folder, '/**/*.pack.js', '/**/*.bundle.js'))
+            // minify
+            .pipe(minifier(config.source.uglify.js, uglifyjs))
+            // rename 
+            .pipe(rename((path) => {
+                path.extname = '.min.js'; // from <name.whatever>.js to <name.whatever>.min.js
+            }))
+            // write to output again
+            .pipe(gulp.dest(root + folder));
+        stream.on('end', _done);
+        stream.on('error', _done);
+    }
+    const processFiles = (folders, onDone) => {
+        let folder = folders.shift(); 
+        if (folder) {
+            processFile(folder, () => {
+                if (folders.length === 0) {
+                    onDone();
+                } else {
+                    processFiles(folders, onDone);
+                }
+            });
+        } else {
+            onDone();
+        }
+    };
+    processFiles(folders, whenDone);
+};
+gulp.task('compress', (done) => {
+    if (isProd) {
+        // note: server side modules (.app) are explicitely left as compressing is not required/not used
+        compressFiles(config.source.sys, () => {
+            compressFiles(config.source.www.sys, () => {
+                compressFiles(config.source.web, () => {
+                    done();
+                });
+            });
+        });
+    } else {
+        done();
+    }
+});
+
 // task: write env file
 gulp.task('env', (done) => {
     let fileName = config.source.www.sys + 'index.js',
@@ -246,5 +288,5 @@ gulp.task('env', (done) => {
 // need to think about their deployment as well
 
 gulp.task('default', (cb) => {
-    runSequence('clean', 'processTemplates', 'pack', 'env', cb);
+    runSequence('clean', 'processTemplates', 'pack', 'compress', 'env', cb);
 });

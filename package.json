@@ -22,6 +22,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-csslint": "^1.0.0",
     "gulp-eslint": "^3.0.1",
+    "gulp-fail": "^1.0.5",
     "gulp-header": "^1.8.8",
     "gulp-if": "^2.0.2",
     "gulp-inject-file": "^0.0.18",
@@ -31,7 +32,7 @@
     "merge-stream": "^1.0.1",
     "run-sequence": "^1.2.2",
     "uglify-js-harmony": "^2.7.5",
-    "gulp-fail": "^1.0.5"
+    "gulp-inject-string": "^1.1.0"
   },
   "dependencies": {
     "app-root-path": "^2.0.1"

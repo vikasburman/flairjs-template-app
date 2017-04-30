@@ -649,7 +649,7 @@ event-emitter@~0.3.5:
     d "1"
     es5-ext "~0.10.14"
 
-event-stream@^3.2.0:
+event-stream@^3.1.7, event-stream@^3.2.0:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/event-stream/-/event-stream-3.3.4.tgz#4ab4c9a0f5a54db9338b4c34d86bfce8f4b35571"
   dependencies:
@@ -1007,6 +1007,13 @@ gulp-inject-file@^0.0.18:
     gulp "^3.8.10"
     gulp-util "^3.0.1"
     lodash "^2.4.1"
+
+gulp-inject-string@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/gulp-inject-string/-/gulp-inject-string-1.1.0.tgz#f02ddedb0f7518dfbad548f7d2df05bae2ed1f64"
+  dependencies:
+    event-stream "^3.1.7"
+    gulp-util "^3.0.0"
 
 gulp-match@^1.0.3:
   version "1.0.3"
