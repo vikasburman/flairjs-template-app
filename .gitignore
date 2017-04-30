@@ -3,8 +3,14 @@ app/**/*.min.js
 gears/**/*.min.js
 web/**/*.min.js
 app/**/*.pack.js
+app/**/*.pack.min.js
 gears/**/*.pack.js
+gears/**/*.pack.min.js
 web/**/*.pack.js
+web/**/*.pack..min.js
 app/**/*.bundle.js
+app/**/*.bundle.min.js
 gears/**/*.bundle.js
+gears/**/*.bundle.min.js
 web/**/*.bundle.js
+web/**/*.bundle.min.js
