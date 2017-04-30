@@ -1,5 +1,5 @@
 define([
-    'System.Base'
+    '[Base]'
 ], (Base) => {
     return class Module extends Base {
         constructor(settings) {
@@ -19,6 +19,6 @@ define([
         get settings() { return _settings; }
 
         // initializer (sync)
-        onInit = () => {};
+        onInit() {};
     };
 });

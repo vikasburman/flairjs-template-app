@@ -1,0 +1,6 @@
+{
+    "bootwares": [
+        "system.Server | system.Client",
+        "app.main | web.main"
+    ]
+}

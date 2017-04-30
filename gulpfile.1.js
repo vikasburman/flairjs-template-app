@@ -1,10 +1,8 @@
 const fs = require('fs');
 const del = require('del');
-const process = require('process');
 const path = require('path');
 const merge = require('merge-stream');
 const gulp = require('gulp');
-const gulpFail = require('gulp-fail');
 const runSequence = require('run-sequence');
 const eslint = require('gulp-eslint');
 const concat = require('gulp-concat');
@@ -29,7 +27,6 @@ const JSBanner = `/**
  */
 `;
 const pkg = require('./package.json');
-const isProd = process.argv.includes('-prod');
 
 // get folders under given root
 const getFolders = (root) => {
@@ -54,6 +51,17 @@ const getSource = (root, folder, ...patterns) => {
     }
     return src;
 };
+// all types of tasks in specific order for specified targets
+const getAllTasks = (roots, ...taskCreators) => {
+    let tasks = [];
+    for(let root of roots) {
+        for (let taskCreator of taskCreators) {
+            let collectedTasks = taskCreator(root);
+            if (collectedTasks) { tasks.push(collectedTasks); }          
+        }
+    }
+    return tasks;
+};
 
 // task: clean (to delete all generated files)
 const cleanGlob = [
@@ -63,26 +71,31 @@ const cleanGlob = [
 ];
 const cleanModules = (root) => {
     let folders = getFolders(root);
-    for(folder of folders) {
-        del.sync(getSource(root, folder, ...cleanGlob));
-    }
+    if (folders.length <= 0) { return null; };
+    return folders.map((folder) => {
+      return del(getSource(root, folder, ...cleanGlob));
+    });
 };
-gulp.task('clean', (done) => {
-    cleanModules(config.source.sys);
-    cleanModules(config.source.app);
-    cleanModules(config.source.web);
-    cleanModules(config.source.www.sys);
-    done();
+gulp.task('clean', () => {
+    let roots = [];
+    if(config.build.sys) { roots.push(config.source.sys); }
+    if(config.build.app) { roots.push(config.source.app); }
+    if(config.build.web) { 
+        roots.push(config.source.web); 
+        roots.push(config.source.www.sys);
+    }
+    return getAllTasks(roots, cleanModules);
 });
 
 // task: process templates (to regenerate all templatzed files)
-const processTemplates = (root, whenDone) => {
+const processTemplates = (root) => {
     let folders = getFolders(root);
+    if (folders.length <= 0) { return null; };
     const isJSFile = (file) => {
         return (file.path.toLowerCase().endsWith('.js.tmpl'));
     };
-    const processFolder = (folder, _done) => {
-        let stream = gulp.src(getSource(root, folder, '/**/*.tmpl'))
+    return folders.map((folder) => {
+        return gulp.src(getSource(root, folder, '/**/*.tmpl'))
             // inject content
             .pipe(injectFile())
             // inject header (for .js files only)
@@ -92,36 +105,18 @@ const processTemplates = (root, whenDone) => {
                 path.extname = ''; // from <name.whatever>.tmpl to <name.whatever>
             }))
             // write to output
-            .pipe(gulp.dest(root));
-        stream.on('end', _done);
-        stream.on('error', _done);
-    }
-    const processFolders = (folders, onDone) => {
-        let folder = folders.shift(); 
-        if (folder) {
-            processFolder(folder, () => {
-                if (folders.length === 0) {
-                    onDone();
-                } else {
-                    processFolders(folders, onDone);
-                }
-            });
-        } else {
-            onDone();
-        }
-    };
-    processFolders(folders, whenDone);
-};
-gulp.task('processTemplates', (done) => {
-    processTemplates(config.source.sys, () => {
-        processTemplates(config.source.app, () => {
-            processTemplates(config.source.web, () => {
-                processTemplates(config.source.www.sys, () => {
-                    done();
-                });
-            });
-        });
+            .pipe(gulp.dest(root))      
     });
+};
+gulp.task('processTemplates', () => {
+    let roots = [];
+    if(config.build.sys) { roots.push(config.source.sys); }
+    if(config.build.app) { roots.push(config.source.app); }
+    if(config.build.web) { 
+        roots.push(config.source.web); 
+        roots.push(config.source.www.sys);
+    }
+    return getAllTasks(roots, processTemplates);
 });
 
 // task: pack (to create bundled .pack.js files of all client visible modules)
@@ -129,8 +124,9 @@ const packs = {
     paths: {},
     bundles: {}
 };
-const packModules = (root, whenDone) => {
+const packModules = (root) => {
     let folders = getFolders(root);
+    if (folders.length <= 0) { return null; };
     const processContent = (folder) => {
         return (file, t) => {
             const getModuleName = () => {
@@ -158,7 +154,7 @@ const packModules = (root, whenDone) => {
                 pattern2 = new RegExp(/define\((?:\n|\s*)\(/), // define((... <-- without dependencies
                 content = file.contents.toString(),
                 packId = root + folder,
-                packUrl = root + folder + (isProd ? '/index.pack.min.js' : '/index.pack.js'); 
+                packUrl = root + folder + '/index.pack.js'; 
             
             // update content
             file.contents = Buffer.concat([
@@ -177,73 +173,54 @@ const packModules = (root, whenDone) => {
             packs.bundles[packId].push(moduleName);
         };
      };
-    const processModule = (folder, _done) => {
-        let stream = gulp.src(getSource(root, folder, 'members/*.js', '/members/**/*.js'))
-            // process content
-            .pipe(gulpTap(processContent(folder)))
-            // check for issues
-            .pipe(eslint('.eslint.json'))
-            // format errors, if any
-            .pipe(eslint.format())
-            // stop if errors
-            .pipe(eslint.failAfterError())
-            // compile 
-            .pipe(babel())
-            // concat into index.pack.js
-            .pipe(concat(path.join(folder, 'index.pack.js')))
-            // write to output
-            .pipe(gulp.dest(root))
-            // stop if not prod
-            .pipe(gulpIf(!isProd, gulpFail()))
-            // minify
-            .pipe(minifier(config.source.uglify.js, uglifyjs))
-            // rename to index.pack.min.js
-            .pipe(rename(path.join(folder, 'index.pack.min.js')))
-            // inject header
-            .pipe(header(JSBanner, { pkg : pkg }))
-            // write to output again
-            .pipe(gulp.dest(root));
-        stream.on('end', _done);
-        stream.on('error', _done);
-    }
-    const processModules = (folders, onDone) => {
-        let folder = folders.shift(); 
-        if (folder) {
-            processModule(folder, () => {
-                if (folders.length === 0) {
-                    onDone();
-                } else {
-                    processModules(folders, onDone);
-                }
-            });
-        } else {
-            onDone();
-        }
-    };
-    processModules(folders, whenDone);
-};
-gulp.task('pack', (done) => {
-    // note: server side modules (.app) are explicitely left as packing is not required/not used
-    packModules(config.source.sys, () => {
-        packModules(config.source.web, () => {
-            done();
-        });
+    return folders.map((folder) => {
+      return gulp.src(getSource(root, folder, 'members/*.js', '/members/**/*.js'))
+        // process content
+        .pipe(gulpTap(processContent(folder)))
+        // check for issues
+        .pipe(eslint('.eslint.json'))
+        // format errors, if any
+        .pipe(eslint.format())
+        // stop if errors
+        .pipe(eslint.failAfterError())
+        // compile 
+        .pipe(babel())
+        // concat into index.pack.js
+        .pipe(concat(path.join(folder, 'index.pack.js')))
+        // write to output
+        .pipe(gulp.dest(root))
+        // minify
+        .pipe(minifier(config.source.uglify.js, uglifyjs))
+        // rename to index.pack.min.js
+        .pipe(rename(path.join(folder, 'index.pack.min.js')))
+        // inject header
+        .pipe(header(JSBanner, { pkg : pkg } ))     
+        // write to output again
+        .pipe(gulp.dest(root));    
     });
+};
+gulp.task('pack', () => {
+    let roots = [];
+    // note: server side modules (.app) are explicitely left as packing is not required/not used
+    if(config.build.sys) { roots.push(config.source.sys); }
+    if(config.build.web) { roots.push(config.source.web); }
+    return getAllTasks(roots, packModules);
 });
-
-// task: write env file
 gulp.task('env', (done) => {
-    let fileName = config.source.www.sys + 'index.js',
-        fileContent = fs.readFileSync(fileName).toString();
-    fileContent = fileContent.replace('[%]PROD[%]', isProd.toString());
-    fileContent = fileContent.replace('[%]PATHS[%]', JSON.stringify(packs.paths));
-    fileContent = fileContent.replace('[%]BUNDLES[%]', JSON.stringify(packs.bundles));
-    fs.writeFileSync(fileName, fileContent);
+    console.log(packs);
     done();
 });
 
+
 //TODO: html templates compressor and css lint and minify is to be added
 // need to think about their deployment as well
+
+// // CSSLint
+// gulp.task('css:lint', () => {
+//     return gulp.src(cssFiles)
+//         .pipe(csslint('.csslint.json'))
+//         .pipe(csslint.failFormatter());
+// });
 
 gulp.task('default', (cb) => {
     runSequence('clean', 'processTemplates', 'pack', 'env', cb);
