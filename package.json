@@ -1,0 +1,35 @@
+{
+  "name": "appgears",
+  "description": "Unified application framework for JavaScript",
+  "copyright": "(C) 2017",
+  "version": "0.1.0",
+  "author": "Vikas Burman",
+  "license": "MIT",
+  "link": "http://",
+  "repository": "https://github.com/vikasburman/appgears.git",
+  "scripts": {
+    "dev": "",
+    "test": "",
+    "prod": "",
+    "clean": "gulp clean",
+    "build": "gulp"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-decorators": "^6.24.1",
+    "eslint": "^3.19.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-csslint": "^1.0.0",
+    "gulp-eslint": "^3.0.1",
+    "gulp-header": "^1.8.8",
+    "gulp-inject-file": "^0.0.18",
+    "gulp-inject-string": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.1.2",
+    "merge-stream": "^1.0.1"
+  },
+  "dependencies": {
+    "app-root-path": "^2.0.1"
+  }
+}

@@ -1,0 +1,9 @@
+/**
+ * <%= pkg.name %> - <%= pkg.description %>
+ * @copyright <%= pkg.copyright %>
+ * @version v<%= pkg.version %>
+ * @link <%= pkg.homepage %>
+ * @license <%= pkg.license %>
+ *
+ * (powered by appgears - https://github.com/vikasburman/appgears)
+ */ 
