@@ -1,2 +1,10 @@
-build
 node_modules
+app/**/*.min.js
+gears/**/*.min.js
+web/**/*.min.js
+app/**/*.pack.js
+gears/**/*.pack.js
+web/**/*.pack.js
+app/**/*.bundle.js
+gears/**/*.bundle.js
+web/**/*.bundle.js
