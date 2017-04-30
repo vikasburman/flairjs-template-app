@@ -1,6 +1,6 @@
 (() => {
-    // if running on server
     const iServer = (typeof global === 'object' && typeof exports === 'object');
+    const dummyJS = '_dummy_';
 
     // config
     const config = JSON.parse(`<!-- inject: ../../config.json -->`);
@@ -16,14 +16,22 @@
         isProd: [%]PROD[%],
         require: {
             baseUrl: '/',
-            paths: JSON.parse('[%]PATHS[%]'),
-            bundles: JSON.parse('[%]BUNDLES[%]')
+            paths: {
+                text: 'libs/require/text{.min}.js',
+                json: 'libs/require/json{.min}.js',
+                css: 'libs/require/css{.min}.js',
+                domReady: 'libs/require/domReady{.min}.js'
+            },
+            bundles: {}
         }
     };
 
+    // update paths and bundles
+    Object.assign(config.env.require.paths, JSON.parse('[%]PATHS[%]'));
+    Object.assign(config.env.require.bundles, JSON.parse('[%]BUNDLES[%]'));
+
     // env path resolver
     config.env.path = () => {
-        const dummyJS = config.source.www.system + 'dummy.js';
         const escapeRegExp = (string) => {
             return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1');
         };
@@ -210,6 +218,9 @@
         window.define = getDefine(window.define);
         window.include = include;
     }
+
+    // define dummy module
+    define(dummyJS, () => { return null; });
 
     // start
     if (isServer) {

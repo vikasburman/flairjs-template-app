@@ -8,8 +8,8 @@
  * (powered by appgears - https://github.com/vikasburman/appgears)
  */
 (() => {
-    // if running on server
     const iServer = (typeof global === 'object' && typeof exports === 'object');
+    const dummyJS = '_dummy_';
 
     // config
     const config = JSON.parse(`{
@@ -70,17 +70,25 @@
     // set env
     config.env = {
         isServer: isServer,
-        isProd: true,
+        isProd: false,
         require: {
             baseUrl: '/',
-            paths: JSON.parse('{"gears/modules/aop":"gears/modules/aop/index.pack.min.js","gears/modules/core":"gears/modules/core/index.pack.min.js"}'),
-            bundles: JSON.parse('{"gears/modules/aop":["sys.aop.Base"],"gears/modules/core":["sys.core.Base","sys.core.Client","sys.core.Module","sys.core.Server"]}')
+            paths: {
+                text: 'libs/require/text.js',
+                json: 'libs/require/json.js',
+                css: 'libs/require/css.js',
+                domReady: 'libs/require/domReady.js'
+            },
+            bundles: {}
         }
     };
 
+    // update paths and bundles
+    Object.assign(config.env.require.paths, JSON.parse('{"gears/modules/aop":"gears/modules/aop/index.pack.js","gears/modules/core":"gears/modules/core/index.pack.js"}'));
+    Object.assign(config.env.require.bundles, JSON.parse('{"gears/modules/aop":["sys.aop.Base"],"gears/modules/core":["sys.core.Base","sys.core.Client","sys.core.Module","sys.core.Server"]}'));
+
     // env path resolver
     config.env.path = () => {
-        const dummyJS = config.source.www.system + 'dummy.js';
         const escapeRegExp = (string) => {
             return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1');
         };
@@ -267,6 +275,9 @@
         window.define = getDefine(window.define);
         window.include = include;
     }
+
+    // define dummy module
+    define(dummyJS, () => { return null; });
 
     // start
     if (isServer) {
