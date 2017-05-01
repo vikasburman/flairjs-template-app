@@ -1,37 +1,8 @@
-(() => {
-    const iServer = (typeof global === 'object' && typeof exports === 'object');
+const gms = () => {
     const dummyJS = '_dummy_';
 
-    // config
-    const config = JSON.parse(`<!-- inject: ../../config.json -->`);
-    if (isServer) {
-        global.config = config;
-    } else {
-        window.config = config;
-    }
-
-    // set env
-    config.env = {
-        isServer: isServer,
-        isProd: [%]PROD[%],
-        require: {
-            baseUrl: '/',
-            paths: {
-                text: 'libs/require/text{.min}.js',
-                json: 'libs/require/json{.min}.js',
-                css: 'libs/require/css{.min}.js',
-                domReady: 'libs/require/domReady{.min}.js'
-            },
-            bundles: {}
-        }
-    };
-
-    // update paths and bundles
-    Object.assign(config.env.require.paths, JSON.parse('[%]PATHS[%]'));
-    Object.assign(config.env.require.bundles, JSON.parse('[%]BUNDLES[%]'));
-
-    // env path resolver
-    config.env.path = () => {
+    // module export and import (custom wrapper over global define and require)
+    const resolvePath = () => {
         const escapeRegExp = (string) => {
             return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1');
         };
@@ -41,7 +12,7 @@
         const getRootPath = (path) => {
             return (isServer ? (require('app-root-path')) :
                     (document.location.protocol.toLowerCase() !== 'file:' ? '' :
-                     document.location.pathname.toLowerCase().replace(config.settings.indexHtml, '')) + path);
+                    document.location.pathname.toLowerCase().replace(config.settings.indexHtml, '')) + path);
         };     
         const getContextualPath = (path) => {
             let parts = null,
@@ -146,8 +117,6 @@
             return path;
         };
     };
-
-    // module export and import
     const getDefine = (realDefine) => {
         // get proxyDefine as per context
         let proxyDefine = null;
@@ -175,24 +144,24 @@
                 _module.exports = factory.apply(_module, args);
             };
         } else {
-            proxyDefine = () => {
-                let args = [];
+            proxyDefine = (...args) => {
+                let allArgs = [];
 
                 // get factory function, name and deps     
-                for(let arg of arguments) { 
+                for(let arg of args) { 
                     if (typeof arg === 'function') {
-                        args.push(factory);
+                        allArgs.push(arg);
                     } else if (typeof arg === 'string') {
-                        args.push(arg);
+                        allArgs.push(arg);
                     } else { // must be array, resolve path of all dependencies                    
                         for(let dep of arg) { 
-                            args.push(config.env.path(dep));
+                            allArgs.push(resolvePath(dep));
                         }
                     }
                 }
 
-                // define
-                return realDefine.apply(window, args);
+                // define with real one without changing context
+                return realDefine(...allArgs);
             };
         }
 
@@ -203,40 +172,47 @@
         }
         return proxyDefine;
     };
-    const include = (deps, onSuccess, onError) => {
-        let i = 0;
-        for(let dep of deps) {
-            deps[i] = config.env.path(dep);
-            i++;
+    const getRequire = (realRequire) => {
+        // get proxyRequire as per context
+        let proxyRequire = (deps, ...args) => {
+            // resolve
+            if (typeof deps === 'string') { // one
+                deps = resolvePath(deps);
+            } else { // array 
+                let i = 0;
+                for(let dep of deps) {
+                    deps[i] = resolvePath(dep);
+                    i++;
+                }
+            }
+
+            // pass to real require without changing context
+            let allArgs = [];
+            if (typeof deps === 'string') { 
+                allArgs.push(deps); 
+            } else {
+                allArgs = allArgs.concat(deps);
+            }
+            if (args) { allArgs = allArgs.concat(args); }
+            return realRequire(...allArgs);
+        };
+
+        // give it same interface as realRequire
+        // e.g., reequire.resolve and anything else that is not known now
+        if (realRequire) {
+            Object.assign(proxyRequire, realRequire);
         }
-        return require(deps, onSuccess, onError);
+        return proxyRequire;
     };
     if (isServer) {
         global.define = getDefine(global.define);
-        global.include = include;
+        global.require = getRequire(global.require);
     } else {
         window.define = getDefine(window.define);
-        window.include = include;
+        window.require = getRequire(window.require);
     }
 
-    // define dummy module
+    // define dummy module (to proxy when something is not found)
     define(dummyJS, () => { return null; });
-
-    // start
-    if (isServer) {
-
-    } else { // client
-        // setup require config
-        require.config(config.env.require);
-
-        // boot
-        const onError = (err) => {
-            console.log(`boot failed. (${err.toString()})`);
-        };
-        include(['[Boot]'], (boot) => {
-            boot().then(() => {
-                console.log('boot success.');
-            }).fail(onError)
-        }, onError);        
-    }
-})();
+};
+gms();

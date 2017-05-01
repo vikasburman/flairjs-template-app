@@ -31,7 +31,9 @@
 
     "catalog": {
         "Base": "sys.core.Base",
-        "Boot": "sys.core.Server | sys.core.Client",
+        "Module": "sys.core.Module",
+        "Bootware": "sys.core.Bootware",
+        "Booter": "sys.boot.Server | sys.boot.Client",
         "Main": "app.main | web.main"
     },
 
@@ -40,9 +42,8 @@
     },
 
     "settings": {
-        "sys.core": {
+        "sys.boot": {
             "bootwares": [
-                "[Main]"
             ]
         }
     }
