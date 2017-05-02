@@ -1,8 +1,8 @@
 // setup
 let Base = require(use('[Base]'));
 
-// base.value()
-describe('base.value()', () => {
+// Base: value()
+describe('Base value() function', () => {
     let base = new Base();
     base.nestedObject = {
         prop1: 1,

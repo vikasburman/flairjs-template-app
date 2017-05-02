@@ -8,12 +8,7 @@
  * (powered by appgears - https://github.com/vikasburman/appgears)
  */
 (() => {
-    let isServer = false;
-    if (typeof IS_SERVER != 'undefined') { 
-        isServer = IS_SERVER;
-    } else {
-        isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
-    }
+    let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
 
     // config
     const config = JSON.parse(`{
@@ -50,22 +45,11 @@
         },
     
         "jasmine": {
-            "browser": {
-                "specRunner": {
-                    "console": true
-                },
-                "headless": {
-                    "port": 8080,
-                    "catch": true,
-                    "random": false,
-                    "throwFailures": true
-                }
-            },
             "node": {
-                "verbose": true,
-                "includeStackTrace": true,
+                "verbose": false,
+                "includeStackTrace": false,
                 "timeout": 5000,
-                "errorOnFail": true
+                "errorOnFail": false
             }
         },
     
@@ -113,21 +97,26 @@
     };
 
     // update paths and bundles
-    Object.assign(config.env.require.paths, JSON.parse('{"gears/modules/aop":"gears/modules/aop/index.pack.js","gears/modules/core":"gears/modules/core/index.pack.js"}'));
-    Object.assign(config.env.require.bundles, JSON.parse('{"gears/modules/aop":["sys.aop.Base"],"gears/modules/core":["sys.core.Base","sys.core.Bootware","sys.core.Module","sys.core.boot.Client","sys.core.boot.Server"]}'));
+    Object.assign(config.env.require.paths, JSON.parse('{}'));
+    Object.assign(config.env.require.bundles, JSON.parse('{}'));
 
     // update root
-    const getRootPath = (_path) => {
-        return (isServer ? (require('app-root-path')) :
-                (document.location.protocol.toLowerCase() !== 'file:' ? '' :
-                document.location.pathname.toLowerCase().replace(config.settings.indexHtml, '')) + _path);
+    const getRootPath = () => {
+        return (isServer ? (require('app-root-path') + '/') : '/');
     };     
-    config.env.root = getRootPath('') + '/';
+    config.env.root = getRootPath();
 
     // path resolver
-    const dummyJS = '_dummy_';
-    //define(dummyJS, () => { return null; });    
-    const use = (_path) => {
+    const dummyJS = 'dummy';
+    const use = (_path, forceAs) => {
+        let isAsServer = isServer;
+        if (forceAs) {
+            if (forceAs === 'server') {
+                isAsServer = true;
+            } else if (forceAs === 'client') {
+                isAsServer = false;
+            }
+        }
         const escapeRegExp = (string) => {
             return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1');
         };
@@ -139,7 +128,7 @@
                 dummy = '';
             if (_path.includes('|')) {
                 parts = _path.split('|');
-                _path = (isServer ? parts[0] : parts[1]).trim();
+                _path = (isAsServer ? parts[0] : parts[1]).trim();
                 _path = _path || dummyJS;
             }
             return _path;
@@ -154,7 +143,7 @@
         const getNamespacedPackageMemberPath = (_path, nsRoot, isMock) => {
             // for server sys.core.Base becomes gears/modules/core/members/Base.js
             // for client it remains sys.core.Base and is loaded from corrosponding .pack file via requirejs bundle configuration
-            if (isServer) {
+            if (isAsServer) {
                 let parts = _path.split('.');
                 parts.shift(); // remove sys    
                 let moduleName = parts.shift(); // remove module name
@@ -167,6 +156,7 @@
             let parts = _path.split('/');
             parts.shift(); // remove sys
             _path = nsRoot + parts.join('/');
+            if (!isAsServer) { _path = '/' + _path; } // add root relativity
             return _path;
         };
 
@@ -220,7 +210,7 @@
                 case '.': // caters to patterns like ./, ../, ../../, etc.
                     _path = getRelativePath(_path); break;
                 case '/':
-                    _path = getRootPath(_path); break;
+                    _path = getRootPath() + _path; break;
             }
         }
 

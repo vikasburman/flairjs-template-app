@@ -32,22 +32,11 @@
     },
 
     "jasmine": {
-        "browser": {
-            "specRunner": {
-                "console": true
-            },
-            "headless": {
-                "port": 8080,
-                "catch": true,
-                "random": false,
-                "throwFailures": true
-            }
-        },
         "node": {
-            "verbose": true,
-            "includeStackTrace": true,
+            "verbose": false,
+            "includeStackTrace": false,
             "timeout": 5000,
-            "errorOnFail": true
+            "errorOnFail": false
         }
     },
 

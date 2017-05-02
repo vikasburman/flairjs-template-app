@@ -15,7 +15,6 @@ const gulpIf = require('gulp-if');
 const gulpTap = require('gulp-tap');
 const header = require('gulp-header');
 const jasmineNode = require('gulp-jasmine');
-const jasmineBrowser = require('gulp-jasmine-browser');
 const injectFile = require('gulp-inject-file');
 const injectString = require('gulp-inject-string');
 const babel = require('gulp-babel');
@@ -61,7 +60,7 @@ const getSource = (root, folder, ...patterns) => {
 // task: clean (to delete all generated files)
 const cleanGlob = [
     '/**/*.pack.js', 
-    '/**/*.bundle.js',
+    '/**/*.set.js',
     '/**/*.min.js', 
     '/**/*.min.css',
     '/node_modules/gears-env.js'
@@ -88,7 +87,7 @@ const processTemplates = (root, whenDone) => {
         return (file.path.toLowerCase().endsWith('.js.tmpl'));
     };
     const processFolder = (folder, _done) => {
-        let stream = gulp.src(getSource(root, folder, '/**/*.tmpl'))
+        gulp.src(getSource(root, folder, '/**/*.tmpl'))
             // inject content
             .pipe(injectFile())
             // handle loading .min version
@@ -101,8 +100,8 @@ const processTemplates = (root, whenDone) => {
             }))
             // write to output
             .pipe(gulp.dest(root + folder))
-        stream.on('end', _done);
-        stream.on('error', _done);
+            .on('end', _done)
+            .on('error', _done);
     }
     const processFolders = (folders, onDone) => {
         let folder = folders.shift(); 
@@ -212,9 +211,9 @@ const packModules = (root, whenDone) => {
                 file.contents = new Buffer(''); // empty string
             }
         };
-     };
+    };
     const processModule = (folder, _done) => {
-        let stream = gulp.src(getSource(root, folder, 'members/*.js', 'members/**/*.js'))
+        gulp.src(getSource(root, folder, 'members/*.js', 'members/**/*.js'))
             // process content
             .pipe(gulpTap(processContent(folder)))
             // check for issues
@@ -228,9 +227,9 @@ const packModules = (root, whenDone) => {
             // concat into index.pack.js
             .pipe(concat(path.join(folder, 'index.pack.js')))
             // write to output
-            .pipe(gulp.dest(root));
-        stream.on('end', _done);
-        stream.on('error', _done);
+            .pipe(gulp.dest(root))
+            .on('end', _done) 
+            .on('error', _done);
     }
     const processModules = (folders, onDone) => {
         let folder = folders.shift(); 
@@ -257,11 +256,60 @@ gulp.task('pack', (done) => {
     });
 });
 
+// pack:sets
+const packSets = (root, whenDone) => {
+    let folders = getFolders(root);
+    const processContent = (folder) => {
+        return (file, t) => {
+            let target = path.join(root, folder, 'index.pack.js');
+            // append file content into target
+            fs.appendFileSync(target,  Buffer.concat([
+                new Buffer(`\n\n// START: (${file.path})\n`),
+                file.contents,
+                new Buffer(`\n// END: (${file.path})\n`),
+                ])
+            );
+        };
+    };
+    const processModule = (folder, _done) => {
+        gulp.src(getSource(root, folder, '*.set.js'))
+            // append into index.pack.js
+            .pipe(gulpTap(processContent(folder)))
+            // write to output
+            .pipe(gulp.dest(root + folder))
+            .on('end', _done) 
+            .on('error', _done);
+    }
+    const processModules = (folders, onDone) => {
+        let folder = folders.shift(); 
+        if (folder) {
+            processModule(folder, () => {
+                if (folders.length === 0) {
+                    onDone();
+                } else {
+                    processModules(folders, onDone);
+                }
+            });
+        } else {
+            onDone();
+        }
+    };
+    processModules(folders, whenDone);
+};
+gulp.task('pack:sets', (done) => {
+    // note: server side modules (.app and .api) are explicitely left as packing is not required/not used
+    packSets(config.source.sys, () => {
+        packSets(config.source.web, () => {
+            done();
+        });
+    });
+});
+
 // task: compress
 const compressFiles = (root, whenDone) => {
     let folders = getFolders(root);
     const processFile = (folder, _done) => {
-        let stream = gulp.src(getSource(root, folder, '/**/*.pack.js', '/**/*.bundle.js'))
+        gulp.src(getSource(root, folder, '/**/*.pack.js', '/**/*.set.js'))
             // minify
             .pipe(minifier(config.uglify.js, uglifyjs))
             // rename 
@@ -269,9 +317,9 @@ const compressFiles = (root, whenDone) => {
                 path.extname = '.min.js'; // from <name.whatever>.js to <name.whatever>.min.js
             }))
             // write to output again
-            .pipe(gulp.dest(root + folder));
-        stream.on('end', _done);
-        stream.on('error', _done);
+            .pipe(gulp.dest(root + folder))
+            .on('end', _done)
+            .on('error', _done);
     }
     const processFiles = (folders, onDone) => {
         let folder = folders.shift(); 
@@ -318,45 +366,37 @@ gulp.task('env', (done) => {
 });
 
 // task: test
-
-
-gulp.task('test:client', (done) => {
-    global.IS_SERVER = false;
-    require(require('app-root-path') + '/' + config.source.www.sys + 'index.js');
+gulp.task('test:all', (done) => {
     const tests = [
-        config.source.sys + '**/tests/*.spec.js',
-        config.source.web + '**/tests/*.spec.js'
-    ];
-    let stream = gulp.src(tests)
-        .pipe(jasmineBrowser.specRunner(config.jasmine.browser.specRunner))
-        .pipe(jasmineBrowser.headless(config.jasmine.browser.headless));
-    stream.on('end', done);
-    stream.on('error', done);
-});
-gulp.task('test:server', (done) => {
-    global.IS_SERVER = true;
-    require(require('app-root-path') + '/' + config.source.www.sys + 'index.js');
-    const tests = [
+        require('app-root-path') + '/' + config.source.www.sys + 'index.js',
         config.source.sys + '**/tests/*.spec.js',
         config.source.app + '**/tests/*.spec.js',
-        config.source.api + '**/tests/*.spec.js'
+        config.source.api + '**/tests/*.spec.js',
+        config.source.web + '**/tests/*.spec.js',
+        config.source.www.sys + '**/tests/*.spec.js',
+        config.source.www.web + '**/tests/*.spec.js'                          
     ];
-    let stream = gulp.src(tests)
-        .pipe(jasmineNode(config.jasmine.node));
-    stream.on('end', done);
-    stream.on('error', done);
+    gulp.src(tests)
+        .pipe(jasmineNode(config.jasmine.node))
+        .on('end', done)
+        .on('error', done);
+    // HACK: pipe() is not exising and hence end/error done() is not called via pipe, 
+    // so calling done() manually below - this seems to be working so far
+    // but need to be revisited for a better solution
+    done(); 
 });
 gulp.task('test', (cb) => {
     isProd = false;
     isTest = true;
-    runSequence('clean', 'processTemplates', 'pack', 'env', 'test:server', 'test:client', cb);
+    runSequence('clean', 'processTemplates', 'env', 'test:all', cb);
+    
 });
 
 // task: build (dev)
 gulp.task('build', (cb) => {
     isProd = false;
     isTest = false;
-    runSequence('clean', 'processTemplates', 'pack', 'env', cb);
+    runSequence('clean', 'processTemplates', 'pack', 'pack:sets', 'env', cb);
 });
 
 // task: build (prod)
@@ -365,7 +405,7 @@ gulp.task('build', (cb) => {
 gulp.task('build-prod', (cb) => {
     isProd = true;
     isTest = false;
-    runSequence('clean', 'processTemplates', 'pack', 'compress', 'env', cb);
+    runSequence('clean', 'processTemplates', 'pack', 'pack:sets', 'compress', 'env', cb);
 });
 
 // task: default
