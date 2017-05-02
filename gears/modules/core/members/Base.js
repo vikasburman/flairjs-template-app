@@ -1,16 +1,16 @@
 define(() => {
     return class Base {
-
         // get value of given object's nested path 
-        value(path, defaultValue = null) {
-            var result = defaultValue,
-                obj = this,
+        value(keyPath = '', defaultValue = null) {
+            var obj = this,
+                result = defaultValue,
                 index = -1,
-                pathArray = path.split('.');
+                pathArray = keyPath.split('.'),
                 length = pathArray.length;
             while (obj != null && ++index < length) {
                 result = obj = obj[pathArray[index]];
             };
+            if (typeof result === 'undefined') { result = defaultValue; }
             return result;
         };
     };

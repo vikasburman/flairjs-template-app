@@ -1,6 +1,8 @@
-let Base = require('./Base')
+// setup
+let Base = require(use('[Base]'));
 
-describe('Base class', function() {
+// base.value()
+describe('base.value()', () => {
     let base = new Base();
     base.nestedObject = {
         prop1: 1,
@@ -12,9 +14,9 @@ describe('Base class', function() {
         }
     };
 
-    describe('when value() is used to get property value', () => {
+    describe('when used to get property path value', () => {
         it('should read level 0 prop', () => {
-            expect(base.value('nestedObject')).toEqual(nestedObject);
+            expect(base.value('nestedObject')).toEqual(base.nestedObject);
         });
         it('should read level 1 prop', () => {
             expect(base.value('nestedObject.prop1')).toEqual(1);
@@ -25,8 +27,14 @@ describe('Base class', function() {
         it('should read level 3 prop', () => {
             expect(base.value('nestedObject.prop2.prop22.prop221')).toEqual(3);
         });
-        it('should return default value when prop not found', () => {
+        it('should return default value if path not found', () => {
             expect(base.value('nestedObject.prop3', 0)).toEqual(0);
         });
+        it('should return default value if no path passed', () => {
+            expect(base.value('', -1)).toEqual(-1);
+        });  
+        it('should return null if no parameter passed', () => {
+            expect(base.value()).toEqual(null);
+        });                
     });
 });

@@ -14,6 +14,8 @@ const rename = require('gulp-rename');
 const gulpIf = require('gulp-if');
 const gulpTap = require('gulp-tap');
 const header = require('gulp-header');
+const jasmineNode = require('gulp-jasmine');
+const jasmineBrowser = require('gulp-jasmine-browser');
 const injectFile = require('gulp-inject-file');
 const injectString = require('gulp-inject-string');
 const babel = require('gulp-babel');
@@ -61,7 +63,8 @@ const cleanGlob = [
     '/**/*.pack.js', 
     '/**/*.bundle.js',
     '/**/*.min.js', 
-    '/**/*.min.css'
+    '/**/*.min.css',
+    '/node_modules/gears-env.js'
 ];
 const cleanModules = (root) => {
     let folders = getFolders(root);
@@ -306,14 +309,47 @@ gulp.task('env', (done) => {
     fileContent = fileContent.replace('[%]PATHS[%]', JSON.stringify(packs.paths));
     fileContent = fileContent.replace('[%]BUNDLES[%]', JSON.stringify(packs.bundles));
     fs.writeFileSync(fileName, fileContent);
+
+    // copy it to node_modules for easy reference when running tests
+    fs.writeFileSync('node_modules/gears-env.js', fileContent);
+
+    // done
     done();
 });
 
 // task: test
-gulp.task('test', (done) => {
+
+
+gulp.task('test:client', (done) => {
+    global.IS_SERVER = false;
+    require(require('app-root-path') + '/' + config.source.www.sys + 'index.js');
+    const tests = [
+        config.source.sys + '**/tests/*.spec.js',
+        config.source.web + '**/tests/*.spec.js'
+    ];
+    let stream = gulp.src(tests)
+        .pipe(jasmineBrowser.specRunner(config.jasmine.browser.specRunner))
+        .pipe(jasmineBrowser.headless(config.jasmine.browser.headless));
+    stream.on('end', done);
+    stream.on('error', done);
+});
+gulp.task('test:server', (done) => {
+    global.IS_SERVER = true;
+    require(require('app-root-path') + '/' + config.source.www.sys + 'index.js');
+    const tests = [
+        config.source.sys + '**/tests/*.spec.js',
+        config.source.app + '**/tests/*.spec.js',
+        config.source.api + '**/tests/*.spec.js'
+    ];
+    let stream = gulp.src(tests)
+        .pipe(jasmineNode(config.jasmine.node));
+    stream.on('end', done);
+    stream.on('error', done);
+});
+gulp.task('test', (cb) => {
     isProd = false;
     isTest = true;
-    runSequence('clean', 'processTemplates', 'pack', 'env', cb);
+    runSequence('clean', 'processTemplates', 'pack', 'env', 'test:server', 'test:client', cb);
 });
 
 // task: build (dev)

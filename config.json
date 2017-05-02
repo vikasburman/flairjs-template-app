@@ -32,11 +32,22 @@
     },
 
     "jasmine": {
-        "verbose": true,
-        "includeStackTrace": true,
-        "timeout": 5000,
-        "errorOnFail": true,
-        "config": {
+        "browser": {
+            "specRunner": {
+                "console": true
+            },
+            "headless": {
+                "port": 8080,
+                "catch": true,
+                "random": false,
+                "throwFailures": true
+            }
+        },
+        "node": {
+            "verbose": true,
+            "includeStackTrace": true,
+            "timeout": 5000,
+            "errorOnFail": true
         }
     },
 
@@ -44,7 +55,7 @@
         "Base": "sys.core.Base",
         "Module": "sys.core.Module",
         "Bootware": "sys.core.Bootware",
-        "Bootstrapper": "sys.boot.Server | sys.boot.Client",
+        "Bootstrapper": "sys.core.boot.Server | sys.core.boot.Client",
         "Main": "app.main | web.main"
     },
 
