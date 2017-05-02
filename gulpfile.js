@@ -4,7 +4,6 @@ const process = require('process');
 const path = require('path');
 const merge = require('merge-stream');
 const gulp = require('gulp');
-const gulpFail = require('gulp-fail');
 const runSequence = require('run-sequence');
 const eslint = require('gulp-eslint');
 const concat = require('gulp-concat');
@@ -30,7 +29,8 @@ const JSBanner = `/**
  */
 `;
 const pkg = require('./package.json');
-const isProd = process.argv.includes('-prod');
+let isProd = false;
+let isTest = false;
 
 // get folders under given root
 const getFolders = (root) => {
@@ -140,52 +140,78 @@ const packModules = (root, whenDone) => {
     let folders = getFolders(root);
     const processContent = (folder) => {
         return (file, t) => {
-            const getModuleName = () => {
-                let fileName = path.basename(file.path, '.js'),
-                    namespace = '',
-                    rootName = '',
-                    items = file.path.split(path.sep),
-                    startAt = items.lastIndexOf('members');
-                fileName = fileName.toLowerCase() === 'index' ? '' : fileName;
-                if (startAt > 0) {
-                    for(let i = startAt + 1; i < items.length - 1; i++) {
-                        namespace = (namespace ? (namespace + '.' + items[i]) : items[i]);
+            let isProcess = false,
+                isMockFile = path.basename(file.path).endsWith('.mock.js'),
+                mockFile = file.path.replace('.js', '.mock.js'),
+                hasMockFile = fs.existsSync(mockFile);
+            if (isTest) { // in test mode
+                if (isMockFile) { // if this is mock file
+                    isProcess = true; // process it
+                } else { // otherwise, for any non mock file
+                    if (hasMockFile) { // if corrosponding mock file exists
+                        isProcess = false; // don't process it, as mockFile would be processed instead
+                    } else { // otherwise
+                        isProcess = true; // process this itself
                     }
                 }
-                switch(root) {
-                    case config.source.sys:
-                        rootName = 'sys.'; break;
-                    case config.source.web:
-                        rootName = 'web.'; break;
-                }
-                return rootName + folder + (namespace ? ('.' + namespace) : '') + (fileName ? ('.' + fileName) : '');
-            };
-            let moduleName = getModuleName(),
-                pattern1 = new RegExp(/define\((?:\n|\s*)\[/), // define([... <-- with dependencies
-                pattern2 = new RegExp(/define\((?:\n|\s*)\(/), // define((... <-- without dependencies
-                content = file.contents.toString(),
-                packId = root + folder,
-                packUrl = root + folder + (isProd ? '/index.pack.min.js' : '/index.pack.js'); 
-            
-            // update content
-            file.contents = Buffer.concat([
-                new Buffer(`\n// START: (${file.path})\n`),
-                (pattern1.test(content) ? 
-                    new Buffer(file.contents.toString().replace(pattern1, "define('" + moduleName + "', [")) :
-                    new Buffer(file.contents.toString().replace(pattern2, "define('" + moduleName + "', ("))),
-                new Buffer(`\n// END: (${file.path})\n`),
-            ]);
-
-            // add to packs (for bundle based resolving on client side)
-            if (!packs.paths[packId]) {
-                packs.paths[packId] = packUrl;
-                packs.bundles[packId] = [];
+            } else { // in normal mode
+                if (isMockFile) { // if this is mock file
+                    isProcess = false; // dont' process it
+                } else { // otherwise, for any non mock file
+                    isProcess = true; // process this itself
+                }       
             }
-            packs.bundles[packId].push(moduleName);
+
+            if (isProcess) {
+                const getModuleName = () => {
+                    let fileName = (isMockFile ? path.basename(file.path, '.mock.js') : path.basename(file.path, '.js')),
+                        namespace = '',
+                        rootName = '',
+                        items = file.path.split(path.sep),
+                        startAt = items.lastIndexOf('members');
+                    fileName = fileName.toLowerCase() === 'index' ? '' : fileName;
+                    if (startAt > 0) {
+                        for(let i = startAt + 1; i < items.length - 1; i++) {
+                            namespace = (namespace ? (namespace + '.' + items[i]) : items[i]);
+                        }
+                    }
+                    switch(root) {
+                        case config.source.sys:
+                            rootName = 'sys.'; break;
+                        case config.source.web:
+                            rootName = 'web.'; break;
+                    }
+                    return rootName + folder + (namespace ? ('.' + namespace) : '') + (fileName ? ('.' + fileName) : '');
+                };
+                let moduleName = getModuleName(),
+                    pattern1 = new RegExp(/define\((?:\n|\s*)\[/), // define([... <-- with dependencies
+                    pattern2 = new RegExp(/define\((?:\n|\s*)\(/), // define((... <-- without dependencies
+                    content = file.contents.toString(),
+                    packId = root + folder,
+                    packUrl = root + folder + (isProd ? '/index.pack.min.js' : '/index.pack.js'); 
+                
+                // update content
+                file.contents = Buffer.concat([
+                    new Buffer(`\n// START: (${file.path})\n`),
+                    (pattern1.test(content) ? 
+                        new Buffer(file.contents.toString().replace(pattern1, "define('" + moduleName + "', [")) :
+                        new Buffer(file.contents.toString().replace(pattern2, "define('" + moduleName + "', ("))),
+                    new Buffer(`\n// END: (${file.path})\n`),
+                ]);
+
+                // add to packs (for bundle based resolving on client side)
+                if (!packs.paths[packId]) {
+                    packs.paths[packId] = packUrl;
+                    packs.bundles[packId] = [];
+                }
+                packs.bundles[packId].push(moduleName);
+            } else {
+                file.contents = new Buffer(''); // empty string
+            }
         };
      };
     const processModule = (folder, _done) => {
-        let stream = gulp.src(getSource(root, folder, 'members/*.js', '/members/**/*.js'))
+        let stream = gulp.src(getSource(root, folder, 'members/*.js', 'members/**/*.js'))
             // process content
             .pipe(gulpTap(processContent(folder)))
             // check for issues
@@ -234,7 +260,7 @@ const compressFiles = (root, whenDone) => {
     const processFile = (folder, _done) => {
         let stream = gulp.src(getSource(root, folder, '/**/*.pack.js', '/**/*.bundle.js'))
             // minify
-            .pipe(minifier(config.source.uglify.js, uglifyjs))
+            .pipe(minifier(config.uglify.js, uglifyjs))
             // rename 
             .pipe(rename((path) => {
                 path.extname = '.min.js'; // from <name.whatever>.js to <name.whatever>.min.js
@@ -261,18 +287,14 @@ const compressFiles = (root, whenDone) => {
     processFiles(folders, whenDone);
 };
 gulp.task('compress', (done) => {
-    if (isProd) {
-        // note: server side modules (.app and .api) are explicitely left as compressing is not required/not used
-        compressFiles(config.source.sys, () => {
-            compressFiles(config.source.www.sys, () => {
-                compressFiles(config.source.web, () => {
-                    done();
-                });
+    // note: server side modules (.app and .api) are explicitely left as compressing is not required/not used
+    compressFiles(config.source.sys, () => {
+        compressFiles(config.source.www.sys, () => {
+            compressFiles(config.source.web, () => {
+                done();
             });
         });
-    } else {
-        done();
-    }
+    });
 });
 
 // task: write env file
@@ -280,15 +302,36 @@ gulp.task('env', (done) => {
     let fileName = config.source.www.sys + 'index.js',
         fileContent = fs.readFileSync(fileName).toString();
     fileContent = fileContent.replace('[%]PROD[%]', isProd.toString());
+    fileContent = fileContent.replace('[%]TEST[%]', isTest.toString());
     fileContent = fileContent.replace('[%]PATHS[%]', JSON.stringify(packs.paths));
     fileContent = fileContent.replace('[%]BUNDLES[%]', JSON.stringify(packs.bundles));
     fs.writeFileSync(fileName, fileContent);
     done();
 });
 
+// task: test
+gulp.task('test', (done) => {
+    isProd = false;
+    isTest = true;
+    runSequence('clean', 'processTemplates', 'pack', 'env', cb);
+});
+
+// task: build (dev)
+gulp.task('build', (cb) => {
+    isProd = false;
+    isTest = false;
+    runSequence('clean', 'processTemplates', 'pack', 'env', cb);
+});
+
+// task: build (prod)
 //TODO: html templates compressor and css lint and minify is to be added
 // need to think about their deployment as well
-
-gulp.task('default', (cb) => {
+gulp.task('build-prod', (cb) => {
+    isProd = true;
+    isTest = false;
     runSequence('clean', 'processTemplates', 'pack', 'compress', 'env', cb);
+});
+
+// task: default
+gulp.task('default', () => {
 });

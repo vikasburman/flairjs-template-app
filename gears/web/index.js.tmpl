@@ -1,8 +1,39 @@
-const gms = () => {
-    const dummyJS = '_dummy_';
+(() => {
+    const iServer = (typeof global === 'object' && typeof exports === 'object');
 
-    // module export and import (custom wrapper over global define and require)
-    const resolvePath = () => {
+    // config
+    const config = JSON.parse(`<!-- inject: ../../config.json -->`);
+    if (isServer) {
+        global.config = config;
+    } else {
+        window.config = config;
+    }
+
+    // set env
+    config.env = {
+        isServer: isServer,
+        isProd: [%]PROD[%],
+        isTest: [%]TEST[%],
+        require: {
+            baseUrl: '/',
+            paths: {
+                text: 'libs/require/text{.min}.js',
+                json: 'libs/require/json{.min}.js',
+                css: 'libs/require/css{.min}.js',
+                domReady: 'libs/require/domReady{.min}.js'
+            },
+            bundles: {}
+        }
+    };
+
+    // update paths and bundles
+    Object.assign(config.env.require.paths, JSON.parse('[%]PATHS[%]'));
+    Object.assign(config.env.require.bundles, JSON.parse('[%]BUNDLES[%]'));
+
+    // path resolver
+    const dummyJS = '_dummy_';
+    define(dummyJS, () => { return null; });    
+    const use = () => {
         const escapeRegExp = (string) => {
             return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1');
         };
@@ -35,13 +66,13 @@ const gms = () => {
             }
             return path; // requirejs handles relative path with baseUrl automatically
         };
-        const getNamesacedPackageMemberPath = (path, nsRoot) => {
+        const getNamesacedPackageMemberPath = (path, nsRoot, isMock) => {
             // for server sys.core.Base becomes gears/modules/core/members/Base.js
             // for client it remains sys.core.Base and is loaded from corrosponding .pack file via requirejs bundle configuration
             if (isServer) {
                 let parts = path.split('.').shift(), // remove sys
                     moduleName = parts.shift(), // remove module name
-                path = nsRoot + moduleName + '/members/' + parts.join('/') + '.js';
+                path = nsRoot + moduleName + '/members/' + parts.join('/') + (isMock ? '.mock.js' : '.js');
             }
             return path;            
         };
@@ -63,7 +94,11 @@ const gms = () => {
             // (3) appgears packaged files path
             //  {ns/}*  --> to reference files which are placed inside appgears module folder (e.g., sys/core/assets/..., etc.)
             // (4) appgears packaged members path
-            //  {ns.}*  --> to load namespaced package members (e.g., sys.Core.Base, app.main, web.main.start, etc.)
+            //  {ns.}*  --> to load namespaced package member (e.g., sys.Core.Base, app.main.start, web.main.start, etc.)
+            //  ~{ns.}* --> to load namespaced package member's mock implementation when running in test mode
+            //              a '~' as first character before any namespaced member will get resolve to corrosponding
+            //              mock file. e.g., '~app.main.start' will resolves to app/modules/members/main/start.js normally, 
+            //              however in test mode, this will be resolved to app/modules/members/main/start.mock.js
             // (5) cataloged path
             //  [*]     --> to load namespaced modules whose actual name is defined in catalog registry
 
@@ -83,22 +118,35 @@ const gms = () => {
             // any missing will be resolved with a null value
             path = getContextualPath(path);
 
+            // mocking consideration
+            let isMock = false;
+            if (path.substr(0, 1) === '~') { // mock required in test mode
+                path = path.substr(1); // strip this
+                if (config.env.isTest) {
+                    isMock = true;
+                }
+            }
+
             // type #4: namespaced package files path
             if (path.startsWith('sys/')) {
                 path = getNamesacedPackageFilePath(path, config.source.sys);
             } else if (path.startsWith('app/')) {
                 path = getNamesacedPackageFilePath(path, config.source.app);
+            } else if (path.startsWith('api/')) {
+                path = getNamesacedPackageFilePath(path, config.source.api);
             } else if (path.startsWith('web/')) {
                 path = getNamesacedPackageFilePath(path, config.source.web);
             }
 
             // type #3: namespaced package members path
             if (path.startsWith('sys.')) {
-                path = getNamesacedPackageMemberPath(path, config.source.sys);
+                path = getNamesacedPackageMemberPath(path, config.source.sys, isMock);
             } else if (path.startsWith('app.')) {
-                path = getNamesacedPackageMemberPath(path, config.source.app);
+                path = getNamesacedPackageMemberPath(path, config.source.app, isMock);
+            } else if (path.startsWith('api.')) {
+                path = getNamesacedPackageMemberPath(path, config.source.api, isMock);
             } else if (path.startsWith('web.')) {
-                path = getNamesacedPackageMemberPath(path, config.source.web);
+                path = getNamesacedPackageMemberPath(path, config.source.web, isMock);
             }
 
             // type #2: relative files path
@@ -117,102 +165,26 @@ const gms = () => {
             return path;
         };
     };
-    const getDefine = (realDefine) => {
-        // get proxyDefine as per context
-        let proxyDefine = null;
-        if (isServer) {
-            proxyDefine = () => {
-                // this gives access to module object of the file which is calling this function
-                let _module = arguments.callee.caller.arguments[2],
-                    args = [],
-                    factory = null;
-                    
-                // get factory function, name and deps     
-                for(let arg of arguments) { 
-                    if (typeof arg === 'function') {
-                        factory = arg; 
-                    } else if (typeof arg === 'string') { 
-                        _module.id = arg; 
-                    } else { // must be array, require all dependencies                    
-                        for(let dep of arg) { 
-                            args.push(require(config.env.path(dep))); 
-                        }
-                    }
-                }
-
-                // exports factory function
-                _module.exports = factory.apply(_module, args);
-            };
-        } else {
-            proxyDefine = (...args) => {
-                let allArgs = [];
-
-                // get factory function, name and deps     
-                for(let arg of args) { 
-                    if (typeof arg === 'function') {
-                        allArgs.push(arg);
-                    } else if (typeof arg === 'string') {
-                        allArgs.push(arg);
-                    } else { // must be array, resolve path of all dependencies                    
-                        for(let dep of arg) { 
-                            allArgs.push(resolvePath(dep));
-                        }
-                    }
-                }
-
-                // define with real one without changing context
-                return realDefine(...allArgs);
-            };
-        }
-
-        // give it same interface as realDefine
-        // e.g., define.amd and anything else that is not known now
-        if (realDefine) {
-            Object.assign(proxyDefine, realDefine);
-        }
-        return proxyDefine;
-    };
-    const getRequire = (realRequire) => {
-        // get proxyRequire as per context
-        let proxyRequire = (deps, ...args) => {
-            // resolve
-            if (typeof deps === 'string') { // one
-                deps = resolvePath(deps);
-            } else { // array 
-                let i = 0;
-                for(let dep of deps) {
-                    deps[i] = resolvePath(dep);
-                    i++;
-                }
-            }
-
-            // pass to real require without changing context
-            let allArgs = [];
-            if (typeof deps === 'string') { 
-                allArgs.push(deps); 
-            } else {
-                allArgs = allArgs.concat(deps);
-            }
-            if (args) { allArgs = allArgs.concat(args); }
-            return realRequire(...allArgs);
-        };
-
-        // give it same interface as realRequire
-        // e.g., reequire.resolve and anything else that is not known now
-        if (realRequire) {
-            Object.assign(proxyRequire, realRequire);
-        }
-        return proxyRequire;
-    };
     if (isServer) {
-        global.define = getDefine(global.define);
-        global.require = getRequire(global.require);
+        global.use = use;
     } else {
-        window.define = getDefine(window.define);
-        window.require = getRequire(window.require);
+        window.use = use;
     }
 
-    // define dummy module (to proxy when something is not found)
-    define(dummyJS, () => { return null; });
-};
-gms();
+    // pre boot essentials
+    if (isServer) {
+        // nothing specific
+    } else {
+        // setup require config
+        require.config(config.env.require);
+    }
+
+    // boot
+    const onError = (err) => { if (!config.env.isProd) { console.log(`boot failed. (${err.toString()})`); } };
+    require([use('[Bootstrapper]')], (Bootstrapper) => {
+        let bootstrapper = new Bootstrapper();
+        bootstrapper.start().then(() => {
+            if (!config.env.isProd) { console.log('boot success.'); }
+        }).fail(onError)
+    }, onError);
+})();

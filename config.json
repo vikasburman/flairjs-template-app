@@ -12,20 +12,31 @@
             "assets/**",
             "libs/**",
             "tests/**"
-        ],
-        "uglify": {
-            "js": {
-                "mangle": false,
-                "preserveComments": "license",
-                "output": {
-                },
-                "compress": {
-                    "dead_code": true,
-                    "drop_debugger": true,
-                    "global_defs": {
-                    }
+        ]
+    },
+
+    "uglify": {
+        "js": {
+            "mangle": false,
+            "preserveComments": "license",
+            "output": {
+            },
+            "compress": {
+                "dead_code": true,
+                "drop_debugger": true,
+                "global_defs": {
+                    "use": true
                 }
             }
+        }
+    },
+
+    "jasmine": {
+        "verbose": true,
+        "includeStackTrace": true,
+        "timeout": 5000,
+        "errorOnFail": true,
+        "config": {
         }
     },
 
@@ -33,7 +44,7 @@
         "Base": "sys.core.Base",
         "Module": "sys.core.Module",
         "Bootware": "sys.core.Bootware",
-        "Booter": "sys.boot.Server | sys.boot.Client",
+        "Bootstrapper": "sys.boot.Server | sys.boot.Client",
         "Main": "app.main | web.main"
     },
 

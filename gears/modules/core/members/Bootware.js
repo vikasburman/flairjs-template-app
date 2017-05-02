@@ -1,5 +1,5 @@
 define([
-    '[Module]'
+    use('[Module]')
 ], (Module) => {
     return class Bootware extends Module {
 
