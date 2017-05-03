@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Base.js - Documentation</title>
+    <title>Child B - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,48 +29,20 @@
 
 <div id="main">
     
-    <h1 class="page-title">Base.js</h1>
+    <h1 class="page-title">Child B</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>define(() => {
-    /**
-     * Root of all framework and app classes.
-     */    
-    return class Base {
-        /**
-         * get value of given object's nested property 
-         * @param {string} keyPath - path string representing nested property to read
-         * @example
-         * 'prop1.prop11.prop111'
-         * @param {any} defaultValue - value to return if key not found
-         * @return {any} value of the requested property
-         */
-        value(keyPath = '', defaultValue = null) {
-            var obj = this,
-                result = defaultValue,
-                index = -1,
-                pathArray = keyPath.split('.'),
-                length = pathArray.length;
-            while (obj != null &amp;&amp; ++index &lt; length) {
-                result = obj = obj[pathArray[index]];
-            };
-            if (typeof result === 'undefined') { result = defaultValue; }
-            return result;
-        };
-    };
-});</code></pre>
-        </article>
-    </section>
 
+<header>
+    
+</header>
 
+<article>
+    
+</article>
 
+</section>
 
 </div>
 

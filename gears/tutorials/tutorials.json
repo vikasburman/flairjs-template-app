@@ -1,12 +1,12 @@
 {
-     "Getting Started": {
-         "title": "Getting Started",
-         "children": ["Child A", "Child B"]
+     "getting-started": {
+         "title": "appgears / Getting Started",
+         "children": ["child-a", "child-b"]
      },
-     "Child A": {
+     "child-a": {
          "title": "Child A"
      },
-     "Child B": {
+     "child-b": {
          "title": "Child B"
      }
  }
