@@ -59,8 +59,8 @@
                 "dictionaries": ["jsdoc"]
             },
             "opts": {
-                "destination": "./docs/web",
-                 "tutorials": "./docs/tutorials",
+                "destination": "docs",
+                 "tutorials": "gears/tutorials",
                  "template": "node_modules/minami",
                  "encoding": "utf8",
                  "private": true,
@@ -75,9 +75,9 @@
                 "useLongnameInNav": true,
                 "showInheritedInNav": true,
                 "default": {
-                    "outputSourceFiles": false
+                    "outputSourceFiles": true
                 }
-            }        
+            }
         },
     
         "catalog": {
