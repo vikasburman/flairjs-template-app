@@ -18,6 +18,7 @@ const jasmineNode = require('gulp-jasmine');
 const injectFile = require('gulp-inject-file');
 const injectString = require('gulp-inject-string');
 const babel = require('gulp-babel');
+const gulpJsdoc = require('gulp-jsdoc3');
 const config = JSON.parse(fs.readFileSync('config.json').toString());
 const JSBanner = `/** 
  * <%= pkg.name %> - <%= pkg.description %>
@@ -389,14 +390,24 @@ gulp.task('test', (cb) => {
     isProd = false;
     isTest = true;
     runSequence('clean', 'processTemplates', 'env', 'test:all', cb);
-    
+});
+
+// task: docs
+gulp.task('docs', (done) => {
+    let docs = [
+            'README.md',
+            config.source.sys + '**/members/*.js',
+            config.source.sys + '**/members/**/*.js'
+        ];
+    gulp.src(docs, {read: false})
+        .pipe(gulpJsdoc(config.jsdocs, done));
 });
 
 // task: build (dev)
 gulp.task('build', (cb) => {
     isProd = false;
     isTest = false;
-    runSequence('clean', 'processTemplates', 'pack', 'pack:sets', 'env', cb);
+    runSequence('clean', 'processTemplates', 'pack', 'pack:sets', 'env', 'docs', cb);
 });
 
 // task: build (prod)
@@ -405,7 +416,7 @@ gulp.task('build', (cb) => {
 gulp.task('build-prod', (cb) => {
     isProd = true;
     isTest = false;
-    runSequence('clean', 'processTemplates', 'pack', 'pack:sets', 'compress', 'env', cb);
+    runSequence('clean', 'processTemplates', 'pack', 'pack:sets', 'compress', 'env', 'docs', cb);
 });
 
 // task: default

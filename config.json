@@ -40,6 +40,33 @@
         }
     },
 
+    "jsdocs": {
+        "tags": {
+            "allowUnknownTags": true,
+            "dictionaries": ["jsdoc"]
+        },
+        "opts": {
+            "destination": "./docs/web",
+             "tutorials": "./docs/tutorials",
+             "template": "node_modules/minami",
+             "encoding": "utf8",
+             "private": true,
+             "recurse": true            
+        },
+        "plugins": [
+            "plugins/markdown"
+        ],
+        "templates": {
+            "cleverLinks": false,
+            "monospaceLinks": true,
+            "useLongnameInNav": true,
+            "showInheritedInNav": true,
+            "default": {
+                "outputSourceFiles": true
+            }
+        }
+    },
+
     "catalog": {
         "Base": "sys.core.Base",
         "Module": "sys.core.Module",

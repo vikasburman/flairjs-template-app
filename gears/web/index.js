@@ -53,6 +53,33 @@
             }
         },
     
+        "jsdocs": {
+            "tags": {
+                "allowUnknownTags": true,
+                "dictionaries": ["jsdoc"]
+            },
+            "opts": {
+                "destination": "./docs/web",
+                 "tutorials": "./docs/tutorials",
+                 "template": "node_modules/minami",
+                 "encoding": "utf8",
+                 "private": true,
+                 "recurse": true            
+            },
+            "plugins": [
+                "plugins/markdown"
+            ],
+            "templates": {
+                "cleverLinks": false,
+                "monospaceLinks": true,
+                "useLongnameInNav": true,
+                "showInheritedInNav": true,
+                "default": {
+                    "outputSourceFiles": false
+                }
+            }        
+        },
+    
         "catalog": {
             "Base": "sys.core.Base",
             "Module": "sys.core.Module",
@@ -82,7 +109,7 @@
     config.env = {
         isServer: isServer,
         isProd: false,
-        isTest: true,
+        isTest: false,
         root: '',
         require: {
             baseUrl: '/',
@@ -97,8 +124,8 @@
     };
 
     // update paths and bundles
-    Object.assign(config.env.require.paths, JSON.parse('{}'));
-    Object.assign(config.env.require.bundles, JSON.parse('{}'));
+    Object.assign(config.env.require.paths, JSON.parse('{"gears/modules/aop":"gears/modules/aop/index.pack.js","gears/modules/core":"gears/modules/core/index.pack.js"}'));
+    Object.assign(config.env.require.bundles, JSON.parse('{"gears/modules/aop":["sys.aop.Base"],"gears/modules/core":["sys.core.Base","sys.core.Bootware","sys.core.Module","sys.core.dummy","sys.core.boot.Client","sys.core.boot.Server"]}'));
 
     // update root
     const getRootPath = () => {
