@@ -57,14 +57,20 @@ const getSource = (root, folder, ...patterns) => {
     }
     return src;
 };
+// error handler
+const errorHandler = (name) => {
+    return function (err) {
+        console.error('Error in task: ' + name);
+        console.error('Error: ' + err.toString());
+    };
+};
 
 // task: clean (to delete all generated files)
 const cleanGlob = [
     '/**/*.pack.js', 
     '/**/*.set.js',
     '/**/*.min.js', 
-    '/**/*.min.css',
-    '/node_modules/gears-env.js'
+    '/**/*.min.css'
 ];
 const cleanModules = (root) => {
     let folders = getFolders(root);
@@ -91,18 +97,22 @@ const processTemplates = (root, whenDone) => {
         gulp.src(getSource(root, folder, '/**/*.tmpl'))
             // inject content
             .pipe(injectFile())
+            .on('error', errorHandler('injectFile'))
             // handle loading .min version
             .pipe(gulpIf(isProd, injectString.replace('{.min}', '.min'), injectString.replace('{.min}', '')))
+            .on('error', errorHandler('injectString'))
             // inject header (for .js files only)
             .pipe(gulpIf(isJSFile, header(JSBanner, { pkg : pkg } )))
+            .on('error', errorHandler('header'))
             // rename by removing .tmpl and leaving name as is    
             .pipe(rename((path) => {
                 path.extname = ''; // from <name.whatever>.tmpl to <name.whatever>
             }))
+            .on('error', errorHandler('rename'))
             // write to output
             .pipe(gulp.dest(root + folder))
             .on('end', _done)
-            .on('error', _done);
+            .on('error', errorHandler('dest'));
     }
     const processFolders = (folders, onDone) => {
         let folder = folders.shift(); 
@@ -217,6 +227,7 @@ const packModules = (root, whenDone) => {
         gulp.src(getSource(root, folder, 'members/*.js', 'members/**/*.js'))
             // process content
             .pipe(gulpTap(processContent(folder)))
+            .on('error', errorHandler('processContent'))
             // check for issues
             .pipe(eslint('.eslint.json'))
             // format errors, if any
@@ -225,12 +236,14 @@ const packModules = (root, whenDone) => {
             .pipe(eslint.failAfterError())
             // compile 
             .pipe(babel())
+            .on('error', errorHandler('babel'))
             // concat into index.pack.js
             .pipe(concat(path.join(folder, 'index.pack.js')))
+            .on('error', errorHandler('concat'))
             // write to output
             .pipe(gulp.dest(root))
             .on('end', _done) 
-            .on('error', _done);
+            .on('error', errorHandler('dest'));
     }
     const processModules = (folders, onDone) => {
         let folder = folders.shift(); 
@@ -309,18 +322,21 @@ gulp.task('pack:sets', (done) => {
 // task: compress
 const compressFiles = (root, whenDone) => {
     let folders = getFolders(root);
+    const uglifyConfig = require('./.uglify.json');
     const processFile = (folder, _done) => {
         gulp.src(getSource(root, folder, '/**/*.pack.js', '/**/*.set.js'))
             // minify
-            .pipe(minifier(config.uglify.js, uglifyjs))
+            .pipe(minifier(uglifyConfig.js, uglifyjs))
+            .on('error', errorHandler('minifier'))
             // rename 
             .pipe(rename((path) => {
                 path.extname = '.min.js'; // from <name.whatever>.js to <name.whatever>.min.js
             }))
+            .on('error', errorHandler('rename'))
             // write to output again
             .pipe(gulp.dest(root + folder))
             .on('end', _done)
-            .on('error', _done);
+            .on('error', errorHandler('dest'));
     }
     const processFiles = (folders, onDone) => {
         let folder = folders.shift(); 
@@ -368,19 +384,20 @@ gulp.task('env', (done) => {
 
 // task: test
 gulp.task('test:all', (done) => {
-    const tests = [
-        require('app-root-path') + '/' + config.source.www.sys + 'index.js',
-        config.source.sys + '**/tests/*.spec.js',
-        config.source.app + '**/tests/*.spec.js',
-        config.source.api + '**/tests/*.spec.js',
-        config.source.web + '**/tests/*.spec.js',
-        config.source.www.sys + '**/tests/*.spec.js',
-        config.source.www.web + '**/tests/*.spec.js'                          
+    const jasminConfig = require('./.jasmine.json'),
+        tests = [
+            require('app-root-path') + '/' + config.source.www.sys + 'index.js',
+            config.source.sys + '**/tests/*.spec.js',
+            config.source.app + '**/tests/*.spec.js',
+            config.source.api + '**/tests/*.spec.js',
+            config.source.web + '**/tests/*.spec.js',
+            config.source.www.sys + '**/tests/*.spec.js',
+            config.source.www.web + '**/tests/*.spec.js'                          
     ];
     gulp.src(tests)
-        .pipe(jasmineNode(config.jasmine.node))
+        .pipe(jasmineNode(jasminConfig))
         .on('end', done)
-        .on('error', done);
+        .on('error', errorHandler('jasmine'));
     // HACK: pipe() is not exising and hence end/error done() is not called via pipe, 
     // so calling done() manually below - this seems to be working so far
     // but need to be revisited for a better solution
@@ -394,13 +411,15 @@ gulp.task('test', (cb) => {
 
 // task: docs
 gulp.task('docs', (done) => {
-    let docs = [
+    const jsdocsConfig = require('./.jsdocs.json'),
+        docs = [
             'README.md',
             config.source.sys + '**/members/*.js',
             config.source.sys + '**/members/**/*.js'
         ];
     gulp.src(docs, {read: false})
-        .pipe(gulpJsdoc(config.jsdocs, done));
+        .pipe(gulpJsdoc(jsdocsConfig, done))
+        .on('error', errorHandler('jsdocs'));
 });
 
 // task: build (dev)

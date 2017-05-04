@@ -12,7 +12,7 @@
 
     // config
     const config = JSON.parse(`{
-        "source": {
+         "source": {
             "sys": "gears/modules/",
             "app": "app/modules/",
             "api": "api/modules/",
@@ -27,60 +27,7 @@
                 "tests/**"
             ]
         },
-    
-        "uglify": {
-            "js": {
-                "mangle": false,
-                "preserveComments": "license",
-                "output": {
-                },
-                "compress": {
-                    "dead_code": true,
-                    "drop_debugger": true,
-                    "global_defs": {
-                        "use": true
-                    }
-                }
-            }
-        },
-    
-        "jasmine": {
-            "node": {
-                "verbose": false,
-                "includeStackTrace": false,
-                "timeout": 5000,
-                "errorOnFail": false
-            }
-        },
-    
-        "jsdocs": {
-            "tags": {
-                "allowUnknownTags": true,
-                "dictionaries": ["jsdoc"]
-            },
-            "opts": {
-                "destination": "docs",
-                 "tutorials": "gears/tutorials",
-                 "template": "node_modules/minami",
-                 "encoding": "utf8",
-                 "private": true,
-                 "recurse": true            
-            },
-            "plugins": [
-                "plugins/markdown"
-            ],
-            "templates": {
-                "cleverLinks": false,
-                "monospaceLinks": true,
-                "useLongnameInNav": true,
-                "showInheritedInNav": true,
-                "default": {
-                    "outputSourceFiles": true
-                }
-            }
-        },
-    
-        "catalog": {
+        "catalog" : {
             "Base": "sys.core.Base",
             "Module": "sys.core.Module",
             "Bootware": "sys.core.Bootware",
@@ -88,8 +35,8 @@
             "Main": "app.main | web.main"
         },
     
-        "weaving": {
     
+        "weaving": {
         },
     
         "settings": {
@@ -108,24 +55,24 @@
     // set env
     config.env = {
         isServer: isServer,
-        isProd: false,
+        isProd: true,
         isTest: false,
         root: '',
         require: {
             baseUrl: '/',
             paths: {
-                text: 'libs/require/text.js',
-                json: 'libs/require/json.js',
-                css: 'libs/require/css.js',
-                domReady: 'libs/require/domReady.js'
+                text: 'libs/require/text.min.js',
+                json: 'libs/require/json.min.js',
+                css: 'libs/require/css.min.js',
+                domReady: 'libs/require/domReady.min.js'
             },
             bundles: {}
         }
     };
 
     // update paths and bundles
-    Object.assign(config.env.require.paths, JSON.parse('{"gears/modules/aop":"gears/modules/aop/index.pack.js","gears/modules/core":"gears/modules/core/index.pack.js"}'));
-    Object.assign(config.env.require.bundles, JSON.parse('{"gears/modules/aop":["sys.aop.Base"],"gears/modules/core":["sys.core.Base","sys.core.Bootware","sys.core.Module","sys.core.dummy","sys.core.boot.Client","sys.core.boot.Server"]}'));
+    Object.assign(config.env.require.paths, JSON.parse('{"gears/modules/core":"gears/modules/core/index.pack.min.js"}'));
+    Object.assign(config.env.require.bundles, JSON.parse('{"gears/modules/core":["sys.core.Base","sys.core.Bootware","sys.core.Module","sys.core.dummy","sys.core.boot.Client","sys.core.boot.Server"]}'));
 
     // update root
     const getRootPath = () => {

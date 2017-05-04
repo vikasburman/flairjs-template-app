@@ -7,5 +7,5 @@
  *
  * (powered by appgears - https://github.com/vikasburman/appgears)
  */
-**** NO 2 **** 
+// **** NO 2 **** 
 <!-- for test purpose -- to remove ->
