@@ -1,26 +1,34 @@
 {
-    "tags": {
-        "allowUnknownTags": true,
-        "dictionaries": ["jsdoc"]
-    },
-    "opts": {
-        "destination": "docs",
-            "tutorials": "gears/tutorials",
-            "template": "node_modules/minami",
-            "encoding": "utf8",
-            "private": true,
-            "recurse": true            
-    },
-    "plugins": [
-        "plugins/markdown"
+    "docs": [
+        "README.md",
+        "gears/**/members/*.js",
+        "gears/**/members/**/*.js"
     ],
-    "templates": {
-        "cleverLinks": false,
-        "monospaceLinks": true,
-        "useLongnameInNav": true,
-        "showInheritedInNav": true,
-        "default": {
-            "outputSourceFiles": true
+
+    "config": {
+        "tags": {
+            "allowUnknownTags": true,
+            "dictionaries": ["jsdoc"]
+        },
+        "opts": {
+            "destination": "docs",
+                "tutorials": "gears/tutorials",
+                "template": "node_modules/minami",
+                "encoding": "utf8",
+                "private": true,
+                "recurse": true            
+        },
+        "plugins": [
+            "plugins/markdown"
+        ],
+        "templates": {
+            "cleverLinks": false,
+            "monospaceLinks": true,
+            "useLongnameInNav": true,
+            "showInheritedInNav": true,
+            "default": {
+                "outputSourceFiles": true
+            }
         }
     }
 }

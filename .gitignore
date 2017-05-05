@@ -8,9 +8,9 @@ gears/**/*.pack.js
 gears/**/*.pack.min.js
 web/**/*.pack.js
 web/**/*.pack..min.js
-app/**/*.bundle.js
-app/**/*.bundle.min.js
-gears/**/*.bundle.js
-gears/**/*.bundle.min.js
-web/**/*.bundle.js
-web/**/*.bundle.min.js
+app/**/*.set.js
+app/**/*.set.min.js
+gears/**/*.set.js
+gears/**/*.set.min.js
+web/**/*.set.js
+web/**/*.set.min.js

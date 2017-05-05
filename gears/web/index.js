@@ -11,41 +11,7 @@
     let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
 
     // config
-    const config = JSON.parse(`{
-         "source": {
-            "sys": "gears/modules/",
-            "app": "app/modules/",
-            "api": "api/modules/",
-            "web": "web/modules/",
-            "www": {
-                "sys": "gears/web/",
-                "web": "web/"
-            },
-            "exclude": [
-                "assets/**",
-                "libs/**",
-                "tests/**"
-            ]
-        },
-        "catalog" : {
-            "Base": "sys.core.Base",
-            "Module": "sys.core.Module",
-            "Bootware": "sys.core.Bootware",
-            "Bootstrapper": "sys.core.boot.Server | sys.core.boot.Client",
-            "Main": "app.main | web.main"
-        },
-    
-    
-        "weaving": {
-        },
-    
-        "settings": {
-            "sys.boot": {
-                "bootwares": [
-                ]
-            }
-        }
-    }`);
+    const config = JSON.parse(`{"source":{"sys":"gears/modules/","app":"app/modules/","api":"api/modules/","web":"web/modules/","www":{"sys":"gears/web/","web":"web/"}},"exclude":["assets/**","libs/**","tests/**"],"catalog":{"Base":"sys.core.Base","Module":"sys.core.Module","Bootware":"sys.core.Bootware","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","Main":"app.main | web.main"}}`);
     if (isServer) {
         global.config = config;
     } else {
@@ -55,23 +21,23 @@
     // set env
     config.env = {
         isServer: isServer,
-        isProd: true,
+        isProd: false,
         isTest: false,
         root: '',
         require: {
             baseUrl: '/',
             paths: {
-                text: 'libs/require/text.min.js',
-                json: 'libs/require/json.min.js',
-                css: 'libs/require/css.min.js',
-                domReady: 'libs/require/domReady.min.js'
+                text: 'libs/require/text.js',
+                json: 'libs/require/json.js',
+                css: 'libs/require/css.js',
+                domReady: 'libs/require/domReady.js'
             },
             bundles: {}
         }
     };
 
     // update paths and bundles
-    Object.assign(config.env.require.paths, JSON.parse('{"gears/modules/core":"gears/modules/core/index.pack.min.js"}'));
+    Object.assign(config.env.require.paths, JSON.parse('{"gears/modules/core":"gears/modules/core/index.pack.js"}'));
     Object.assign(config.env.require.bundles, JSON.parse('{"gears/modules/core":["sys.core.Base","sys.core.Bootware","sys.core.Module","sys.core.dummy","sys.core.boot.Client","sys.core.boot.Server"]}'));
 
     // update root

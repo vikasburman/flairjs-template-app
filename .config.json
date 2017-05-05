@@ -7,13 +7,15 @@
         "www": {
             "sys": "gears/web/",
             "web": "web/"
-        },
-        "exclude": [
-            "assets/**",
-            "libs/**",
-            "tests/**"
-        ]
+        }
     },
+
+    "exclude": [
+        "assets/**",
+        "libs/**",
+        "tests/**"
+    ],
+
     "catalog" : {
         "Base": "sys.core.Base",
         "Module": "sys.core.Module",

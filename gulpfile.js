@@ -19,7 +19,6 @@ const injectFile = require('gulp-inject-file');
 const injectString = require('gulp-inject-string');
 const babel = require('gulp-babel');
 const gulpJsdoc = require('gulp-jsdoc3');
-const config = JSON.parse(fs.readFileSync('config.json').toString());
 const JSBanner = `/** 
  * <%= pkg.name %> - <%= pkg.description %>
  * @copyright <%= pkg.copyright %>
@@ -50,8 +49,8 @@ const getSource = (root, folder, ...patterns) => {
     for(let incGlob of patterns) {
         src.push(path.join(root, folder, incGlob));
     }
-    if (config.source.exclude) {
-        for(let exGlob of config.source.exclude) {
+    if (config.exclude) {
+        for(let exGlob of config.exclude) {
             src.push('!' + path.join(root, folder, exGlob));
         }
     }
@@ -64,6 +63,31 @@ const errorHandler = (name) => {
         console.error('Error: ' + err.toString());
     };
 };
+// merge config
+const mergeConfig = () => {
+    // 0: pick everything as is in default config with an additive merge from custom
+    let newConfig = Object.assign({}, defaultConfig, customConfig);
+
+    // 1: "source": mandatorily comes from default config as is
+    newConfig.source = defaultConfig.source;
+
+    // 2: "exclude": as is from custom, if defined, else default
+    newConfig.exclude = customConfig.exclude || defaultConfig.exclude;
+
+    // 3: "catalog": pick from default and then additive merge from custom
+    newConfig.catalog = Object.assign({}, defaultConfig.catalog, (customConfig.catalog || {}));
+
+    // 4: rest all has come already by merge at #0 step above
+
+    // 5: save this new config as .mergedConfig.json file to be used here
+    fs.writeFileSync(defaultConfig.source.www.sys + 'config.json', JSON.stringify(newConfig));
+
+    // return
+    return newConfig;
+};
+const defaultConfig = JSON.parse(fs.readFileSync('.config.json').toString()); 
+const customConfig = JSON.parse(fs.readFileSync('config.json').toString());
+const config = mergeConfig();
 
 // task: clean (to delete all generated files)
 const cleanGlob = [
@@ -80,10 +104,10 @@ const cleanModules = (root) => {
 };
 gulp.task('clean', (done) => {
     cleanModules(config.source.sys);
+    cleanModules(config.source.www.sys);
     cleanModules(config.source.app);
     cleanModules(config.source.api);
     cleanModules(config.source.web);
-    cleanModules(config.source.www.sys);
     done();
 });
 
@@ -411,14 +435,9 @@ gulp.task('test', (cb) => {
 
 // task: docs
 gulp.task('docs', (done) => {
-    const jsdocsConfig = require('./.jsdocs.json'),
-        docs = [
-            'README.md',
-            config.source.sys + '**/members/*.js',
-            config.source.sys + '**/members/**/*.js'
-        ];
-    gulp.src(docs, {read: false})
-        .pipe(gulpJsdoc(jsdocsConfig, done))
+    const jsdocsConfig = require('./.jsdocs.json');
+    gulp.src(jsdocsConfig.docs, {read: false})
+        .pipe(gulpJsdoc(jsdocsConfig.config, done))
         .on('error', errorHandler('jsdocs'));
 });
 
