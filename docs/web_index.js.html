@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>web/index.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-getting-started.html">Getting Started</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="sys.core.Base.html">Base</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="sys.core.Base.html#.value">value</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#use">use</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">web/index.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * appgears - Unified application framework for JavaScript
+ * @copyright (C) 2017
+ * @version v0.1.0
+ * @link 
+ * @license MIT
+ *
+ * (powered by appgears - https://github.com/vikasburman/appgears)
+ */
+(() => {
+    let isServer = (typeof global === 'object' &amp;&amp; typeof exports === 'object') ? true : false;
+
+    // config
+    const config = JSON.parse(`{"source":{"sys":"gears/modules/","app":"app/modules/","api":"api/modules/","web":"web/modules/","www":{"sys":"gears/web/","web":"web/"}},"exclude":["assets/**","libs/**","tests/**"],"catalog":{"Base":"sys.core.Base","Module":"sys.core.Module","Bootware":"sys.core.Bootware","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","Main":"app.main | web.main"}}`);
+    if (isServer) {
+        global.config = config;
+    } else {
+        window.config = config;
+    }
+
+    // set env
+    config.env = {
+        isServer: isServer,
+        isProd: false,
+        isTest: false,
+        root: '',
+        require: {
+            baseUrl: '/',
+            paths: {
+                text: 'libs/require/text.js',
+                json: 'libs/require/json.js',
+                css: 'libs/require/css.js',
+                domReady: 'libs/require/domReady.js'
+            },
+            bundles: {}
+        }
+    };
+
+    // update paths and bundles
+    Object.assign(config.env.require.paths, JSON.parse('{"gears/modules/core":"gears/modules/core/index.pack.js"}'));
+    Object.assign(config.env.require.bundles, JSON.parse('{"gears/modules/core":["sys.core.Base","sys.core.Bootware","sys.core.Module","sys.core.boot.Client","sys.core.boot.Server"]}'));
+
+    // update root
+    const getRootPath = () => {
+        return (isServer ? (require('app-root-path') + '/') : '/');
+    };     
+    config.env.root = getRootPath();
+
+    // path resolver
+    const dummyJS = 'dummy';
+
+    /**
+     * Resolve path from given token
+     * 
+     * @global
+     * @param {string} path - The path string that needs to be resolved.
+     * @param {string} [as] - Environment to assume as 'server' or 'client'. (for internal use only)
+     * @return {string} The resolved path string that can be passed to require(...) and define(...) calls as is for loading required module.
+     * @example
+     * 1. Any module: 
+     *    use('fs') --> 'fs'
+     *
+     * 2. Any file with relative path: 
+     *    use('../../file1.js') --> '../../file1.js'
+     *
+     * 3. Any packaged module member:
+     *    use('sys.core.Base') --> 'gears/modules/core/members/Base.js'
+     *
+     * 4. Any file inside a packaged module:
+     *    use('app/main/assets/folder1/file1.png') --> 'app/modules/main/assets/folder1/file1.png'
+     *
+     * 5. Any catalog injected member on this name:
+     *    use('[Logger]') --> '...' (exact entry as specified in config file against 'Logger' catalog key)
+     *
+     * 6. Mock implementation of the member when running in test mode, else member itself 
+     *    use('~app.transactions.Payment')
+     *      normally --> app/modules/transactions/members/Payments.js
+     *      when testing --> app/modules/transactions/members/Payments.mock.js (this must exists when using ~ in path)
+     *
+     * 7. Conditional implementation for isomorphic members (that runs both on server and client)
+     *    use('app.main.Server | web.main.Client') 
+     *      when called on server: --> app/modules/main/members/Server.js
+     *      when called on client: --> web/modules/main/members/Client.js
+     */    
+    const use = (_path, as) => {
+        let isAsServer = isServer;
+        if (as) {
+            if (as === 'server') {
+                isAsServer = true;
+            } else if (as === 'client') {
+                isAsServer = false;
+            }
+        }
+        const escapeRegExp = (string) => {
+            return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1');
+        };
+        const replaceAll = (string, find, replace) => {
+            return string.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+        };    
+        const getContextualPath = (_path) => {
+            let parts = null,
+                dummy = '';
+            if (_path.includes('|')) {
+                parts = _path.split('|');
+                _path = (isAsServer ? parts[0] : parts[1]).trim();
+                _path = _path || dummyJS;
+            }
+            return _path;
+        };
+        const getCatalogedPath = (_path) => {
+            let key = _path.substr(1, _path.length - 2); // strip [ and ]
+            return config.catalog[key] || dummyJS;
+        };
+        const getRelativePath = (_path) => {
+            return _path; // requirejs/amdefine handles relative path with baseUrl automatically
+        };
+        const getNamespacedPackageMemberPath = (_path, nsRoot, isMock) => {
+            // for server sys.core.Base becomes gears/modules/core/members/Base.js
+            // for client it remains sys.core.Base and is loaded from corrosponding .pack file via requirejs bundle configuration
+            if (isAsServer) {
+                let parts = _path.split('.');
+                parts.shift(); // remove sys    
+                let moduleName = parts.shift(); // remove module name
+                _path =  config.env.root + nsRoot + moduleName + '/members/' + parts.join('/') + (isMock ? '.mock.js' : '.js');
+        }
+            return _path;              
+        };
+        const getNamespacedPackageFilePath = (_path, nsRoot) => {
+            // for both server and client sys/core/**/*.* becomes gears/modules/core/**/*.*
+            let parts = _path.split('/');
+            parts.shift(); // remove sys
+            _path = nsRoot + parts.join('/');
+            if (!isAsServer) { _path = '/' + _path; } // add root relativity
+            return _path;
+        };
+
+        // path can be:
+        // (1) node/require modules path
+        //  *       --> to load preloaded/configured named/resolved named modules (e.g., fs, myCustomModule, etc.)
+        // (2) relative files path
+        //  ./*     --> to load file relative to current path
+        //  ../*    --> to load file relative to referenced path
+        //  /*      --> to load file relative to root path
+        // (3) appgears packaged files path
+        //  {ns/}*  --> to reference files which are placed inside appgears module folder (e.g., sys/core/assets/..., etc.)
+        // (4) appgears packaged members path
+        //  {ns.}*  --> to load namespaced package member (e.g., sys.Core.Base, app.main.start, web.main.start, etc.)
+        //  ~{ns.}* --> to load namespaced package member's mock implementation when running in test mode
+        //              a '~' as first character before any namespaced member will get resolve to corrosponding
+        //              mock file. e.g., '~app.main.start' will resolves to app/modules/members/main/start.js normally, 
+        //              however in test mode, this will be resolved to app/modules/members/main/start.mock.js
+        // (5) cataloged path
+        //  [*]     --> to load namespaced modules whose actual name is defined in catalog registry
+
+        // note:
+        //  for any packaged .js file never define js file name. It will be reolved automatically
+        //  other than .js file, .json, .html, .css file types will get required special processing
+
+        // type #5: cataloged path
+        let firstChar = _path.substr(0, 1),
+            lastChar = _path.substr(_path.length - 1, 1);
+        if (firstChar === '[' &amp;&amp; lastChar === ']') {
+            _path = getCatalogedPath(_path);
+        }
+
+        // different paths can be defined for server and client as:
+        // pathWhenOnServer | pathWhenOnClient
+        // any missing will be resolved with a null value
+        _path = getContextualPath(_path);
+
+        // mocking consideration
+        let isMock = false;
+        if (_path.substr(0, 1) === '~') { // mock required in test mode
+            _path = _path.substr(1); // strip this
+            if (config.env.isTest) {
+                isMock = true;
+            }
+        }
+
+        // type #2: relative files path
+        firstChar = _path.substr(0, 1);
+        if (firstChar === '.' || '/') {
+            switch(firstChar) {
+                case '.': // caters to patterns like ./, ../, ../../, etc.
+                    _path = getRelativePath(_path); break;
+                case '/':
+                    _path = getRootPath() + _path; break;
+            }
+        }
+
+        // type #4: namespaced package files path
+        if (_path.startsWith('sys/')) {
+            _path = getNamespacedPackageFilePath(_path, config.source.sys);
+        } else if (_path.startsWith('app/')) {
+            _path = getNamespacedPackageFilePath(_path, config.source.app);
+        } else if (_path.startsWith('api/')) {
+            _path = getNamespacedPackageFilePath(_path, config.source.api);
+        } else if (_path.startsWith('web/')) {
+            _path = getNamespacedPackageFilePath(_path, config.source.web);
+        }
+
+        // type #3: namespaced package members path
+        if (_path.startsWith('sys.')) {
+            _path = getNamespacedPackageMemberPath(_path, config.source.sys, isMock);
+        } else if (_path.startsWith('app.')) {
+            _path = getNamespacedPackageMemberPath(_path, config.source.app, isMock);
+        } else if (_path.startsWith('api.')) {
+            _path = getNamespacedPackageMemberPath(_path, config.source.api, isMock);
+        } else if (_path.startsWith('web.')) {
+            _path = getNamespacedPackageMemberPath(_path, config.source.web, isMock);
+        }
+
+        // type #1, if nothing was of match OR processed result
+        return _path;
+    };
+    if (isServer) {
+        global.use = use;
+    } else {
+        window.use = use;
+    }
+
+    // setup
+    if (isServer) {
+        require('amdefine/intercept'); // define global define
+    } else {
+        // setup require config
+        require.config(config.env.require);
+    }
+
+    // boot (if not test mode)
+    if (config.env.isTest) {
+        // do nothing
+    } else {
+        const onError = (err) => { if (!config.env.isProd) { console.log(`boot failed. (${err.toString()})`); } };
+        require([use('[Bootstrapper]')], (Bootstrapper) => {
+            let bootstrapper = new Bootstrapper();
+            bootstrapper.start().then(() => {
+                if (!config.env.isProd) { console.log('boot success.'); }
+            }).fail(onError)
+        }, onError);
+    }
+})();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat May 06 2017 08:56:20 GMT+0530 (IST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

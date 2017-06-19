@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-getting-started.html">Getting Started</a></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#value">value</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-getting-started.html">Getting Started</a></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#forAsync">forAsync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#include">include</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#settings">settings</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#use">use</a></span></li>
 </nav>
 
 <div id="main">
@@ -117,14 +117,14 @@
 
     
 
-    <h4 class="name" id="value"><span class="type-signature"></span>value<span class="signature">(keyPath, defaultValue)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    <h4 class="name" id="forAsync"><span class="type-signature"></span>forAsync<span class="signature">(items, fn)</span><span class="type-signature"> &rarr; {promise}</span></h4>
 
     
 
 
 
 <div class="description">
-    <p>get value of given object's nested property</p>
+    <p>Iterates on an array and call given async function for each item.</p>
 </div>
 
 
@@ -158,11 +158,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Base.js.html">Base.js</a>, <a href="Base.js.html#line14">line 14</a>
-    </li></ul></dd>
-    
 
     
 
@@ -194,7 +189,202 @@
         
 
         
-        <th>Default</th>
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>items</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>array</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>items array to async iterate to.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>async function to be called for each item.</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>promise</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <ul>
+<li>promise object which gets resolved when all items are iterated.</li>
+</ul>
+</div>
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>forAsync(items, (resolve, reject, item) => { 
+   // async operation on item
+   // then resolve();
+}).then(() => {
+ // done
+});</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="include"><span class="type-signature"></span>include<span class="signature">(path, isReturnAsArray<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {promise}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Require given module with a uniform syntax both on server and on client.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
         
 
         <th class="last">Description</th>
@@ -206,7 +396,217 @@
 
         <tr>
             
-                <td class="name"><code>keyPath</code></td>
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>array</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>the path array of strings that needs to be 'required'.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isReturnAsArray</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>bool</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>if included modules are returned as single array.</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>promise</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <ul>
+<li>promise object that will resolve after requiring paths.</li>
+</ul>
+</div>
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>include(use('sys.core.Base'), use('sys.core.IBootware')], (Base, IBootware) => { });</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="settings"><span class="type-signature"></span>settings<span class="signature">(key, defaultValue<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {any}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Reads setting value.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
             
 
             <td class="type">
@@ -219,15 +619,19 @@
             </td>
 
             
+                <td class="attributes">
+                
 
-            
-                <td class="default">
+                
+
                 
                 </td>
             
 
+            
+
             <td class="description last">
-                <p>path string representing nested property to read</p>
+                <p>which setting to read to. (format: [{assemblyPath}:]{settingKey})</p>
                 
             </td>
         </tr>
@@ -249,17 +653,21 @@
             </td>
 
             
-
-            
-                <td class="default">
+                <td class="attributes">
                 
-                    null
+                    &lt;optional><br>
+                
+
+                
+
                 
                 </td>
             
 
+            
+
             <td class="description last">
-                <p>value to return if key not found</p>
+                <p>what value to return, if setting not found.</p>
                 
             </td>
         </tr>
@@ -300,7 +708,9 @@
 
 
 <div class="param-desc">
-    <p>value of the requested property</p>
+    <ul>
+<li>setting value.</li>
+</ul>
 </div>
 
     
@@ -311,7 +721,240 @@
 <div class="section-examples">
 <h5>Example</h5>
 
-    <pre class="prettyprint"><code>'prop1.prop11.prop111'</code></pre>
+    <pre class="prettyprint"><code>1. let value1 = settings('sys.core:level1');
+2. let value2 = settings('sys.core:level1.level2');
+3. let value3 = settings('level1.level2');</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="use"><span class="type-signature"></span>use<span class="signature">(path, as<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Resolve path from given path identifier.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>The path string that needs to be resolved.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>as</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>Environment to assume. ['server', 'client'] (for internal use only)</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>string</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <p>The resolved path string that can be passed to require(...) and define(...) calls as is for loading required module.</p>
+</div>
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>1. Any module: 
+   use('fs') --> 'fs'
+
+2. Any file with relative path: 
+   use('../../file1.js') --> '../../file1.js'
+
+3. Any assembly member:
+   use('sys.core.Base') --> 'sys/core/members/Base.js'
+
+4. Any assembly file:
+   use('app/main/assets/folder1/file1.png') --> 'app/main/assets/folder1/file1.png'
+
+5. Any catalog injected member on this name:
+   use('[Logger]') --> '...' (exact entry as specified in config file against 'Logger' catalog key)
+
+6. Mock implementation of the assembly member when running in test mode, else member itself 
+   use('~app.transactions.Payment')
+     normally --> app/transactions/members/Payments.js
+     when testing --> app/transactions/members/Payments.mock.js (this must exists when using ~ in path)
+
+7. Conditional implementation for isomorphic members (that runs both on server and client)
+   use('app.main.Server | web.main.Client') 
+     when called on server: --> app/main/members/Server.js
+     when called on client: --> web/main/members/Client.js</code></pre>
 
 </div>
 
@@ -334,7 +977,7 @@
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri May 05 2017 08:45:41 GMT+0530 (IST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Jun 20 2017 00:35:33 GMT+0530 (IST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

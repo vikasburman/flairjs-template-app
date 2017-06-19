@@ -1,0 +1,22 @@
+{
+    "catalog": {
+    },
+
+    "container": {
+    },
+
+    "settings": {
+        "middlewares": [
+            "sys.bootwares.server.Middlewares | sys.bootwares.client.Dependencies",
+            "sys.bootwares.server.Static | "
+        ],
+        "dependencies": [],
+        "static": {
+            "favIcon": "",
+            "caching": {  
+                "enabled": true,
+                "age": 86400000
+            }  
+        }
+    }
+}

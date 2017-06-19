@@ -8,18 +8,20 @@
   "link": "http://",
   "repository": "https://github.com/vikasburman/appgears.git",
   "scripts": {
-    "dev": "",
+    "dev": "nodemon sys/loader.js",
+    "prod": "forever sys/loader.js",
     "test": "gulp test",
-    "prod": "",
-    "build": "gulp build",
-    "build-prod": "gulp build-prod",
+    "build": "gulp dev",
+    "build-prod": "gulp prod",
     "clean": "gulp clean"
   },
   "devDependencies": {
-    "babel-plugin-transform-decorators": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-preset-env": "^1.4.0",
     "esdoc": "^0.5.2",
     "eslint": "^3.19.0",
     "express": "^4.15.2",
+    "forever": "^0.15.3",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.1",
@@ -38,11 +40,16 @@
     "jsdoc": "^3.4.3",
     "merge-stream": "^1.0.1",
     "minami": "^1.2.3",
+    "nodemon": "^1.11.0",
     "run-sequence": "^1.2.2",
     "uglify-js-harmony": "^2.7.5"
   },
   "dependencies": {
     "amdefine": "^1.0.1",
-    "app-root-path": "^2.0.1"
+    "app-root-path": "^2.0.1",
+    "compression": "^1.6.2",
+    "cookie-parser": "^1.4.3",
+    "morgan": "^1.8.2",
+    "serve-favicon": "^2.4.3"
   }
 }

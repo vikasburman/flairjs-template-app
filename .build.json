@@ -1,0 +1,25 @@
+{
+    "source": {
+        "sys": "sys/",
+        "app": "app/",
+        "web": "web/",
+        "www": "www/"
+    },
+    "globs": {
+        "exclude": [
+            "assets/**",
+            "libs/**",
+            "tests/**"
+        ],
+        "clean": [
+            "/**/*.asm.js", 
+            "/**/*.min.js", 
+            "/**/*.min.css"
+        ]
+    },
+
+    "docs": {
+        "isAddSysDocs": true,
+        "tutorials": "sys/tutorials"
+    }
+}
