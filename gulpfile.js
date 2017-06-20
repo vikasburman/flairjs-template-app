@@ -15,6 +15,12 @@ gulp.task('cfg', (done) => {
     generator(isProd, isTest, done);
 });
 
+// task: cfg-clean (to delete generated .config.json file)
+gulp.task('cfg-clean', (done) => {
+    let trasher = require('./build/task-cfg-clean.js').trasher;
+    trasher(isProd, isTest, done);
+});
+
 // task: process templates (to regenerate all templatzed files)
 gulp.task('tmpl', (done) => {
     let processor = require('./build/task-tmpl.js').processor;
@@ -61,21 +67,21 @@ gulp.task('tst', (done) => {
 gulp.task('test', (cb) => {
     isProd = false;
     isTest = true;
-    runSequence('clean', 'cfg', 'tmpl', 'asm', 'env', 'tst', cb);
+    runSequence('clean', 'cfg', 'tmpl', 'asm', 'env', 'cfg-clean', 'tst', cb);
 });
 
 // task: build (dev)
 gulp.task('dev', (cb) => {
     isProd = false;
     isTest = false;
-    runSequence('clean', 'cfg', 'tmpl', 'asm', 'env', 'docs', cb);
+    runSequence('clean', 'cfg', 'tmpl', 'asm', 'env', 'cfg-clean', cb);
 });
 
 // task: build (prod)
 gulp.task('prod', (cb) => {
     isProd = true;
     isTest = false;
-    runSequence('clean', 'cfg', 'tmpl', 'asm', 'compress', 'env', 'docs', cb);
+    runSequence('clean', 'cfg', 'tmpl', 'asm', 'env', 'compress', 'cfg-clean', 'docs', cb);
 });
 
 // task: default

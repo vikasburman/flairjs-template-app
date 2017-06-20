@@ -12,7 +12,7 @@ const compressFiles = (isProd, isTest, root, whenDone) => {
     let folders = utils.getFolders(root);
     const uglifyConfig = require('./.uglify.json');
     const processFile = (folder, _done) => {
-        gulp.src(utils.getSource(root, folder, '/**/*.asm.js'))
+        gulp.src(utils.getSource(root, folder, '/**/*.asm.js', 'loader.js'))
             // minify
             .pipe(minifier(uglifyConfig.js, uglifyjs))
             .on('error', utils.errorHandler('minifier'))

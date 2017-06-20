@@ -45,7 +45,7 @@ const generateConfig = () => {
         }
     }
 
-    // 3: save this new config as gears/.config.json file to be used here
+    // 3: save this new config as sys/.config.json file to be used here
     fs.writeFileSync(buildSettings.source.sys + '.config.json', JSON.stringify(newConfig));
 
     // return

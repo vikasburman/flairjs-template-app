@@ -139,10 +139,12 @@ define('sys.bootwares.server.Static', [use('[Base]'), use('serve-favicon'), use(
             var age = _this.settings('static.caching.age', 0);
             if (_this.settings('static.caching.enabled') && age !== 0) {
                 app.use('/', express.static(use('www/'), { maxAge: age }));
+                app.use('/', express.static(use('sys/www/'), { maxAge: age }));
                 app.use('/web', express.static(use('web/'), { maxAge: age }));
                 app.use('/sys', express.static(use('sys/'), { maxAge: age }));
             } else {
                 app.use('/', express.static(use('www/')));
+                app.use('/', express.static(use('sys/www/')));
                 app.use('/web', express.static(use('web/')));
                 app.use('/sys', express.static(use('sys/')));
             }

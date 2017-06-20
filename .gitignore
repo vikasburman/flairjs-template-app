@@ -1,16 +1,1 @@
 node_modules
-app/**/*.min.js
-gears/**/*.min.js
-web/**/*.min.js
-app/**/*.pack.js
-app/**/*.pack.min.js
-gears/**/*.pack.js
-gears/**/*.pack.min.js
-web/**/*.pack.js
-web/**/*.pack..min.js
-app/**/*.set.js
-app/**/*.set.min.js
-gears/**/*.set.js
-gears/**/*.set.min.js
-web/**/*.set.js
-web/**/*.set.min.js

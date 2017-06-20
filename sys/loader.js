@@ -24,9 +24,9 @@
         require: {
             baseUrl: '/',
             paths: {
-                text: './text.js',
-                json: './json.js',
-                css: './css.js'
+                text: './libs/text.js',
+                json: './libs/json.js',
+                css: './libs/css.js'
             },
             bundles: {}
         }
@@ -44,7 +44,7 @@
         }
     }
 
-    const dummyJS = './dummy.js';
+    const dummyJS = './sys/dummy.js';
     const catalog = {};
     const getNestedKeyValue = (obj, keyPath = '', defaultValue = null) => {
         let result = defaultValue,
@@ -369,7 +369,7 @@
         } else {
             require.config(config.env.require); // setup require config
         }
-        include([use('./oojs.js | sys/oojs.js')]).then((oojs) => {
+        include([use('./www/libs/oojs.js | ./libs/oojs.js')]).then((oojs) => {
             // initialize OOJS
             let symbols = [];
             if (!config.env.isProd) { symbols.push('DEBUG'); }
@@ -420,7 +420,7 @@
                         if (isServer) {
                             bootstrapper.ready().then(onDone).catch(onError);
                         } else {
-                            include(['sys/domReady.js']).then((domReady) => {
+                            include(['./libs/domReady.js']).then((domReady) => {
                                 domReady(() => {
                                     bootstrapper.ready().then(onDone).catch(onError);
                                 });
@@ -434,6 +434,6 @@
     if (isServer) {
         onLoad();
     } else {
-        loadScript('sys/require.js', onLoad, onError);
+        loadScript('./libs/require.js', onLoad, onError);
     }
 })();
