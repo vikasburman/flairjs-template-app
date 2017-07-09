@@ -4,7 +4,7 @@ const fs = require('fs');
 
 // generate env
 const generateEnv = (isProd, isTest, asms) => {
-    let fileName = buildSettings.source.sys + 'loader.js',
+    let fileName = buildSettings.source.syswww + 'loader.js',
         fileContent = fs.readFileSync(fileName).toString();
     fileContent = fileContent.replace('[%]PROD[%]', isProd.toString());
     fileContent = fileContent.replace('[%]TEST[%]', isTest.toString());

@@ -26,7 +26,7 @@ const generateConfig = () => {
                     if (!newConfig[asm]) { // asm config is not defined in config
                         newConfig[asm] = {};
                     }
-                    for(let rootKey in settings) { // catalog, cotainer, settings or something else
+                    for(let rootKey in settings) { // catalog, cotainer, routes, settings or something else
                         if (settings.hasOwnProperty(rootKey)) {
                             if (!newConfig[asm][rootKey]) {
                                 newConfig[asm][rootKey] = {};
@@ -46,7 +46,7 @@ const generateConfig = () => {
     }
 
     // 3: save this new config as sys/.config.json file to be used here
-    fs.writeFileSync(buildSettings.source.sys + '.config.json', JSON.stringify(newConfig));
+    fs.writeFileSync(buildSettings.source.syswww + '.config.json', JSON.stringify(newConfig));
 
     // return
     return newConfig;

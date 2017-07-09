@@ -11,11 +11,11 @@ const generateDocs = (isProd, isTest, done) => {
     jsdocsConfig.docs = [];
     jsdocsConfig.docs.push('README.md');
     if (buildSettings.docs.isAddSysDocs) {
-        jsdocsConfig.docs.push(buildSettings.source.sys + 'loader.js');
+        jsdocsConfig.docs.push(buildSettings.source.syswww + 'loader.js');
     }
     for(let root in buildSettings.source) {
         if (buildSettings.source.hasOwnProperty(root)) {
-            if (!buildSettings.docs.isAddSysDocs && root === buildSettings.source.sys) {
+            if (!buildSettings.docs.isAddSysDocs && root === buildSettings.source.syswww) {
                 continue;
             }
             let globs = utils.getSource(root, 'members', '*.js', '**/*.js');

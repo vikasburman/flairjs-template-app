@@ -1,0 +1,17 @@
+{
+    "catalog": {
+        "View": "sys.ui.View",
+        "SecureView": "sys.ui.SecureView"
+    },
+
+    "container": {
+    },
+
+    "routes": {
+        "server": [],
+        "client": []
+    },
+
+    "settings": {
+    }
+}

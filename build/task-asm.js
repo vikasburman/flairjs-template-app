@@ -74,11 +74,15 @@ const assembleFiles = (isProd, isTest, asms, root, whenDone) => {
                 ]);
 
                 // add to packs (for bundle based resolving on client side)
-                if (!asms.paths[asmId]) {
-                    asms.paths[asmId] = asmUrl.replace('.js', ''); // requirejs automatically adds a .js
-                    asms.bundles[asmId] = [];
+                // remove "/modules/" because use() adds 'modules/' automatically when resolved
+                let newAsmId = asmId.replace('/modules/', '/'),
+                    newAsmUrl = asmUrl.replace('/modules/', '/'),
+                    newModuleName = moduleName.replace('/modules/', '/');
+                if (!asms.paths[newAsmId]) {
+                    asms.paths[newAsmId] = newAsmUrl.replace('.js', ''); // requirejs automatically adds a .js
+                    asms.bundles[newAsmId] = [];
                 }
-                asms.bundles[asmId].push(moduleName);
+                asms.bundles[newAsmId].push(newModuleName);
             } else {
                 file.contents = new Buffer(''); // empty string
             }

@@ -5,7 +5,7 @@ const fs = require('fs');
 // delete generated config
 const deleteGenerateConfig = () => {
     // delete this new config from sys/.config.json file to be used here
-    fs.unlinkSync(buildSettings.source.sys + '.config.json');
+    fs.unlinkSync(buildSettings.source.syswww + '.config.json');
 };
 exports.trasher = function(isProd, isTest, cb) {
     deleteGenerateConfig();

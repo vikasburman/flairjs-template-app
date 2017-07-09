@@ -10,7 +10,7 @@ const doTest = (isProd, isTest, done) => {
         tests = [];
 
     // fill tests array
-    tests.push(require('app-root-path') + '/' + buildSettings.source.sys + 'loader.js');
+    tests.push(require('app-root-path') + '/' + buildSettings.source.syswww + 'loader.js');
     for(let root in buildSettings.source) {
         if (buildSettings.source.hasOwnProperty(root)) {
             tests.push(buildSettings.source[root] + '**/tests/*.spec.js');

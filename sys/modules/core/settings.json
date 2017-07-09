@@ -1,0 +1,62 @@
+{
+    "catalog": {
+        "Base": "sys.core.Base",
+        "IBootware": "sys.core.IBootware",
+        "ErrorInfo": "sys.core.ErrorInfo",
+        "Bootstrapper": "sys.core.boot.Server | sys.core.boot.Client",
+        "App": "sys.core.app.Server | sys.core.app.Client"
+    },
+
+    "container": {
+    },
+
+    "routes": {
+        "server": [],
+        "client": []
+    },
+
+    "settings": {
+        "express": {
+            "case sensitive routing": false,
+            "strict routing": false
+        },
+        "port": {
+            "dev": 80,
+            "prod": 443
+        },
+        "ssl": {
+            "public": "",
+            "private": ""
+        },
+        "response": {
+            "headers": [
+                { "name": "Access-Control-Allow-Credentials", "value": true },
+                { "name": "Access-Control-Allow-Origin", "value": "*" },
+                { "name": "Access-Control-Allow-Methods", "value": "GET, PUT, POST, DELETE" },
+                { "name": "Access-Control-Allow-Headers", "value": "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request" }
+            ]
+        },
+        "bootwares": [
+            "sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies",
+            "sys.core.bootwares.server.StaticServer | ",
+            "sys.core.bootwares.Router",
+            "sys.core.bootwares.ErrorHandler",
+            "sys.comm.bootwares.Attributes"
+        ],
+        "middlewares": [
+            { "name": "morgan", "args": ["dev"] },
+            { "name": "compression" },
+            { "name": "cookie-parser" }
+        ],
+        "dependencies": [
+            "./libs/rivets{.min}.js"
+        ],
+        "static": {
+            "favIcon": "",
+            "caching": {  
+                "enabled": true,
+                "age": 86400000
+            }  
+        }
+    }
+}

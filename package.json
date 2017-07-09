@@ -8,8 +8,8 @@
   "link": "http://",
   "repository": "https://github.com/vikasburman/appgears.git",
   "scripts": {
-    "dev": "nodemon sys/loader.js",
-    "prod": "forever sys/loader.js",
+    "dev": "nodemon sys/www/loader.js",
+    "prod": "forever sys/www/loader.js",
     "test": "gulp test",
     "build": "gulp dev",
     "build-prod": "gulp prod",
@@ -47,9 +47,11 @@
   "dependencies": {
     "amdefine": "^1.0.1",
     "app-root-path": "^2.0.1",
+    "body-parser": "^1.17.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
     "morgan": "^1.8.2",
+    "node-fetch": "^1.7.1",
     "serve-favicon": "^2.4.3"
   }
 }

@@ -1,9 +1,10 @@
 {
     "source": {
-        "sys": "sys/",
-        "app": "app/",
-        "web": "web/",
-        "www": "www/"
+        "sys": "sys/modules/",
+        "app": "app/modules/",
+        "web": "web/modules/",
+        "www": "web/www/",
+        "syswww": "sys/www/"
     },
     "globs": {
         "exclude": [
@@ -13,8 +14,7 @@
         ],
         "clean": [
             "/**/*.asm.js", 
-            "/**/*.min.js", 
-            "/**/*.min.css"
+            "/**/*.asm.min.js"
         ]
     },
 
