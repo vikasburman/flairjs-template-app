@@ -8,6 +8,7 @@ define([
      */
     return Class('sys.core.comm.ClientResponse', Response, function(attr) {
         attr('override');
+        attr('sealed');
         this.func('constructor', (base, res, err, data) => {
             base(res);
             this.error = err || null;

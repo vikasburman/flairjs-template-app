@@ -1,7 +1,7 @@
 define([
     use('[Base]'),
     use('[IBootware]'),
-    use('express | ./libs/pathparser{.min}.js')
+    use('express | sys/core/libs/pathparser{.min}.js')
 ], (Base, IBootware, RouteManager) => {
     /**
      * @class sys.core.bootwares.Router
@@ -34,8 +34,12 @@ define([
             // verb: 
             //  on server, these can be: "get", "post", "put", "delete"
             //  on client, this is not required
-            // class: the class that can handle this route
-            // func: the function name of the class that handles this
+            // class: 
+            //  on server, the class that can handle this route
+            //  on client, the view class that represents this route
+            // func: 
+            //  on server, the function name of the class that handles this
+            //  on client, this is fixed as 'mount'
             routesOrder = this.settings(routesKey);
             for(let routesOf of routesOrder) {
                 routes = this.settings(routesOf + routesKey, []);
@@ -48,7 +52,7 @@ define([
                         } else {
                             router.add(route.url, function() {
                                 // "this"" will have all route values (e.g., abc/xyz when resolved against abc/:name will have name: 'xyz' in this object)
-                                theHandler(route.url, '', route.class, route.func, this, null);
+                                theHandler(route.url, '', route.class, 'navigate', this, null);
                             });
                         }
                     }
@@ -69,6 +73,6 @@ define([
         });
 
         attr('async');
-        this.func('ready', this.noopAsync);          
+        this.func('ready', this.noopAsync);        
     });
 });

@@ -1,17 +1,20 @@
 define([
     use('[Base]'),
     use('[IBootware]'),
-    use('sys.core.IApp'),
-    use('[App]')
-], (Base, IBootware, IApp, ClientApp) => {
+    use('[App]'),
+    use('sys.core.app.IApp')
+], (Base, IBootware, ClientApp, IApp) => {
     /**
      * @class sys.core.boot.Client
      * @classdesc sys.core.boot.Client
      * @desc Starts client processing.
      */    
     return Class('sys.core.boot.Client', Base, [IBootware], function(attr) {
+        attr('override');
         attr('sealed');
-        this.func('constructor', () => {
+        this.func('constructor', (base) => {
+            base();
+
             // resolve path of bootwares
             this.bootwares = this.settings('bootwares', []).slice();
             if (this.bootwares.length > 0) {

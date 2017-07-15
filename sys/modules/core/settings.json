@@ -1,10 +1,11 @@
 {
     "catalog": {
         "Base": "sys.core.Base",
-        "IBootware": "sys.core.IBootware",
+        "IBootware": "sys.core.boot.IBootware",
         "ErrorInfo": "sys.core.ErrorInfo",
         "Bootstrapper": "sys.core.boot.Server | sys.core.boot.Client",
-        "App": "sys.core.app.Server | sys.core.app.Client"
+        "App": "sys.core.app.Server | sys.core.app.Client",
+        "Transition": "sys.core.ui.Transition"
     },
 
     "container": {
@@ -49,7 +50,6 @@
             { "name": "cookie-parser" }
         ],
         "dependencies": [
-            "./libs/rivets{.min}.js"
         ],
         "static": {
             "favIcon": "",
@@ -57,6 +57,10 @@
                 "enabled": true,
                 "age": 86400000
             }  
-        }
+        },
+        "view": {
+            "stage": "#stage",
+            "container": "#container"
+        }        
     }
 }

@@ -49,6 +49,6 @@ define([
         });
 
         attr('async');
-        this.func('ready', this.noopAsync);          
+        this.func('ready', this.noopAsync);        
     });
 });

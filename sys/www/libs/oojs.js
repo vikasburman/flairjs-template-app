@@ -103,6 +103,12 @@
                 }
 
                 // definition helper
+                const guid = () => {
+                    return '_xxxxxxxx_xxxx_4xxx_yxxx_xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
+                };
                 const isSingletonClass = () => {
                     return hasAttr('singleton', meta['_constructor']);
                 }
@@ -111,7 +117,7 @@
                 };
                 const isSpecialMember = (member) => {
                     return ['constructor', 'dispose', '_constructor', '_dispose', '_'].indexOf(member) !== -1;
-                };
+                };   
                 const isOwnMember = (member) => {
                     return typeof meta[member] !== 'undefined';
                 };
@@ -420,14 +426,14 @@
 
                 _this.func = (name, fn) => {
                     // validate
-                    if (name === '_') { throw `${name} is not allowed.`; }
+                    if (name === '_') { throw `${className}.${name} is not allowed.`; }
                     if (!fn) { fn = noop; }
-
+                    
                     // special names
                     if (isSpecialMember(name)) {
                         name = '_' + name;
                     }
-                    
+
                     // add mixed attr
                     if (mixin_being_applied !== null) {
                         attr('mixed', mixin_being_applied);
@@ -449,11 +455,15 @@
                     if (hasAttr('override', attrs)) {
                         // check
                         let desc = Object.getOwnPropertyDescriptor(_this, name);
-                        if (typeof desc.value !== 'function') {
-                            throw `${name} is not a function to override.`;
+                        if (!desc || typeof desc.value !== 'function') {
+                            if (name === '_constructor') { name = 'constructor'; }
+                            if (name === '_dispose') { name = 'dispose'; }
+                            throw `${className}.${name} is not a function to override.`;
                         }
-                        if (hasAttrEx('sealed', name)) {
-                            throw `${name} cannot override a sealed function.`;
+                        if (hasAttrEx('sealed', name) && !hasAttr('sealed', attrs)) {
+                            if (name === '_constructor') { name = 'constructor'; }
+                            if (name === '_dispose') { name = 'dispose'; }
+                            throw `${className}.${name} cannot override a sealed function.`;
                         }
 
                         // redefine
@@ -471,7 +481,11 @@
                         });
                     } else {
                         // duplicate check
-                        if (!isSpecialMember(name) && isDefined(name, true)) { throw `${name} already defined either as public, protected or private member.`; }
+                        if (isDefined(name, true)) { 
+                            if (name === '_constructor') { name = 'constructor'; }
+                            if (name === '_dispose') { name = 'dispose'; }
+                            throw `${className}.${name} is already defined.`; 
+                        }
 
                         // define
                         Object.defineProperty(_this, name, {
@@ -496,7 +510,7 @@
                 };
                 _this.prop = (name, valueOrGetter, setter) => {
                     // special names
-                    if (isSpecialMember(name)) {  throw `${name} can only be defined as a function.`; }
+                    if (isSpecialMember(name)) {  throw `${className}.${name} can only be defined as a function.`; }
 
                     // default value
                     if (typeof valueOrGetter === 'undefined' && typeof setter === 'undefined') { valueOrGetter = null; }
@@ -523,18 +537,18 @@
                         // when overriding a property, it can only be redefined completely
                         // check
                         let desc = Object.getOwnPropertyDescriptor(_this, name);
-                        if (typeof desc.get !== 'function') {
-                            throw `Not a property to override. (${name})`;
+                        if (!desc || typeof desc.get !== 'function') {
+                            throw `Not a property to override. (${className}.${name})`;
                         }
-                        if (hasAttrEx('sealed', name)) {
-                            throw `Cannot override a sealed property. (${name})`;
+                        if (hasAttrEx('sealed', name) && !hasAttr('sealed', attrs)) {
+                            throw `Cannot override a sealed property. (${className}.${name})`;
                         }
-                        if (hasAttrEx('static', name)) { 
-                            throw `Cannot override a static property. (${name})`;
+                        if (hasAttrEx('static', name) && !hasAttr('static', attrs)) { 
+                            throw `Cannot override a static property. (${className}.${name})`;
                         }
                     } else {
                         // duplicate check
-                        if (isDefined(name, true)) { throw `${name} already defined either as public, protected or private member.`; }
+                        if (isDefined(name, true)) { throw `${className}.${name} is already defined.`; }
                     }
 
                     // define or redefine
@@ -555,7 +569,7 @@
                             enumerable: true,
                             get: () => { return propHost[name]; },
                             set: hasAttr('readonly', attrs) ? (value) => {
-                                if (_this._.constructing === className) {
+                                if (_this._.constructing || (hasAttr('once', attrs) && !propHost[name])) {
                                     propHost[name] = value;
                                 } else {
                                     throw `${name} is readonly.`;
@@ -565,14 +579,14 @@
                             }                            
                         });
                     } else {
-                        if (hasAttr('static', attrs)) { throw `Static properties cannot be defined with a getter/setter. (${name})`}
+                        if (hasAttr('static', attrs)) { throw `Static properties cannot be defined with a getter/setter. (${className}.${name})`}
                         Object.defineProperty(_this, name, {
                             __proto__: null,
                             configurable: true,
                             enumerable: true,
                             get: valueOrGetter,
                             set: hasAttr('readonly', attrs) ? (value) => { 
-                                if (_this._.constructing === className) {
+                                if (_this._.constructing || (hasAttr('once', attrs) && !valueOrGetter())) {
                                     if (typeof setter === 'function') { setter(value); }
                                 } else {
                                     throw `${name} is readonly.`;
@@ -594,10 +608,10 @@
                 };
                 _this.event = (name) => {
                     // special names
-                    if (isSpecialMember(name)) {  throw `${name} can only be defined as a function.`; }
+                    if (isSpecialMember(name)) {  throw `${className}.${name} can only be defined as a function.`; }
 
                     // duplicate check
-                    if (isDefined(name, true)) { throw `${name} already defined either as public, protected or private member.`; }
+                    if (isDefined(name, true)) { throw `${className}.${name} is already defined.`; }
 
                     // add meta
                     meta[name] = [];
@@ -606,7 +620,7 @@
                   
                     // discard attributes
                     if (bucket.length > 0) {
-                        console.warn(`Attributes can only be applied to properties or functions. ${name} is an event.`);
+                        console.warn(`Attributes can only be applied to properties or functions. ${className}.${name} is an event.`);
                         bucket = []; 
                     }
 
@@ -654,6 +668,7 @@
                 _this._ = _this._ || {};
                 _this._.type = 'instance';
                 _this._.name = className;
+                _this._.id = guid();
                 _this._.instanceOf = _this._.instanceOf || [];
                 if (!inherits) {
                     _this._.instanceOf.push({name: 'Object', type: Object, meta: [], mixins: [], interfaces: []});
@@ -731,31 +746,33 @@
                 delete _this.noop;
                 delete _this.noopAsync;
 
-                // constructor
-                if (typeof _this._constructor === 'function') {
-                    _this._.constructing = className;
-                    _this._constructor(...classArgs);
-                    delete _this._constructor;
-                    delete _this._.constructing;
-                }
-
-                // dispose
-                if (typeof _this._dispose === 'function') {
-                    _this._.dispose = _this._.dispose || [];
-                    let dispose = _this._dispose;
-                    _this._.dispose.push(dispose);
-                    delete _this._dispose;
-                }
-
                 // weave members with configured advises
                 weave();
+
+                // // top level class
+                if (!isNeedProtected) { 
+                    // constructor
+                    if (typeof _this._constructor === 'function') {
+                        _this._.constructing = true;
+                        _this._constructor(...classArgs);
+                        _this._.constructor = this._constructor;
+                        delete _this._constructor;
+                        delete _this._.constructing;
+                    }
+
+                    // dispose
+                    if (typeof _this._dispose === 'function') {
+                        _this._._dispose = _this._dispose;
+                        delete _this._dispose;
+                    }
+                }
 
                 // get exposable _this
                 let isCopy = false;
                 doCopy('_'); // '_' is a very special member
                 for(let member in _this) {
                     isCopy = false;
-                    if (_this.hasOwnProperty(member) && !isSpecialMember(member)) {
+                    if (_this.hasOwnProperty(member)) {
                         isCopy = true;
                         if (isOwnMember(member)) {
                             if (isPrivateMember(member)) { isCopy = false; }
@@ -893,17 +910,17 @@
 
             // definition helpers
             _this.func = (name) => {
-                if (typeof meta[name] !== 'undefined') { throw `${name} already defined.`; }
+                if (typeof meta[name] !== 'undefined') { throw `${className}.${name} is already defined.`; }
                 meta[name] = [];
                 meta[name].type = 'func';
             };
             _this.prop = (name) => {
-                if (typeof meta[name] !== 'undefined') { throw `${name} already defined.`; }
+                if (typeof meta[name] !== 'undefined') { throw `${className}.${name} is already defined.`; }
                 meta[name] = [];
                 meta[name].type = 'prop';
             };
             _this.event = (name) => {
-                if (typeof meta[name] !== 'undefined') { throw `${name} already defined.`; }
+                if (typeof meta[name] !== 'undefined') { throw `${className}.${name} is already defined.`; }
                 meta[name] = [];
                 meta[name].type = 'event';
             };
@@ -971,11 +988,8 @@
             try {
                 scopeFn(obj);
             } finally {
-                if (obj._ && obj._.dispose && obj._.dispose.length > 0) {
-                    obj._.dispose.reverse();
-                    for(let dispose of obj._.dispose) {
-                        dispose();
-                    }
+                if (obj._ && typeof obj._.dispose === 'function') {
+                    obj._.dispose();
                 }
             }
         };
@@ -1096,8 +1110,8 @@
         oojs.Container.register(oojs.Class('async', oojs.Attribute, function() {
             this.decorator((obj, type, name, descriptor) => {
                 // validate
-                if (['func'].indexOf(type) === -1) { throw `async attribute cannot be applied on ${type} members. (${name})`; }
-                if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `async attribute cannot be applied on special function. (${name})`; }
+                if (['func'].indexOf(type) === -1) { throw `async attribute cannot be applied on ${type} members. (${className}.${name})`; }
+                if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `async attribute cannot be applied on special function. (${className}.${name})`; }
 
                 // decorate
                 let fn = descriptor.value;
@@ -1116,7 +1130,7 @@
         oojs.Container.register(oojs.Class('deprecate', oojs.Attribute, function() {
             this.decorator((obj, type, name, descriptor) => {
                 // validate
-                if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `deprecate attribute cannot be applied on special function. (${name})`; }
+                if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `deprecate attribute cannot be applied on special function. (${className}.${name})`; }
 
                 // decorate
                 let msg = `${name} is deprecated.`;
@@ -1163,7 +1177,7 @@
         oojs.Container.register(oojs.Class('enumerate', oojs.Attribute, function() {
             this.decorator((obj, type, name, descriptor) => {
                 // validate
-                if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `enumerate attribute cannot be applied on special function. (${name})`; }
+                if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `enumerate attribute cannot be applied on special function. (${className}.${name})`; }
 
                 // decorate
                 let flag = this.args[0];
@@ -1182,8 +1196,8 @@
         oojs.Container.register(oojs.Class('inject', oojs.Attribute, function() {
             this.decorator((obj, type, name, descriptor) => {
                 // validate
-                if (['func', 'prop'].indexOf(type) === -1) { throw `inject attribute cannot be applied on ${type} members. (${name})`; }
-                if (['_constructor', '_dispose'].indexOf(name) !== -1) { throw `inject attribute cannot be applied on special function. (${name})`; }
+                if (['func', 'prop'].indexOf(type) === -1) { throw `inject attribute cannot be applied on ${type} members. (${className}.${name})`; }
+                if (['_constructor', '_dispose'].indexOf(name) !== -1) { throw `inject attribute cannot be applied on special function. (${className}.${name})`; }
 
                 // decorate
                 let Type = this.args[0],
@@ -1227,8 +1241,8 @@
         oojs.Container.register(oojs.Class('multiinject', oojs.Attribute, function() {
             this.decorator((obj, type, name, descriptor) => {
                 // validate
-                if (['func', 'prop'].indexOf(type) === -1) { throw `multiinject attribute cannot be applied on ${type} members. (${name})`; }
-                if (['_constructor', '_dispose'].indexOf(name) !== -1) { throw `multiinject attribute cannot be applied on special function. (${name})`; }
+                if (['func', 'prop'].indexOf(type) === -1) { throw `multiinject attribute cannot be applied on ${type} members. (${className}.${name})`; }
+                if (['_constructor', '_dispose'].indexOf(name) !== -1) { throw `multiinject attribute cannot be applied on special function. (${className}.${name})`; }
 
                 // decorate
                 let Type = this.args[0],
@@ -1246,7 +1260,7 @@
                     }
                     instance = oojs.Container.resolve(Type, true, ...typeArgs)
                 } else {
-                    throw `multiinject attribute does not support direct type injections. (${name})`;
+                    throw `multiinject attribute does not support direct type injections. (${className}.${name})`;
                 }
                 switch(type) {
                     case 'func':
@@ -1385,6 +1399,7 @@
                 refl.getValue = () => { return ref.get(); }
                 refl.setValue = (value) => { return ref.set(value); }
                 refl.isReadOnly = () => { return target._._.hasAttrEx('readonly', name); };
+                refl.isSetOnce = () => { return target._._.hasAttrEx('readonly', name) && target._._.hasAttrEx('once', name); };
                 refl.isStatic = () => { return target._._.hasAttrEx('static', name); };
                 refl.isSerializable = () => { return target._._.isSerializableMember(name); }
                 return refl;

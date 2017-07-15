@@ -5,22 +5,18 @@ define(() => {
      * @desc Base class for all classes.
      */
     return Class('sys.core.Base', function(attr) {
-        this.func('constructor', this.noop);
-
         attr('protected');
         this.prop('env', config.env);
 
-        let _assembly = '';
         attr('readonly');
         attr('protected');
         this.prop('assembly', () => {
-            if (!_assembly) { 
-                let parts = this._.name.split('.');
-                if (parts.length > 1) {
-                    _assembly = parts[0] + '.' + parts[1];
-                }
+            let parts = this._.name.split('.');
+            if (parts.length > 1) {
+                return parts[0] + '.' + parts[1];
+            } else {
+                return '';
             }
-            return _assembly;
         });
 
         attr('protected');

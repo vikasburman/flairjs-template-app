@@ -1,12 +1,16 @@
-define(() => {
+define([
+    use('[Base]')
+], (Base) => {
     /**
      * @class sys.core.comm.Request
      * @classdesc sys.core.comm.Request
      * @desc Request information.
      */
-    return Class('sys.core.comm.Request', function(attr) {
+    return Class('sys.core.comm.Request', Base, function(attr) {
+        attr('override');
         attr('abstract');
-        this.func('constructor', (req, res, access) => {
+        this.func('constructor', (base, req, res, access) => {
+            base();
             this.access = access;
         });
 

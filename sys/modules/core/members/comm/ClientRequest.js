@@ -8,6 +8,7 @@ define([
      */
     return Class('sys.core.comm.ClientRequest', Request, function(attr) {
         attr('override');
+        attr('sealed');
         this.func('constructor', (base, req, response, access) => {
             base(req, null, access); // no need to send response in a client request, it does not apply here
             this.url = req.url;

@@ -11,7 +11,7 @@
     let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
 
     // config
-    const config = JSON.parse(`{"settings":{"appSettings":{"title":"My Application","version":"1.0.0"},"tabletWidth":{"min":600,"max":992},"routesOrder":{"server":["sys.core"],"client":["sys.core"]}},"sys.core":{"catalog":{},"settings":{"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.Attributes","sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":["./libs/rivets.js"],"static":{"favIcon":"images/icon.png","caching":{"enabled":true,"age":86400000}}}},"source":{"sys":"sys/modules/","app":"app/modules/","web":"web/modules/","www":"web/www/","syswww":"sys/www/"},"sys.modules/core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client"},"container":{},"routes":{"server":[],"client":[]},"settings":{"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":80,"prod":443},"ssl":{"public":"","private":""},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.comm.bootwares.Attributes"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":["./libs/rivets.js"],"static":{"favIcon":"","caching":{"enabled":true,"age":86400000}}}},"sys.modules/ui":{"catalog":{"View":"sys.ui.View","SecureView":"sys.ui.SecureView"},"container":{},"routes":{"server":[],"client":[]},"settings":{}}}`);
+    const config = JSON.parse(`{"settings":{"appSettings":{"title":"My Application","version":"1.0.0"},"loader":{"tabletWidth":{"min":600,"max":992}},"routesOrder":{"server":["sys.core"],"client":["sys.core"]}},"sys.core":{"catalog":{},"settings":{"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.Attributes","sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":[],"static":{"favIcon":"images/icon.png","caching":{"enabled":true,"age":86400000}},"view":{"stage":"#stage","container":"#container"}}},"source":{"sys":"sys/modules/","app":"app/modules/","web":"web/modules/","www":"web/www/","syswww":"sys/www/"},"sys.modules/core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Transition":"sys.core.ui.Transition"},"container":{},"routes":{"server":[],"client":[]},"settings":{"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":80,"prod":443},"ssl":{"public":"","private":""},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.comm.bootwares.Attributes"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":[],"static":{"favIcon":"","caching":{"enabled":true,"age":86400000}},"view":{"stage":"#stage","container":"#container"}}},"sys.modules/ui":{"catalog":{"View":"sys.ui.View","SecureView":"sys.ui.SecureView"},"container":{},"routes":{"server":[],"client":[]},"settings":{}}}`);
     config.env = {
         isServer: isServer,
         isDevice: false,
@@ -32,20 +32,20 @@
             bundles: {}
         }
     };
-    Object.assign(config.env.require.paths, JSON.parse('{"sys/core":"sys/core/index.asm","sys/ui":"sys/ui/index.asm"}'));
-    Object.assign(config.env.require.bundles, JSON.parse('{"sys/core":["sys.core.App","sys.core.Base","sys.core.ErrorInfo","sys.core.IApp","sys.core.IBootware","sys.core.app.Client","sys.core.app.Server","sys.core.boot.Client","sys.core.boot.Server","sys.core.bootwares.Attributes","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Router","sys.core.comm.ClientRequest","sys.core.comm.ClientResponse","sys.core.comm.Request","sys.core.comm.Response","sys.core.comm.ServerRequest","sys.core.comm.ServerResponse","sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.Middlewares","sys.core.bootwares.server.StaticServer"],"sys/ui":["sys.ui.SecureView","sys.ui.View"]}'));
+    Object.assign(config.env.require.paths, JSON.parse('{"sys/core":"sys/core/index.asm","sys/ui":"sys/ui/index.asm","web/sample":"web/sample/index.asm"}'));
+    Object.assign(config.env.require.bundles, JSON.parse('{"sys/core":["sys.core.Base","sys.core.ErrorInfo","sys.core.app.App","sys.core.app.Client","sys.core.app.IApp","sys.core.app.Server","sys.core.boot.Client","sys.core.boot.IBootware","sys.core.boot.Server","sys.core.bootwares.Attributes","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Router","sys.core.comm.ClientRequest","sys.core.comm.ClientResponse","sys.core.comm.Request","sys.core.comm.Response","sys.core.comm.ServerRequest","sys.core.comm.ServerResponse","sys.core.ui.Component","sys.core.ui.Partial","sys.core.ui.Shell","sys.core.ui.Transition","sys.core.ui.View","sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.Middlewares","sys.core.bootwares.server.StaticServer"],"sys/ui":["sys.ui.SecureView","sys.ui.View"],"web/sample":["web.sample.partials.SimpleList","web.sample.shells.Full","web.sample.views.Home"]}'));
     if (!config.env.isServer) {
         if (window.document) {
             config.env.isDevice = (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1);
         }
-        if (window.innerWidth <= config.settings.tabletWidth.min) {
+        if (window.innerWidth <= config.settings.loader.tabletWidth.min) {
             config.env.isMobile = true;
-        } else if (window.innerWidth > config.settings.tabletWidth.min && window.innerWidth <= config.settings.tabletWidth.max) {
+        } else if (window.innerWidth > config.settings.loader.tabletWidth.min && window.innerWidth <= config.settings.loader.tabletWidth.max) {
             config.env.isTablet = true;
         }
     }
 
-    const dummyJS = './dummy.js';
+    const dummyJS = './libs/dummy.js';
     const catalog = {};
     const getNestedKeyValue = (obj, keyPath = '', defaultValue = null) => {
         let result = defaultValue,
@@ -109,7 +109,7 @@
         };
         const getContextualPath = (_path) => {
             let parts = null,
-                dummy = '';
+                asked = _path;
             if (_path.includes('|')) {
                 parts = _path.split('|');
                 _path = (isAsServer ? parts[0] : parts[1]).trim();
@@ -118,11 +118,13 @@
             return _path.trim();
         };
         const getCatalogedPath = (_path) => {
+            let asked = _path;
             let key = _path.substr(1, _path.length - 2); // strip [ and ]
             let value = catalog[key];
             if (value && value.startsWith('[') && value.endsWith(']')) {
                 return getCatalogedPath(value);
             } else {
+                if (!value) { console.log(`Failed to resolve ${asked}`); }
                 return value || dummyJS;
             }
         };
@@ -145,6 +147,7 @@
             let parts = _path.split('/');
             parts.shift(); // remove sys
             _path = nsRoot + parts.join('/');
+            if (!isAsServer) { _path = _path.replace('modules/', '').replace('www/', ''); } // remove these invisible parts of path on client
             if (!isAsServer) { _path = '/' + _path; } // add root relativity
             if (!isAsServer) {
                 if (_path.endsWith('.json')) {
@@ -357,13 +360,31 @@
         });
     };
 
+    /** 
+     * @global
+     * @param {string} str - string to find and replace in.
+     * @param {string} find - string to find.
+     * @param {string} replace - string to replace found string with.
+     * @return {string} - replaced string.
+     * @desc Replace all instances of 'find' string with 'replace' string in 'str'.
+     * @example
+     * replaceAll('this is test for test', 'test', 'hello'); --> this is hello for hello
+     */    
+    const replaceAll = (str, find, replace) => {
+        let escapeRegExp = (_str) => {
+            return _str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        };
+        return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+    };
+
     // expose this global API
     let g = (isServer ? global : window);
     g.config = config;
     g.use = use;
     g.include = include;
     g.settings = settings;
-    g.forAsync = forAsync;
+    g.forAsync = forAsync; 
+    g.replaceAll = replaceAll;
     g.App = null;
 
     // setup
@@ -387,6 +408,7 @@
         } else {
             require.config(config.env.require); // setup require config
         }
+
         include([use('./libs/oojs.js')]).then((oojs) => {
             // initialize OOJS
             let symbols = [];

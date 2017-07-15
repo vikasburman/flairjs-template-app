@@ -1,10 +1,14 @@
 define(() => {
     /**
-     * @interface sys.core.IApp
-     * @classdesc sys.core.IApp
+     * @interface sys.core.app.IApp
+     * @classdesc sys.core.app.IApp
      * @desc App interface.
      */    
-    return Interface('sys.core.IApp', function() {
+    return Interface('sys.core.app.IApp', function() {
+        /**
+         * @return {object} - promise object
+         * @desc Runs anything that is required to execute now, when app is loaded and ready.
+         */ 
         this.func('start');
 
         /**
@@ -13,5 +17,8 @@ define(() => {
          * @desc Authenticates and authorizes the current request as per given access information.
          */ 
         this.func('auth');
+
+        this.prop('title');
+        this.prop('version');
     });
 });

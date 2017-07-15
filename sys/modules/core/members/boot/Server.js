@@ -1,19 +1,22 @@
 define([
     use('[Base]'),
     use('[IBootware]'),
-    use('sys.core.IApp'),
     use('[App]'),
+    use('sys.core.app.IApp'),
     use('express'),
     use('fs')
-], (Base, IBootware, IApp, ServerApp, express, fs) => {
+], (Base, IBootware, ServerApp, IApp, express, fs) => {
     /**
      * @class sys.core.boot.Server
      * @classdesc sys.core.boot.Server
      * @desc Starts server processing.
      */    
     return Class('sys.core.boot.Server', Base, [IBootware], function(attr) {
+        attr('override');
         attr('sealed');
-        this.func('constructor', () => {
+        this.func('constructor', (base) => {
+            base();
+
             // create express app
             this.app = express();
 

@@ -36,7 +36,7 @@
         }
     }
 
-    const dummyJS = './dummy.js';
+    const dummyJS = './libs/dummy.js';
     const catalog = {};
     const getNestedKeyValue = (obj, keyPath = '', defaultValue = null) => {
         let result = defaultValue,
@@ -100,7 +100,7 @@
         };
         const getContextualPath = (_path) => {
             let parts = null,
-                dummy = '';
+                asked = _path;
             if (_path.includes('|')) {
                 parts = _path.split('|');
                 _path = (isAsServer ? parts[0] : parts[1]).trim();
@@ -109,11 +109,13 @@
             return _path.trim();
         };
         const getCatalogedPath = (_path) => {
+            let asked = _path;
             let key = _path.substr(1, _path.length - 2); // strip [ and ]
             let value = catalog[key];
             if (value && value.startsWith('[') && value.endsWith(']')) {
                 return getCatalogedPath(value);
             } else {
+                if (!value) { console.log(`Failed to resolve ${asked}`); }
                 return value || dummyJS;
             }
         };
@@ -136,6 +138,7 @@
             let parts = _path.split('/');
             parts.shift(); // remove sys
             _path = nsRoot + parts.join('/');
+            if (!isAsServer) { _path = _path.replace('modules/', '').replace('www/', ''); } // remove these invisible parts of path on client
             if (!isAsServer) { _path = '/' + _path; } // add root relativity
             if (!isAsServer) {
                 if (_path.endsWith('.json')) {
@@ -348,13 +351,31 @@
         });
     };
 
+    /** 
+     * @global
+     * @param {string} str - string to find and replace in.
+     * @param {string} find - string to find.
+     * @param {string} replace - string to replace found string with.
+     * @return {string} - replaced string.
+     * @desc Replace all instances of 'find' string with 'replace' string in 'str'.
+     * @example
+     * replaceAll('this is test for test', 'test', 'hello'); --> this is hello for hello
+     */    
+    const replaceAll = (str, find, replace) => {
+        let escapeRegExp = (_str) => {
+            return _str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        };
+        return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+    };
+
     // expose this global API
     let g = (isServer ? global : window);
     g.config = config;
     g.use = use;
     g.include = include;
     g.settings = settings;
-    g.forAsync = forAsync;
+    g.forAsync = forAsync; 
+    g.replaceAll = replaceAll;
     g.App = null;
 
     // setup
@@ -378,6 +399,7 @@
         } else {
             require.config(config.env.require); // setup require config
         }
+
         include([use('./libs/oojs{.min}.js')]).then((oojs) => {
             // initialize OOJS
             let symbols = [];

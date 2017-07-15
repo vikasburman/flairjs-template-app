@@ -57,7 +57,6 @@
                 { "name": "cookie-parser" }
             ],
             "dependencies": [
-                "./libs/rivets{.min}.js"
             ],
             "static": {
                 "favIcon": "images/icon.png",
@@ -65,6 +64,10 @@
                     "enabled": true,
                     "age": 86400000
                 }  
+            },
+            "view": {
+                "stage": "#stage",
+                "container": "#container"                
             }
         }
     }

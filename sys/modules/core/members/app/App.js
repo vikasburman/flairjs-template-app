@@ -1,15 +1,18 @@
 define([
-    use('sys.core.Base'),
-    use('sys.core.IApp')
+    use('[Base]'),
+    use('sys.core.app.IApp')
 ], (Base, IApp) => {
     /**
-     * @class sys.core.App
-     * @classdesc sys.core.App
+     * @class sys.core.app.App
+     * @classdesc sys.core.app.App
      * @desc App base class.
      */    
-    return Class('sys.core.App', Base, [IApp], function(attr) {
+    return Class('sys.core.app.App', Base, [IApp], function(attr) {
+        attr('override');
         attr('abstract');
-        this.func('constructor', () => {
+        this.func('constructor', (base) => {
+            base();
+            
             this.appSettings = this.settings(':appSettings');
             this.title = this.appSettings.title;
             this.version = this.appSettings.version;

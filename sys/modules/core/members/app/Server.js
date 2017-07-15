@@ -1,5 +1,5 @@
 define([
-    use('sys.core.App')
+    use('sys.core.app.App')
 ], (App) => {
     /**
      * @class sys.core.app.Server
@@ -7,7 +7,5 @@ define([
      * @desc Starts server application.
      */         
     return Class('sys.core.app.Server', App, function(attr) {
-        this.func('constructor', () => {
-        });
     });
 });

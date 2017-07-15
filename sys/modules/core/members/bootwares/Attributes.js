@@ -200,11 +200,73 @@ define([
                 });
             }));             
             
+            // cache
+            // cache([duration])
+            //  duration: in milliseconds, for how long to keep last result in cache (when not defined, it keeps it in cache forever till object is live)
+            Container.register(Class('cache', Attribute, function() {
+                this.decorator((obj, type, name, descriptor) => {
+                    // validate
+                    if (['func'].indexOf(type) === -1) { throw `cache attribute cannot be applied on ${type} members. (${name})`; }
+                    if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `cache attribute cannot be applied on special function. (${name})`; }
+
+                    // decorate
+                    let fn = descriptor.value,
+                        duration = this.args[0] || 0,
+                        cachedValue = null,
+                        isASync = false,
+                        isCalledOnce = false,
+                        lastCalled = null;
+                    descriptor.value = function(...args) {
+                        let result = null,
+                            callAndCache = () => {
+                                isCalledOnce = true;
+                                result = fn(...args);
+                                if (typeof result.then === 'function' && typeof result.catch === 'function') {
+                                    isASync = true;
+                                    return new Promise((resolve, reject) => {
+                                        result.then((data) => {
+                                            lastCalled = new Date().getMilliseconds();
+                                            cachedValue = data;
+                                            resolve(data); 
+                                        }).catch((err) => {
+                                            isCalledOnce = false;
+                                            lastCalled = null;
+                                            cachedValue = null;
+                                            reject(err);
+                                        });
+                                    });
+                                } else {
+                                    lastCalled = new Date().getMilliseconds();
+                                    cachedValue = result;
+                                    return result;
+                                }
+                            };
+                        if (!isCalledOnce) {
+                            return callAndCache();
+                        } else {
+                            if (duration) {
+                                let now = new Date().getMilliseconds();
+                                if ((now - lastCalled) > duration) {
+                                    return callAndCache();
+                                }
+                            }
+                            if (isASync) {
+                                return new Promise((resolve, reject) => {
+                                    resolve(cachedValue);
+                                });
+                            } else {
+                                return cachedValue;
+                            }
+                        }
+                    }.bind(obj);
+                });
+            }));
+
             // dome
             resolve();
-        });
+        });         
 
         attr('async');
-        this.func('ready', this.noopAsync);          
+        this.func('ready', this.noopAsync);
     });
 });
