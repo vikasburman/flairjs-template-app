@@ -7,12 +7,7 @@ define('web.sample.partials.SimpleList', [use('sys.core.ui.Partial')], function 
      * @classdesc web.sample.partials.SimpleList
      * @desc SimpleList partial.
      */
-    return Class('web.sample.partials.SimpleList', Partial, function (attr) {
-        attr('override');
-        this.func('constructor', function (base) {
-            base('index.html', 'Simple List');
-        });
-    });
+    return Class('web.sample.partials.SimpleList', Partial, function (attr) {});
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/partials/SimpleList.js)
 'use strict';
@@ -24,12 +19,7 @@ define('web.sample.shells.Full', [use('sys.core.ui.Shell')], function (Shell) {
      * @classdesc web.sample.shells.Full
      * @desc Shell (fully loaded version).
      */
-    return Class('web.sample.shells.Full', Shell, function (attr) {
-        attr('override');
-        this.func('constructor', function (base) {
-            base('index.html', 'Full');
-        });
-    });
+    return Class('web.sample.shells.Full', Shell, function (attr) {});
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/shells/Full.js)
 'use strict';

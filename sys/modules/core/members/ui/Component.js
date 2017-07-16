@@ -89,7 +89,7 @@ define([
                     //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
                     let $partials = this.$el.querySelectorAll('[ag-partial]'),
                         partials = [],
-                        partialArgs = [],
+                        partialClassParams = [],
                         partialObjects = [],
                         className = '',
                         args = null;
@@ -98,16 +98,18 @@ define([
                         args = $partial.getAttribute('ag-args');
                         args = (args ? this.env.queryStringToObject(args) : null);
                         partials.push(className);
-                        partialArgs.push(args);
+                        partialClassParams.push({$host: $partial, args: args});
                     }
 
                     // get partials
                     include(partials, true).then((PartialClasses) => {
                         // instantiate all partials
                         if (PartialClasses) {
-                            let i = 0;
+                            let i = 0,
+                                pa = null;
                             for(let PartialClass of PartialClasses) {
-                                partialObjects.push(new PartialClass(this, $partials[i], partialArgs[i]));
+                                pa = partialClassParams[i];
+                                partialObjects.push(new PartialClass(this, pa.$host, pa.args));
                                 i++; 
                             }
 
@@ -145,7 +147,9 @@ define([
                             include(styles, true).then((allStyles) => {
                                 if (allStyles) {
                                     for(let thisStyle of allStyles) {
-                                        _styles += '\n\n /* next */ \n\n' + thisStyle;
+                                        if (thisStyle) {
+                                            _styles += '\n/* next */\n' + thisStyle;
+                                        }
                                     }
                                 }
                                 resolve();
@@ -158,12 +162,12 @@ define([
             };   
 
             // init
-            this.cfas('beforeInit').then(() => {
+            this.beforeInit().then(() => {
                 loadHtml().then(() => {
                     defineHost();
                     loadDeps().then(() => {
                         initPartials().then(() => {
-                            this.cfas('afterInit').then(() => {
+                            this.afterInit().then(() => {
                                 _isInit = true;
                                 resolve();
                             }).catch(reject);
@@ -200,10 +204,10 @@ define([
         let _partials = null;
         this.prop('partials', () => { return _partials; });
 
-        let _styles = null;
+        let _styles = '';
         this.prop('styles', () => { return _styles; });
 
-        attr('private');
+        attr('protected');
         this.prop('type', '');
 
         attr('readonly');
@@ -241,74 +245,6 @@ define([
                 _path = 'text!' + _path;
             }
             return _path;
-        });
-
-        attr('async');
-        this.func('cfas', (resolve, reject, asyncFuncName, ...args) => {
-          let callOnPartials = (obj) => {
-              return new Promise((_resolve, _reject) => {
-                    if (obj.partials) {
-                        forAsync(obj.partials, (__resolve, __reject, partial) => {
-                            partial.cfas(asyncFuncName, ...args).then(__resolve).catch(__reject);
-                        }).then(_resolve).catch(_reject);
-                    } else {
-                        _resolve();
-                    }
-              });
-            };
-
-            // cumulative function call (async)
-            switch(this.type) {
-                case 'view':
-                    this.parent.cfas(asyncFuncName, ...args).then(() => {
-                        if (typeof this[asyncFuncName] === 'function') {
-                            this[asyncFuncName](...args).then(() => {
-                                callOnPartials(this).then(resolve).catch(reject);
-                            }).catch(reject);
-                        } else {
-                            resolve();
-                        }
-                    }).catch(reject);
-                    break;
-                case 'shell':
-                case 'partial':
-                    if (typeof this[asyncFuncName] === 'function') {
-                        this[asyncFuncName](...args).then(() => {
-                            callOnPartials(this).then(resolve).catch(reject);
-                        }).catch(reject);
-                    } else {
-                        resolve();
-                    }
-                    break;
-            }
-        });
-
-        this.func('cfs', (syncFuncName, ...args) => {
-          let callOnPartials = (obj) => {
-                if (obj.partials) {
-                    for(let partial of obj.partials) {
-                        partial.cfs(syncFuncName, ...args);
-                    }
-                }
-            };
-
-            // cumulative function call (sync)
-            switch(this.type) {
-                case 'view':
-                    this.parent.cfs(syncFuncName, ...args);
-                    if (typeof this[syncFuncName] === 'function') {
-                        this[syncFuncName](...args);
-                    }
-                    callOnPartials(this);
-                    break;
-                case 'shell':
-                case 'partial':
-                    if (typeof this[syncFuncName] === 'function') {
-                        this[syncFuncName](...args);
-                    }
-                    callOnPartials(this);
-                    break;
-            }
         });
     });
 });

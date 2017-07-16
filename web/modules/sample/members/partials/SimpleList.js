@@ -7,9 +7,5 @@ define([
      * @desc SimpleList partial.
      */
     return Class('web.sample.partials.SimpleList', Partial, function(attr) {
-        attr('override');
-        this.func('constructor', (base) => {
-            base('index.html', 'Simple List');
-        });
     });
 });

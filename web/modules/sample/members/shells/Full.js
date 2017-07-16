@@ -7,9 +7,5 @@ define([
      * @desc Shell (fully loaded version).
      */
     return Class('web.sample.shells.Full', Shell, function(attr) {
-        attr('override');
-        this.func('constructor', (base) => {
-            base('index.html', 'Full');
-        });
     });
 });

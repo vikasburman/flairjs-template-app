@@ -165,16 +165,16 @@ define([
                 if (obj.styles) {
                     obj.$style = document.createElement('style');
                     obj.$style.setAttribute('scoped', '');
-                    obj.$style.innerText = obj.styles;
+                    obj.$style.appendChild(document.createTextNode(obj.styles));
                     obj.$el.prepend(obj.$style);
                 }
             };
 
             // mount partials
             let mountPartial = (partial) => {
-                    partial.$host.append(partial.$el);
-                    mountStyles(partial);
-                    mountPartials(partial.partials);
+                partial.$host.append(partial.$el);
+                mountStyles(partial);
+                mountPartials(partial.partials);
             };
             let mountPartials = (partials) => {
                 if (partials) {
@@ -242,7 +242,7 @@ define([
                 let getPartialBindings = (target, _obj) => {
                     if (_obj.partials) {
                         for(let partial of _obj.partials) {
-                            target[partial.id] = partial;
+                            target[partial._.id] = partial;
                             getPartialBindings(target, partial);
                         }
                     }
@@ -258,7 +258,7 @@ define([
                 getPartialBindings(obj.partials, this);
 
                 // bind
-                binder = new DataBinder(); // its singleton, so no issue
+                let binder = new DataBinder(); // its singleton, so no issue
                 _bindedView = binder.bind(this.shell.$el, obj);
             }
         });
@@ -267,11 +267,54 @@ define([
         attr('sealed');
         this.func('unbind', () => {
             if (_bindedView) {
-                binder = new DataBinder(); // its singleton, so no issue
+                let binder = new DataBinder(); // its singleton, so no issue
                 binder.unbind(_bindedView);
                 _bindedView = null;
             }
         });
+
+        attr('async');
+        this.func('cfas', (resolve, reject, asyncFuncName, ...args) => {
+          let callOnPartials = (obj) => {
+              return new Promise((_resolve, _reject) => {
+                    if (obj.partials) {
+                        forAsync(obj.partials, (__resolve, __reject, partial) => {
+                            partial.cfas(asyncFuncName, ...args).then(__resolve).catch(__reject);
+                        }).then(_resolve).catch(_reject);
+                    } else {
+                        _resolve();
+                    }
+              });
+            };
+
+            // cumulative function call (async)
+            this.parent.cfas(asyncFuncName, ...args).then(() => {
+                if (typeof this[asyncFuncName] === 'function') {
+                    this[asyncFuncName](...args).then(() => {
+                        callOnPartials(this).then(resolve).catch(reject);
+                    }).catch(reject);
+                } else {
+                    resolve();
+                }
+            }).catch(reject);
+        });
+
+        this.func('cfs', (syncFuncName, ...args) => {
+          let callOnPartials = (obj) => {
+                if (obj.partials) {
+                    for(let partial of obj.partials) {
+                        partial.cfs(syncFuncName, ...args);
+                    }
+                }
+            };
+
+            // cumulative function call (sync)
+            this.parent.cfs(syncFuncName, ...args);
+            if (typeof this[syncFuncName] === 'function') {
+                this[syncFuncName](...args);
+            }
+            callOnPartials(this);
+        });         
 
         this.prop('title', '');
     });

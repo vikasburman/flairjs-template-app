@@ -1617,7 +1617,7 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
                     //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
                     var $partials = _this.$el.querySelectorAll('[ag-partial]'),
                         partials = [],
-                        partialArgs = [],
+                        partialClassParams = [],
                         partialObjects = [],
                         className = '',
                         args = null;
@@ -1633,7 +1633,7 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
                             args = $partial.getAttribute('ag-args');
                             args = args ? _this.env.queryStringToObject(args) : null;
                             partials.push(className);
-                            partialArgs.push(args);
+                            partialClassParams.push({ $host: $partial, args: args });
                         }
 
                         // get partials
@@ -1655,7 +1655,8 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
                     include(partials, true).then(function (PartialClasses) {
                         // instantiate all partials
                         if (PartialClasses) {
-                            var i = 0;
+                            var i = 0,
+                                pa = null;
                             var _iteratorNormalCompletion2 = true;
                             var _didIteratorError2 = false;
                             var _iteratorError2 = undefined;
@@ -1664,7 +1665,8 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
                                 for (var _iterator2 = PartialClasses[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                                     var PartialClass = _step2.value;
 
-                                    partialObjects.push(new PartialClass(_this, $partials[i], partialArgs[i]));
+                                    pa = partialClassParams[i];
+                                    partialObjects.push(new PartialClass(_this, pa.$host, pa.args));
                                     i++;
                                 }
 
@@ -1746,7 +1748,9 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
                                         for (var _iterator4 = allStyles[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                                             var thisStyle = _step4.value;
 
-                                            _styles += '\n\n /* next */ \n\n' + thisStyle;
+                                            if (thisStyle) {
+                                                _styles += '\n/* next */\n' + thisStyle;
+                                            }
                                         }
                                     } catch (err) {
                                         _didIteratorError4 = true;
@@ -1773,12 +1777,12 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
             };
 
             // init
-            _this.cfas('beforeInit').then(function () {
+            _this.beforeInit().then(function () {
                 loadHtml().then(function () {
                     defineHost();
                     loadDeps().then(function () {
                         initPartials().then(function () {
-                            _this.cfas('afterInit').then(function () {
+                            _this.afterInit().then(function () {
                                 _isInit = true;
                                 resolve();
                             }).catch(reject);
@@ -1817,12 +1821,12 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
             return _partials;
         });
 
-        var _styles = null;
+        var _styles = '';
         this.prop('styles', function () {
             return _styles;
         });
 
-        attr('private');
+        attr('protected');
         this.prop('type', '');
 
         attr('readonly');
@@ -1862,107 +1866,6 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
                 _path = 'text!' + _path;
             }
             return _path;
-        });
-
-        attr('async');
-        this.func('cfas', function (resolve, reject, asyncFuncName) {
-            for (var _len = arguments.length, args = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-                args[_key - 3] = arguments[_key];
-            }
-
-            var _parent;
-
-            var callOnPartials = function callOnPartials(obj) {
-                return new Promise(function (_resolve, _reject) {
-                    if (obj.partials) {
-                        forAsync(obj.partials, function (__resolve, __reject, partial) {
-                            partial.cfas.apply(partial, [asyncFuncName].concat(args)).then(__resolve).catch(__reject);
-                        }).then(_resolve).catch(_reject);
-                    } else {
-                        _resolve();
-                    }
-                });
-            };
-
-            // cumulative function call (async)
-            switch (_this.type) {
-                case 'view':
-                    (_parent = _this.parent).cfas.apply(_parent, [asyncFuncName].concat(args)).then(function () {
-                        if (typeof _this[asyncFuncName] === 'function') {
-                            _this[asyncFuncName].apply(_this, args).then(function () {
-                                callOnPartials(_this).then(resolve).catch(reject);
-                            }).catch(reject);
-                        } else {
-                            resolve();
-                        }
-                    }).catch(reject);
-                    break;
-                case 'shell':
-                case 'partial':
-                    if (typeof _this[asyncFuncName] === 'function') {
-                        _this[asyncFuncName].apply(_this, args).then(function () {
-                            callOnPartials(_this).then(resolve).catch(reject);
-                        }).catch(reject);
-                    } else {
-                        resolve();
-                    }
-                    break;
-            }
-        });
-
-        this.func('cfs', function (syncFuncName) {
-            var _parent2;
-
-            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-                args[_key2 - 1] = arguments[_key2];
-            }
-
-            var callOnPartials = function callOnPartials(obj) {
-                if (obj.partials) {
-                    var _iteratorNormalCompletion5 = true;
-                    var _didIteratorError5 = false;
-                    var _iteratorError5 = undefined;
-
-                    try {
-                        for (var _iterator5 = obj.partials[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                            var partial = _step5.value;
-
-                            partial.cfs.apply(partial, [syncFuncName].concat(args));
-                        }
-                    } catch (err) {
-                        _didIteratorError5 = true;
-                        _iteratorError5 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                                _iterator5.return();
-                            }
-                        } finally {
-                            if (_didIteratorError5) {
-                                throw _iteratorError5;
-                            }
-                        }
-                    }
-                }
-            };
-
-            // cumulative function call (sync)
-            switch (_this.type) {
-                case 'view':
-                    (_parent2 = _this.parent).cfs.apply(_parent2, [syncFuncName].concat(args));
-                    if (typeof _this[syncFuncName] === 'function') {
-                        _this[syncFuncName].apply(_this, args);
-                    }
-                    callOnPartials(_this);
-                    break;
-                case 'shell':
-                case 'partial':
-                    if (typeof _this[syncFuncName] === 'function') {
-                        _this[syncFuncName].apply(_this, args);
-                    }
-                    callOnPartials(_this);
-                    break;
-            }
         });
     });
 });
@@ -2029,6 +1932,75 @@ define('sys.core.ui.Partial', [use('sys.core.ui.Component')], function (Componen
             base('partial', parent, args);
             _this.$host = $host;
         });
+
+        attr('async');
+        this.func('cfas', function (resolve, reject, asyncFuncName) {
+            for (var _len = arguments.length, args = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+                args[_key - 3] = arguments[_key];
+            }
+
+            var callOnPartials = function callOnPartials(obj) {
+                return new Promise(function (_resolve, _reject) {
+                    if (obj.partials) {
+                        forAsync(obj.partials, function (__resolve, __reject, partial) {
+                            partial.cfas.apply(partial, [asyncFuncName].concat(args)).then(__resolve).catch(__reject);
+                        }).then(_resolve).catch(_reject);
+                    } else {
+                        _resolve();
+                    }
+                });
+            };
+
+            // cumulative function call (async)
+            if (typeof _this[asyncFuncName] === 'function') {
+                _this[asyncFuncName].apply(_this, args).then(function () {
+                    callOnPartials(_this).then(resolve).catch(reject);
+                }).catch(reject);
+            } else {
+                resolve();
+            }
+        });
+
+        this.func('cfs', function (syncFuncName) {
+            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                args[_key2 - 1] = arguments[_key2];
+            }
+
+            var callOnPartials = function callOnPartials(obj) {
+                if (obj.partials) {
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
+                    try {
+                        for (var _iterator = obj.partials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var partial = _step.value;
+
+                            partial.cfs.apply(partial, [syncFuncName].concat(args));
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                _iterator.return();
+                            }
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+                }
+            };
+
+            // cumulative function call (sync)
+            if (typeof _this[syncFuncName] === 'function') {
+                _this[syncFuncName].apply(_this, args);
+            }
+            callOnPartials(_this);
+        });
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Partial.js)
@@ -2053,6 +2025,75 @@ define('sys.core.ui.Shell', [use('sys.core.ui.Component')], function (Component)
 
         attr('protected');
         this.prop('view', null);
+
+        attr('async');
+        this.func('cfas', function (resolve, reject, asyncFuncName) {
+            for (var _len = arguments.length, args = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+                args[_key - 3] = arguments[_key];
+            }
+
+            var callOnPartials = function callOnPartials(obj) {
+                return new Promise(function (_resolve, _reject) {
+                    if (obj.partials) {
+                        forAsync(obj.partials, function (__resolve, __reject, partial) {
+                            partial.cfas.apply(partial, [asyncFuncName].concat(args)).then(__resolve).catch(__reject);
+                        }).then(_resolve).catch(_reject);
+                    } else {
+                        _resolve();
+                    }
+                });
+            };
+
+            // cumulative function call (async)
+            if (typeof _this[asyncFuncName] === 'function') {
+                _this[asyncFuncName].apply(_this, args).then(function () {
+                    callOnPartials(_this).then(resolve).catch(reject);
+                }).catch(reject);
+            } else {
+                resolve();
+            }
+        });
+
+        this.func('cfs', function (syncFuncName) {
+            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                args[_key2 - 1] = arguments[_key2];
+            }
+
+            var callOnPartials = function callOnPartials(obj) {
+                if (obj.partials) {
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
+                    try {
+                        for (var _iterator = obj.partials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var partial = _step.value;
+
+                            partial.cfs.apply(partial, [syncFuncName].concat(args));
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                _iterator.return();
+                            }
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+                }
+            };
+
+            // cumulative function call (sync)
+            if (typeof _this[syncFuncName] === 'function') {
+                _this[syncFuncName].apply(_this, args);
+            }
+            callOnPartials(_this);
+        });
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Shell.js)
@@ -2253,7 +2294,7 @@ define('sys.core.ui.View', [use('[Base]'), use('sys.core.ui.Component'), use('sy
                 if (obj.styles) {
                     obj.$style = document.createElement('style');
                     obj.$style.setAttribute('scoped', '');
-                    obj.$style.innerText = obj.styles;
+                    obj.$style.appendChild(document.createTextNode(obj.styles));
                     obj.$el.prepend(obj.$style);
                 }
             };
@@ -2379,7 +2420,7 @@ define('sys.core.ui.View', [use('[Base]'), use('sys.core.ui.Component'), use('sy
                             for (var _iterator3 = _obj.partials[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                                 var partial = _step3.value;
 
-                                target[partial.id] = partial;
+                                target[partial._.id] = partial;
                                 getPartialBindings(target, partial);
                             }
                         } catch (err) {
@@ -2409,7 +2450,7 @@ define('sys.core.ui.View', [use('[Base]'), use('sys.core.ui.Component'), use('sy
                 getPartialBindings(obj.partials, _this);
 
                 // bind
-                binder = new DataBinder(); // its singleton, so no issue
+                var binder = new DataBinder(); // its singleton, so no issue
                 _bindedView = binder.bind(_this.shell.$el, obj);
             }
         });
@@ -2418,10 +2459,86 @@ define('sys.core.ui.View', [use('[Base]'), use('sys.core.ui.Component'), use('sy
         attr('sealed');
         this.func('unbind', function () {
             if (_bindedView) {
-                binder = new DataBinder(); // its singleton, so no issue
+                var binder = new DataBinder(); // its singleton, so no issue
                 binder.unbind(_bindedView);
                 _bindedView = null;
             }
+        });
+
+        attr('async');
+        this.func('cfas', function (resolve, reject, asyncFuncName) {
+            for (var _len = arguments.length, args = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+                args[_key - 3] = arguments[_key];
+            }
+
+            var _parent;
+
+            var callOnPartials = function callOnPartials(obj) {
+                return new Promise(function (_resolve, _reject) {
+                    if (obj.partials) {
+                        forAsync(obj.partials, function (__resolve, __reject, partial) {
+                            partial.cfas.apply(partial, [asyncFuncName].concat(args)).then(__resolve).catch(__reject);
+                        }).then(_resolve).catch(_reject);
+                    } else {
+                        _resolve();
+                    }
+                });
+            };
+
+            // cumulative function call (async)
+            (_parent = _this.parent).cfas.apply(_parent, [asyncFuncName].concat(args)).then(function () {
+                if (typeof _this[asyncFuncName] === 'function') {
+                    _this[asyncFuncName].apply(_this, args).then(function () {
+                        callOnPartials(_this).then(resolve).catch(reject);
+                    }).catch(reject);
+                } else {
+                    resolve();
+                }
+            }).catch(reject);
+        });
+
+        this.func('cfs', function (syncFuncName) {
+            var _parent2;
+
+            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                args[_key2 - 1] = arguments[_key2];
+            }
+
+            var callOnPartials = function callOnPartials(obj) {
+                if (obj.partials) {
+                    var _iteratorNormalCompletion4 = true;
+                    var _didIteratorError4 = false;
+                    var _iteratorError4 = undefined;
+
+                    try {
+                        for (var _iterator4 = obj.partials[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                            var partial = _step4.value;
+
+                            partial.cfs.apply(partial, [syncFuncName].concat(args));
+                        }
+                    } catch (err) {
+                        _didIteratorError4 = true;
+                        _iteratorError4 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                _iterator4.return();
+                            }
+                        } finally {
+                            if (_didIteratorError4) {
+                                throw _iteratorError4;
+                            }
+                        }
+                    }
+                }
+            };
+
+            // cumulative function call (sync)
+            (_parent2 = _this.parent).cfs.apply(_parent2, [syncFuncName].concat(args));
+            if (typeof _this[syncFuncName] === 'function') {
+                _this[syncFuncName].apply(_this, args);
+            }
+            callOnPartials(_this);
         });
 
         this.prop('title', '');
