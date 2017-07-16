@@ -1,1 +1,1 @@
-define('dummy', function() { return {}; });
+define('dummy', function() { return null; });

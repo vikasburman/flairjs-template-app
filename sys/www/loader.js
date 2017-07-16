@@ -11,8 +11,9 @@
     let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
 
     // config
-    const config = JSON.parse(`{"settings":{"appSettings":{"title":"My Application","version":"1.0.0"},"loader":{"tabletWidth":{"min":600,"max":992}},"routesOrder":{"server":["sys.core"],"client":["sys.core"]}},"sys.core":{"catalog":{},"settings":{"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.Attributes","sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":[],"static":{"favIcon":"images/icon.png","caching":{"enabled":true,"age":86400000}},"view":{"stage":"#stage","container":"#container"}}},"source":{"sys":"sys/modules/","app":"app/modules/","web":"web/modules/","www":"web/www/","syswww":"sys/www/"},"sys.modules/core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Transition":"sys.core.ui.Transition"},"container":{},"routes":{"server":[],"client":[]},"settings":{"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":80,"prod":443},"ssl":{"public":"","private":""},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.comm.bootwares.Attributes"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":[],"static":{"favIcon":"","caching":{"enabled":true,"age":86400000}},"view":{"stage":"#stage","container":"#container"}}},"sys.modules/ui":{"catalog":{"View":"sys.ui.View","SecureView":"sys.ui.SecureView"},"container":{},"routes":{"server":[],"client":[]},"settings":{}}}`);
+    const config = JSON.parse(`{"settings":{"appSettings":{"title":"My Application","version":"1.0.0"},"loader":{"tabletWidth":{"min":600,"max":992}},"routesOrder":{"server":["sys.core"],"client":["sys.core","web.sample"]},"source":{"sys":"sys/modules/","app":"app/modules/","web":"web/modules/","www":"web/www/","syswww":"sys/www/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Transition":"sys.core.ui.Transition"},"container":{},"routes":{"server":[],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":[],"static":{"favIcon":"images/icon.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{"prefix":"ag","preloadData":true,"rootInterface":".","templateDelimiters":["{","}"]}},"view":{"stage":"#stage","container":"#container"}},"web.sample":{"routes":{"client":[{"url":"home","class":"web.sample.views.Home"}]}}}`);
     config.env = {
+        vars: {},
         isServer: isServer,
         isDevice: false,
         isCordova: false,
@@ -25,15 +26,17 @@
         require: {
             baseUrl: '/',
             paths: {
-                text: './libs/text.js',
-                json: './libs/json.js',
-                css: './libs/css.js'
+                text: './libs/text',
+                json: './libs/json',
+                css: './libs/css'
             },
             bundles: {}
         }
     };
-    Object.assign(config.env.require.paths, JSON.parse('{"sys/core":"sys/core/index.asm","sys/ui":"sys/ui/index.asm","web/sample":"web/sample/index.asm"}'));
-    Object.assign(config.env.require.bundles, JSON.parse('{"sys/core":["sys.core.Base","sys.core.ErrorInfo","sys.core.app.App","sys.core.app.Client","sys.core.app.IApp","sys.core.app.Server","sys.core.boot.Client","sys.core.boot.IBootware","sys.core.boot.Server","sys.core.bootwares.Attributes","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Router","sys.core.comm.ClientRequest","sys.core.comm.ClientResponse","sys.core.comm.Request","sys.core.comm.Response","sys.core.comm.ServerRequest","sys.core.comm.ServerResponse","sys.core.ui.Component","sys.core.ui.Partial","sys.core.ui.Shell","sys.core.ui.Transition","sys.core.ui.View","sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.Middlewares","sys.core.bootwares.server.StaticServer"],"sys/ui":["sys.ui.SecureView","sys.ui.View"],"web/sample":["web.sample.partials.SimpleList","web.sample.shells.Full","web.sample.views.Home"]}'));
+    config.env.set = (varName, value) => { config.env.vars[varName] = value; };
+    config.env.get = (varName, defaultValue = null) => { return config.env.vars[varName] || defaultValue; };
+    Object.assign(config.env.require.paths, JSON.parse('{"sys/core":"sys/core/index.asm","web/sample":"web/sample/index.asm"}'));
+    Object.assign(config.env.require.bundles, JSON.parse('{"sys/core":["sys.core.Base","sys.core.ErrorInfo","sys.core.app.App","sys.core.app.Client","sys.core.app.IApp","sys.core.app.Server","sys.core.boot.Client","sys.core.boot.IBootware","sys.core.boot.Server","sys.core.bootwares.Attributes","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Router","sys.core.comm.ClientRequest","sys.core.comm.ClientResponse","sys.core.comm.Handler","sys.core.comm.Request","sys.core.comm.Response","sys.core.comm.ServerRequest","sys.core.comm.ServerResponse","sys.core.ui.Adapter","sys.core.ui.Binder","sys.core.ui.Component","sys.core.ui.Formatter","sys.core.ui.Partial","sys.core.ui.Shell","sys.core.ui.Transition","sys.core.ui.View","sys.core.bootwares.client.DataBinder","sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.Middlewares","sys.core.bootwares.server.StaticServer","sys.core.ui.formatters.Percent"],"web/sample":["web.sample.partials.SimpleList","web.sample.shells.Full","web.sample.views.Home"]}'));
     if (!config.env.isServer) {
         if (window.document) {
             config.env.isDevice = (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1);
@@ -149,15 +152,6 @@
             _path = nsRoot + parts.join('/');
             if (!isAsServer) { _path = _path.replace('modules/', '').replace('www/', ''); } // remove these invisible parts of path on client
             if (!isAsServer) { _path = '/' + _path; } // add root relativity
-            if (!isAsServer) {
-                if (_path.endsWith('.json')) {
-                    _path = 'json!' + _path;
-                } else if (_path.endsWith('.css')) {
-                    _path = 'css!' + _path;
-                } else if (_path.endsWith('.html')) {
-                    _path = 'text!' + _path;
-                }
-            }
             return _path;
         };
 
@@ -224,22 +218,33 @@
 
         // type #4: assembly files path
         if (_path.startsWith('sys/')) {
-            _path = getAssemblyFilePath(_path, config.source.sys);
+            _path = getAssemblyFilePath(_path, config.settings.source.sys);
         } else if (_path.startsWith('app/')) {
-            _path = getAssemblyFilePath(_path, config.source.app);
+            _path = getAssemblyFilePath(_path, config.settings.source.app);
         } else if (_path.startsWith('web/')) {
-            _path = getAssemblyFilePath(_path, config.source.web);
+            _path = getAssemblyFilePath(_path, config.settings.source.web);
         } else if (_path.startsWith('www/')) {
-            _path = getAssemblyFilePath(_path, config.source.www);
+            _path = getAssemblyFilePath(_path, config.settings.source.www);
         }
 
         // type #3: namespaced package members path
         if (_path.startsWith('sys.')) {
-            _path = getAssemblyMemberPath(_path, config.source.sys, isMock);
+            _path = getAssemblyMemberPath(_path, config.settings.source.sys, isMock);
         } else if (_path.startsWith('app.')) {
-            _path = getAssemblyMemberPath(_path, config.source.app, isMock);
+            _path = getAssemblyMemberPath(_path, config.settings.source.app, isMock);
         } else if (_path.startsWith('web.')) {
-            _path = getAssemblyMemberPath(_path, config.source.web, isMock);
+            _path = getAssemblyMemberPath(_path, config.settings.source.web, isMock);
+        }
+
+        // add loader
+        if (!isAsServer) {
+            if (_path.endsWith('.json')) {
+                _path = 'json!' + _path;
+            } else if (_path.endsWith('.css')) {
+                _path = 'css!' + _path;
+            } else if (_path.endsWith('.html')) {
+                _path = 'text!' + _path;
+            }
         }
 
         // type #1, if nothing was of match OR processed result
@@ -253,7 +258,7 @@
      * @return {promise} - promise object that will resolve after requiring paths.
      * @desc Require given module with a uniform syntax both on server and on client.
      * @example
-     *    include(use('sys.core.Base'), use('sys.core.IBootware')], (Base, IBootware) => { });
+     *    include([use('sys.core.Base'), use('sys.core.IBootware')], (Base, IBootware) => { });
      */       
     const include = (paths, isReturnAsArray = false) => {
         return new Promise((resolve, reject) => {
@@ -285,15 +290,15 @@
 
      /**
      * @global
-     * @param {string} key - which setting to read to. (format: [{assemblyPath}:]{settingKey})
+     * @param {string} key - which setting to read to. (format: [{assemblyName}:]{settingKey})
      * @param {any} [defaultValue] - what value to return, if setting not found.
      * @return {any} - setting value.
-     * @desc Reads setting value.
+     * @desc Reads setting value from stiched cand embedded onfiguration data.
      * @example
-     * 1. let value1 = settings('sys.core:level1');
-     * 2. let value2 = settings('sys.core:level1.level2');
-     * 3. let value3 = settings('level1.level2');
-     * 4. let value4 = settings(':level0');
+     * 1. let value1 = settings('sys.core:level1'); --> will read sys.core.settings.level1
+     * 2. let value2 = settings('sys.core:level1.level2'); --> will read sys.core.settings.level1.level2
+     * 3. let value3 = settings(':level1.level2'); --> will read global settings.level1.level2
+     * 4. let value4 = settings('level1.level2'); --> will read global settings.level1.level2
      */       
     const settings = (key, defaultValue = null) => {
         let obj = null;
@@ -303,8 +308,10 @@
                 settingKey = items[1];
             key = settingKey;
             if (asmKey) {
-                if (config[asmKey] && config[asmKey].settings) {
-                    obj = config[asmKey].settings;
+                if (config[asmKey]) {
+                    obj = config[asmKey];
+                } else {
+                    throw `${asmKey}.${settingKey} configuration not found.`
                 }
             } else {
                 obj = config.settings;
@@ -340,17 +347,13 @@
             };
             let processItems = (items, onDone) => {
                 let item = items.shift(); 
-                if (item) {
-                    doProcess(item, () => {
-                        if (items.length === 0) {
-                            onDone();
-                        } else {
-                            processItems(items, onDone);
-                        }
-                    });
-                } else {
-                    onDone();
-                }
+                doProcess(item, () => {
+                    if (items.length === 0) {
+                        onDone();
+                    } else {
+                        processItems(items, onDone);
+                    }
+                });
             };
             if (items.length > 0) {
                 processItems(items.slice(), resolve);
@@ -380,19 +383,67 @@
     // expose this global API
     let g = (isServer ? global : window);
     g.config = config;
-    g.use = use;
-    g.include = include;
+    g.use = use; g.include = include;
     g.settings = settings;
-    g.forAsync = forAsync; 
-    g.replaceAll = replaceAll;
+    g.forAsync = forAsync; g.replaceAll = replaceAll; 
     g.App = null;
 
+    // extend environment
+    config.env.loadScript = (url) => {
+        return new Promise((resolve, reject) => {
+            _loadScript(url, resolve, reject);
+        });
+    };
+    config.env.addShim = (shim, deps) => {
+        // shim: { name: '', path: '' }
+        // deps: [ { name: '', path: '' } ]
+        let requireConfig = config.env.require,
+            requireShim = requireConfig.shim || {},
+            requirePaths = requireConfig.paths || {};
+        
+        // add shim path
+        if (requirePaths[shim.name] || requireShim[shim.name]) { throw `${shim.name} already added.`; }
+        requirePaths[shim.name] = use(shim.path).replace('.js', '');       
+        requireShim[shim.name] = {
+            exports: shim.name
+        };
+
+        // add dependencies
+        if (deps) {
+            let allDeps = [];
+            for(let dep of deps) {
+                if (requirePaths[dep.name] || requireShim[dep.name]) { throw `${dep.name} already added.`; }
+                allDeps.push(dep.name);
+                requirePaths[dep.name] = use(dep.path).replace('.js', '');
+                requireShim[dep.name] = {
+                    exports: dep.name
+                };
+            }
+            requireShim[shim.name].deps = allDeps;
+        }
+
+        // update config
+        requireConfig.shim = requireShim;
+        requireConfig.paths = requirePaths;
+        require.config(requireConfig); // update config
+    };
+    config.env.queryStringToObject = (qs = '') => {
+        let parts = qs.split('&'),
+                    items = null,
+                    args = {};
+        for(let part of parts) {
+            items = part.split('=');
+            args[items[0]] = items[1].trim();
+        }
+        return args;
+    };
+
     // setup
-    const loadScript = (src, success, error) => {
+    const _loadScript = (src, success, error) => {
         let script = window.document.createElement('script');
         script.onload = success; script.onerror = error; script.src = src; 
         window.document.head.appendChild(script);
-    };    
+    };
     const onError = (err) => { 
         if (!config.env.isProd) { 
             console.log(`boot failed. (${err.toString()})`); 
@@ -479,6 +530,6 @@
     if (isServer) {
         onLoad();
     } else {
-        loadScript('./libs/require.js', onLoad, onError);
+        _loadScript('./libs/require.js', onLoad, onError);
     }
 })();

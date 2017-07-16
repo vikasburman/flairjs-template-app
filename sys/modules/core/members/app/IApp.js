@@ -18,6 +18,13 @@ define(() => {
          */ 
         this.func('auth');
 
+        /**
+         * @param {string} url - url to send to router
+         * @return {void} - none
+         * @desc Initiate routing for given url.
+         */ 
+        this.func('navigate');
+
         this.prop('title');
         this.prop('version');
     });

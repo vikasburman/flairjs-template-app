@@ -7,5 +7,10 @@ define([
      * @desc Starts server application.
      */         
     return Class('sys.core.app.Server', App, function(attr) {
+        attr('override');
+        this.func('navigate', (base, url) => {
+            base();
+            // TODO: via that npm package
+        });        
     });
 });

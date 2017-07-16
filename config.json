@@ -15,60 +15,26 @@
                 "sys.core"
             ],
             "client": [
-                "sys.core"
+                "sys.core",
+                "web.sample"
             ]
         }
     },
 
     "sys.core": {
-        "catalog": {
+        "static": {
+            "favIcon": "images/icon.png",
+            "caching": {  
+                "enabled": true
+            }  
+        },            
+        "port": {
+            "dev": 8080,
+            "prod": 8080
         },
-        "settings": {
-            "express": {
-                "case sensitive routing": false,
-                "strict routing": false
-            },            
-            "port": {
-                "dev": 8080,
-                "prod": 8080
-            },            
-            "ssl": {
-                "public": "./cert.pem",
-                "private": "./key.pem"
-            },
-            "response": {
-                "headers": [
-                    { "name": "Access-Control-Allow-Credentials", "value": true },
-                    { "name": "Access-Control-Allow-Origin", "value": "*" },
-                    { "name": "Access-Control-Allow-Methods", "value": "GET, PUT, POST, DELETE" },
-                    { "name": "Access-Control-Allow-Headers", "value": "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request" }
-                ]
-            },
-            "bootwares": [
-                "sys.core.bootwares.Attributes",
-                "sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies",
-                "sys.core.bootwares.server.StaticServer | ",
-                "sys.core.bootwares.Router",
-                "sys.core.bootwares.ErrorHandler"
-            ],
-            "middlewares": [
-                { "name": "morgan", "args": ["dev"] },
-                { "name": "compression" },
-                { "name": "cookie-parser" }
-            ],
-            "dependencies": [
-            ],
-            "static": {
-                "favIcon": "images/icon.png",
-                "caching": {  
-                    "enabled": true,
-                    "age": 86400000
-                }  
-            },
-            "view": {
-                "stage": "#stage",
-                "container": "#container"                
-            }
-        }
+        "ssl": {
+            "public": "./cert.pem",
+            "private": "./key.pem"
+        }   
     }
 }

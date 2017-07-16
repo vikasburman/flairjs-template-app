@@ -17,13 +17,13 @@ define(() => {
                 }                  
             }
             if (details) { this.details = details; }
-            if (!this.env.isProd && this.raw) {
+            if (!config.env.isProd && this.raw) {
                 this.stack = this.raw.stack || this.raw.responseText;
             }
         });
 
-        this.prop('isServerError', this.env.isServer);
-        this.prop('code', this.env.isServer ? 'server_error' : 'client_error');
+        this.prop('isServerError', config.env.isServer);
+        this.prop('code', config.env.isServer ? 'server_error' : 'client_error');
         this.prop('desc', '');
         this.prop('details', '');
         this.prop('raw', null);

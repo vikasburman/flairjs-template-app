@@ -1,9 +1,7 @@
 define([
     use('[Base]'),
-    use('[IBootware]'),
-    use('sys.core.comm.ServerRequest | sys.core.comm.ClientRequest'),
-    use('sys.core.comm.ServerResponse | sys.core.comm.ClientResponse')
-], (Base, IBootware, Request, Response) => {
+    use('[IBootware]')
+], (Base, IBootware) => {
     /**
      * @class sys.core.bootwares.Attributes
      * @classdesc sys.core.bootwares.Attributes
@@ -176,17 +174,17 @@ define([
                     let fn = descriptor.value,
                         opts = this.args[0] || {},
                         auth = opts.auth || false,
-                        access = opts.access || [],
+                        access = opts.access || null,
                         fnArgs = null;
-                    descriptor.value = function(req, res) {
+                    descriptor.value = function(request) {
                         // authenticate and serve request
                         return new Promise((resolve, reject) => {
-                            let request = new Request(req, new Response(res), access);
                             let onAuth = () => {
                                 fnArgs = [resolve, reject, request];
                                 fn(...fnArgs);                                    
                             };
                             if (auth) {
+                                request.access = access; 
                                 if (App) {
                                     App.auth(request).then(onAuth).catch(reject);
                                 } else {

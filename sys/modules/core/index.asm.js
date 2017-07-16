@@ -77,13 +77,13 @@ define('sys.core.ErrorInfo', function () {
             if (details) {
                 _this.details = details;
             }
-            if (!_this.env.isProd && _this.raw) {
+            if (!config.env.isProd && _this.raw) {
                 _this.stack = _this.raw.stack || _this.raw.responseText;
             }
         });
 
-        this.prop('isServerError', this.env.isServer);
-        this.prop('code', this.env.isServer ? 'server_error' : 'client_error');
+        this.prop('isServerError', config.env.isServer);
+        this.prop('code', config.env.isServer ? 'server_error' : 'client_error');
         this.prop('desc', '');
         this.prop('details', '');
         this.prop('raw', null);
@@ -125,6 +125,8 @@ define('sys.core.app.App', [use('[Base]'), use('sys.core.app.IApp')], function (
         attr('async');
         this.func('auth', this.noopAsync);
 
+        this.func('navigate', this.noop);
+
         attr('readonly');
         this.prop('title', '');
 
@@ -142,7 +144,13 @@ define('sys.core.app.Client', [use('sys.core.app.App')], function (App) {
      * @classdesc sys.core.app.Client
      * @desc Starts client application.
      */
-    return Class('sys.core.app.Client', App, function (attr) {});
+    return Class('sys.core.app.Client', App, function (attr) {
+        attr('override');
+        this.func('navigate', function (base, url) {
+            base();
+            document.location.hash = url;
+        });
+    });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/app/Client.js)
 'use strict';
@@ -168,6 +176,13 @@ define('sys.core.app.IApp', function () {
      */
     this.func('auth');
 
+    /**
+     * @param {string} url - url to send to router
+     * @return {void} - none
+     * @desc Initiate routing for given url.
+     */
+    this.func('navigate');
+
     this.prop('title');
     this.prop('version');
   });
@@ -182,7 +197,13 @@ define('sys.core.app.Server', [use('sys.core.app.App')], function (App) {
      * @classdesc sys.core.app.Server
      * @desc Starts server application.
      */
-    return Class('sys.core.app.Server', App, function (attr) {});
+    return Class('sys.core.app.Server', App, function (attr) {
+        attr('override');
+        this.func('navigate', function (base, url) {
+            base();
+            // TODO: via that npm package
+        });
+    });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/app/Server.js)
 'use strict';
@@ -241,7 +262,7 @@ define('sys.core.boot.Client', [use('[Base]'), use('[IBootware]'), use('[App]'),
             // boot configured bootwares
             include(_this.bootwares, true).then(function (items) {
                 forAsync(items, function (_resolve, _reject, Bootware) {
-                    if (Bootware) {
+                    if (Bootware && typeof Bootware === 'function') {
                         var bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.boot().then(_resolve).catch(_reject);
@@ -252,8 +273,7 @@ define('sys.core.boot.Client', [use('[Base]'), use('[IBootware]'), use('[App]'),
                         _resolve();
                     }
                 }).then(function () {
-                    // boot client itself
-                    // (nothing as of now)
+                    // nothins as such
 
                     // done
                     resolve();
@@ -263,10 +283,16 @@ define('sys.core.boot.Client', [use('[Base]'), use('[IBootware]'), use('[App]'),
 
         attr('async');
         this.func('ready', function (resolve, reject) {
+            // instantiate app in global variable
+            App = as(new ClientApp(), IApp);
+            if (!App) {
+                reject('Invalid app definition.');return;
+            }
+
             // ready configured bootwares
             include(_this.bootwares, true).then(function (items) {
                 forAsync(items, function (_resolve, _reject, Bootware) {
-                    if (Bootware) {
+                    if (Bootware && typeof Bootware === 'function') {
                         var bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.ready().then(_resolve).catch(_reject);
@@ -281,23 +307,19 @@ define('sys.core.boot.Client', [use('[Base]'), use('[IBootware]'), use('[App]'),
                     _this.env.isReady = true;
                     console.log(_this.env.isProd ? 'ready: (client, production)' : 'ready: (client, dev)');
 
-                    // load client app
-                    var clientApp = as(new ClientApp(), IApp);
-                    if (clientApp) {
-                        // set
-                        App = clientApp;
+                    // start (if not test mode)
+                    if (!_this.env.isTest) {
+                        App.start().then(function () {
+                            console.log(App.title + ' - ' + App.version);
 
-                        // start (if not test mode)
-                        if (!_this.env.isTest) {
-                            clientApp.start().then(function () {
-                                console.log(App.title + ' - ' + App.version);
-                                resolve();
-                            }).catch(reject);
-                        } else {
+                            // perform default action: open home view
+                            App.navigate('home');
+
+                            // done
                             resolve();
-                        }
+                        }).catch(reject);
                     } else {
-                        reject('Invalid app definition.');
+                        resolve();
                     }
                 }).catch(reject);
             }).catch(reject);
@@ -434,7 +456,7 @@ define('sys.core.boot.Server', [use('[Base]'), use('[IBootware]'), use('[App]'),
             // boot configured bootwares
             include(_this.bootwares, true).then(function (items) {
                 forAsync(items, function (_resolve, _reject, Bootware) {
-                    if (Bootware) {
+                    if (Bootware && typeof Bootware === 'function') {
                         var bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.boot(_this.app).then(_resolve).catch(_reject);
@@ -481,10 +503,16 @@ define('sys.core.boot.Server', [use('[Base]'), use('[IBootware]'), use('[App]'),
             // setup event handlers
             _this.server.on('error', _this.onError);
             _this.server.on('listening', function () {
+                // instantiate app in global variable
+                App = as(new ServerApp(_this.app), IApp);
+                if (!App) {
+                    reject('Invalid app definition.');return;
+                }
+
                 // ready configured bootwares
                 include(_this.bootwares, true).then(function (items) {
                     forAsync(items, function (_resolve, _reject, Bootware) {
-                        if (Bootware) {
+                        if (Bootware && typeof Bootwate === 'function') {
                             var bootware = as(new Bootware(), IBootware);
                             if (bootware) {
                                 bootware.ready(_this.app).then(_resolve).catch(_reject);
@@ -499,23 +527,19 @@ define('sys.core.boot.Server', [use('[Base]'), use('[IBootware]'), use('[App]'),
                         _this.env.isReady = true;
                         console.log(_this.env.isProd ? 'ready: (server, production)' : 'ready: (server, dev)');
 
-                        // load server app
-                        var serverApp = as(new ServerApp(_this.app), IApp);
-                        if (serverApp) {
-                            // set
-                            App = serverApp;
+                        // start (if not test mode)
+                        if (!_this.env.isTest) {
+                            App.start().then(function () {
+                                console.log(App.title + ' - ' + App.version);
 
-                            // start (if not test mode)
-                            if (!_this.env.isTest) {
-                                serverApp.start().then(function () {
-                                    console.log(App.title + ' - ' + App.version);
-                                    resolve();
-                                }).catch(reject);
-                            } else {
+                                // perform default action: assume default is requested
+                                App.navigate('/');
+
+                                // done
                                 resolve();
-                            }
+                            }).catch(reject);
                         } else {
-                            reject('Invalid app definition.');
+                            resolve();
                         }
                     }).catch(reject);
                 }).catch(reject);
@@ -532,7 +556,7 @@ define('sys.core.boot.Server', [use('[Base]'), use('[IBootware]'), use('[App]'),
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/bootwares/Attributes.js)
-define('sys.core.bootwares.Attributes', [use('[Base]'), use('[IBootware]'), use('sys.core.comm.ServerRequest | sys.core.comm.ClientRequest'), use('sys.core.comm.ServerResponse | sys.core.comm.ClientResponse')], function (Base, IBootware, Request, Response) {
+define('sys.core.bootwares.Attributes', [use('[Base]'), use('[IBootware]')], function (Base, IBootware) {
     /**
      * @class sys.core.bootwares.Attributes
      * @classdesc sys.core.bootwares.Attributes
@@ -724,17 +748,17 @@ define('sys.core.bootwares.Attributes', [use('[Base]'), use('[IBootware]'), use(
                     var fn = descriptor.value,
                         opts = _this2.args[0] || {},
                         auth = opts.auth || false,
-                        access = opts.access || [],
+                        access = opts.access || null,
                         fnArgs = null;
-                    descriptor.value = function (req, res) {
+                    descriptor.value = function (request) {
                         // authenticate and serve request
                         return new Promise(function (resolve, reject) {
-                            var request = new Request(req, new Response(res), access);
                             var onAuth = function onAuth() {
                                 fnArgs = [resolve, reject, request];
                                 fn.apply(undefined, _toConsumableArray(fnArgs));
                             };
                             if (auth) {
+                                request.access = access;
                                 if (App) {
                                     App.auth(request).then(onAuth).catch(reject);
                                 } else {
@@ -864,16 +888,6 @@ define('sys.core.bootwares.ErrorHandler', [use('[Base]'), use('[IBootware]'), us
                         next(err);
                     });
                 }
-            } else {
-                // setup global error handler
-                window.onerror = function (desc, url, line, col, err) {
-                    app.onError(new ErrorInfo('fatal_error', desc + ' at: ' + url + ', ' + line + ':' + col, '', err));
-                };
-
-                // global requirejs error handler
-                require.onError = function (err) {
-                    app.onError(new ErrorInfo(err));
-                };
             }
 
             // dome
@@ -881,14 +895,29 @@ define('sys.core.bootwares.ErrorHandler', [use('[Base]'), use('[IBootware]'), us
         });
 
         attr('async');
-        this.func('ready', this.noopAsync);
+        this.func('ready', function (resolve, reject) {
+            if (!_this.env.isServer) {
+                // setup global error handler
+                window.onerror = function (desc, url, line, col, err) {
+                    this.onError(new ErrorInfo('fatal_error', desc + ' at: ' + url + ', ' + line + ':' + col, '', err));
+                };
+
+                // global requirejs error handler
+                require.onError = function (err) {
+                    this.onError(new ErrorInfo(err));
+                };
+            }
+
+            // done
+            resolve();
+        });
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/bootwares/ErrorHandler.js)
 'use strict';
 
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/bootwares/Router.js)
-define('sys.core.bootwares.Router', [use('[Base]'), use('[IBootware]'), use('express | sys/core/libs/pathparser{.min}.js')], function (Base, IBootware, RouteManager) {
+define('sys.core.bootwares.Router', [use('[Base]'), use('[IBootware]'), use('express | sys/core/libs/pathparser{.min}.js'), use('sys.core.comm.ServerRequest | sys.core.comm.ClientRequest'), use('sys.core.comm.Handler')], function (Base, IBootware, RouteManager, Request, Handler) {
     /**
      * @class sys.core.bootwares.Router
      * @classdesc sys.core.bootwares.Router
@@ -903,20 +932,7 @@ define('sys.core.bootwares.Router', [use('[Base]'), use('[IBootware]'), use('exp
                 routes = [],
                 router = _this.env.isServer ? RouteManager.Router() : new RouteManager({}),
                 theRoute = null,
-                routesKey = _this.env.isServer ? ':routesOrder.server' : ':routesOrder.client',
-                theHandler = function theHandler(url, verb, cls, func, req, res) {
-                include([use(cls)]).then(function (Handler) {
-                    var handler = new Handler(),
-                        handlerInfo = Reflector.get(handler),
-                        funcInfo = handlerInfo.getMember(func);
-                    if (!!funcInfo || funcInfo.getMemberType() !== 'func' || !funcInfo.hasAttribute('endpoint')) {
-                        throw 'Invalid handler endpoint for: ' + url + '#' + verb;
-                    }
-                    handler[func](req, res);
-                }).catch(function (err) {
-                    throw err;
-                });
-            };
+                routesKey = _this.env.isServer ? ':routesOrder.server' : ':routesOrder.client';
 
             // each route definition (both on server and client) is as:
             // { "url": "", "verb": "", "class": "", "func": ""}
@@ -929,8 +945,9 @@ define('sys.core.bootwares.Router', [use('[Base]'), use('[IBootware]'), use('exp
             //  on client, the view class that represents this route
             // func: 
             //  on server, the function name of the class that handles this
-            //  on client, this is fixed as 'mount'
+            //  on client, this is fixed as 'navigate'
             routesOrder = _this.settings(routesKey);
+            routesKey = _this.env.isServer ? ':routes.server' : ':routes.client';
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
@@ -942,21 +959,35 @@ define('sys.core.bootwares.Router', [use('[Base]'), use('[IBootware]'), use('exp
                     routes = _this.settings(routesOf + routesKey, []);
 
                     var _loop = function _loop(route) {
-                        if (route.url && route.class && route.func) {
+                        if (route.url && route.class) {
                             if (_this.env.isServer) {
-                                theRoute = router.route(route.url);
-                                if (['get', 'post', 'put', 'delete'].indexOf(verb) === -1) {
-                                    throw 'Unknown verb for: ' + route.url;
+                                if (route.func && route.verb) {
+                                    theRoute = router.route(route.url);
+                                    if (['get', 'post', 'put', 'delete'].indexOf(route.verb) === -1) {
+                                        throw 'Unknown verb for: ' + route.url;
+                                    }
+                                    theRoute[route.verb](function (req, res) {
+                                        var request = new Request(route.verb, req, res),
+                                            handler = new Handler(route.class, route.func);
+                                        handler.handle(request).catch(function (err) {
+                                            throw err;
+                                        });
+                                    });
+                                } else {
+                                    throw 'Invalid route definiton: ' + url + '#' + verb;
                                 }
-                                theRoute[verb](function (req, res) {
-                                    theHandler(route.url, verb, route.class, route.func, req, res);
-                                });
                             } else {
                                 router.add(route.url, function () {
                                     // "this"" will have all route values (e.g., abc/xyz when resolved against abc/:name will have name: 'xyz' in this object)
-                                    theHandler(route.url, '', route.class, 'navigate', this, null);
+                                    var request = new Request(route.url, this),
+                                        handler = new Handler(route.class, 'navigate');
+                                    handler.handle(request).catch(function (err) {
+                                        throw err;
+                                    });
                                 });
                             }
+                        } else {
+                            throw 'Invalid route definiton: ' + url + '#' + verb;
                         }
                     };
 
@@ -1031,15 +1062,10 @@ define('sys.core.comm.ClientRequest', [use('sys.core.comm.Request')], function (
      * @desc Request information (on client).
      */
     return Class('sys.core.comm.ClientRequest', Request, function (attr) {
-        var _this = this;
-
         attr('override');
         attr('sealed');
-        this.func('constructor', function (base, req, response, access) {
-            base(req, null, access); // no need to send response in a client request, it does not apply here
-            _this.url = req.url;
-            _this.args = req; // if url is -> abc/:name, .name will be available here
-            _this.query = req; // query strings, if any
+        this.func('constructor', function (base, url, args) {
+            base(url, args);
         });
     });
 });
@@ -1062,7 +1088,7 @@ define('sys.core.comm.ClientResponse', [use('sys.core.comm.Response')], function
             base(res);
             _this.error = err || null;
             _this.data = data;
-            _this.isError = !res.ok;
+            _this.isError = err ? true : false;
             _this.isRedirected = res.redirected;
             _this.status = res.status;
             _this.statusText = res.statusText;
@@ -1097,6 +1123,47 @@ define('sys.core.comm.ClientResponse', [use('sys.core.comm.Response')], function
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/comm/ClientResponse.js)
 'use strict';
 
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/comm/Handler.js)
+define('sys.core.comm.Handler', [use('[Base]')], function (Base) {
+    /**
+     * @class sys.core.comm.Handler
+     * @classdesc sys.core.comm.Handler
+     * @desc Handler information.
+     */
+    return Class('sys.core.comm.Handler', Base, function (attr) {
+        var _this = this;
+
+        attr('override');
+        attr('sealed');
+        this.func('constructor', function (base, className, funcName) {
+            base();
+            _this.className = className;
+            _this.funcName = funcName;
+        });
+
+        attr('private');
+        this.prop('className', null);
+
+        attr('private');
+        this.prop('funcName', null);
+
+        attr('async');
+        this.func('handle', function (resolve, reject, request) {
+            include([use(_this.className)]).then(function (Handler) {
+                var handler = new Handler(),
+                    handlerInfo = Reflector.get(handler),
+                    funcInfo = handlerInfo.getMember(_this.funcName);
+                if (!funcInfo || funcInfo.getMemberType() !== 'func' || !funcInfo.hasAttribute('endpoint')) {
+                    throw _this.env.isServer ? 'Invalid handler endpoint for: ' + request.url + '#' + request.verb : 'Invalid handler endpoint for: ' + request.url;
+                }
+                handler[_this.funcName](request).then(resolve).catch(reject);
+            }).catch(reject);
+        });
+    });
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/comm/Handler.js)
+'use strict';
+
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/comm/Request.js)
 define('sys.core.comm.Request', [use('[Base]')], function (Base) {
     /**
@@ -1109,22 +1176,25 @@ define('sys.core.comm.Request', [use('[Base]')], function (Base) {
 
         attr('override');
         attr('abstract');
-        this.func('constructor', function (base, req, res, access) {
+        this.func('constructor', function (base, url, args) {
             base();
-            _this.access = access;
+            _this.url = url;
+            _this.args = args; // if url is -> abc/:name, .name will be available here
         });
 
         attr('readonly');
-        this.prop('url', null);
-
-        attr('readonly');
-        this.prop('access', null);
-
-        attr('readonly');
-        this.prop('query', null);
+        this.prop('url', '');
 
         attr('readonly');
         this.prop('args', null);
+
+        attr('readonly');
+        attr('once');
+        this.prop('access', null);
+
+        attr('readonly');
+        attr('once');
+        this.prop('query', null);
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/comm/Request.js)
@@ -1155,7 +1225,7 @@ define('sys.core.comm.Response', [use('[Base]')], function (Base) {
 'use strict';
 
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/comm/ServerRequest.js)
-define('sys.core.comm.ServerRequest', [use('sys.core.comm.Request')], function (Request) {
+define('sys.core.comm.ServerRequest', [use('sys.core.comm.Request'), use('sys.core.comm.ServerResponse')], function (Request, Response) {
     /**
      * @class sys.core.comm.ServerRequest
      * @classdesc sys.core.comm.ServerRequest
@@ -1166,20 +1236,26 @@ define('sys.core.comm.ServerRequest', [use('sys.core.comm.Request')], function (
 
         attr('override');
         attr('sealed');
-        this.func('constructor', function (base, req, response, access) {
-            base(req, response, access);
+        this.func('constructor', function (base, verb, req, res) {
+            base(req.originalUrl, req.params);
+            _this.verb = verb;
             _this.req = req;
-            _this.response = response;
+            _this.res = res;
+            _this.response = new Response(res);
             _this.data = req.body;
             _this.isSecure = req.secure;
             _this.isFresh = req.fresh;
-            _this.url = req.originalUrl;
-            _this.args = req.params; // if url is -> abc/:name, .name will be available here
-            _this.query = req.query; // query strings, if any
+            _this.query = _this.env.queryStringToObject(req.query); // query strings, if any
         });
 
         attr('private');
+        this.prop('verb', '');
+
+        attr('private');
         this.prop('req', null);
+
+        attr('private');
+        this.prop('res', null);
 
         attr('readonly');
         this.prop('response', null);
@@ -1354,6 +1430,99 @@ define('sys.core.comm.ServerResponse', [use('sys.core.comm.Response')], function
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/comm/ServerResponse.js)
 'use strict';
 
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Adapter.js)
+define('sys.core.ui.Adapter', [use('[Base]'), use('sys/core/libs/rivets{.min}.js')], function (Base, rivets) {
+    /**
+     * @class sys.core.ui.Adapter
+     * @classdesc sys.core.ui.Adapter
+     * @desc Adapter base class to define custom adapters for rivets.
+     */
+    return Class('sys.core.ui.Adapter', Base, function (attr) {
+        var _this = this;
+
+        attr('override');
+        attr('abstract');
+        this.func('constructor', function (base) {
+            base();
+
+            // validate
+            if (!_this.name) {
+                throw 'Adapter name is not defined. (' + _this._.name + ')';
+            }
+
+            // define adapter
+            if (!rivets.adapters[_this.name]) {
+                rivets.adapters[_this.name] = {
+                    observe: _this.observe,
+                    unobserve: _this.unobserve,
+                    get: _this.get,
+                    set: _this.set
+                };
+            }
+        });
+
+        this.prop('name', '');
+        this.func('observe', this.noop);
+        this.func('unobserve', this.noop);
+        this.func('get', this.noop);
+        this.func('set', this.noop);
+    });
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Adapter.js)
+'use strict';
+
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Binder.js)
+define('sys.core.ui.Binder', [use('[Base]'), use('sys/core/libs/rivets{.min}.js')], function (Base, rivets) {
+    /**
+     * @class sys.core.ui.Binder
+     * @classdesc sys.core.ui.Binder
+     * @desc Binder base class to define custom binders for rivets.
+     */
+    return Class('sys.core.ui.Binder', Base, function (attr) {
+        var _this = this;
+
+        attr('override');
+        attr('abstract');
+        this.func('constructor', function (base) {
+            base();
+
+            // validate
+            if (!_this.name) {
+                throw 'Binder name is not defined. (' + _this._.name + ')';
+            }
+
+            // define binder
+            if (!rivets.binders[_this.name]) {
+                if (!_this.isTwoWay) {
+                    // one-way binder
+                    rivets.binders[_this.name] = _this.routine;
+                } else {
+                    // two-way binder
+                    rivets.binders[_this.name] = {
+                        bind: _this.bind,
+                        unbind: _this.unbind,
+                        routine: _this.routine,
+                        getValue: _this.getValue,
+                        publishes: _this.publishes,
+                        block: _this.block
+                    };
+                }
+            }
+        });
+
+        this.prop('name', '');
+        this.func('bind', this.noop);
+        this.func('unbind', this.noop);
+        this.func('routine', this.noop);
+        this.func('getValue', this.noop);
+        this.func('isTwoWay', false);
+        this.prop('publishes', false);
+        this.prop('block', false);
+    });
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Binder.js)
+'use strict';
+
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Component.js)
 define('sys.core.ui.Component', [use('[Base]')], function (Base) {
     /**
@@ -1374,114 +1543,132 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
         });
 
         var _isInit = false;
-        attr('async');
         attr('sealed');
+        attr('async');
         this.func('init', function (resolve, reject) {
             if (_isInit) {
                 resolve();return;
             }
-            _this.beforeInit().then(function () {
-                var template = _this.getUrl('index.html');
-                include(['html!' + template]).then(function (html) {
-                    // process html
-                    // 1. replace all ~/... paths with this component's root url + ...
-                    // 2. replace all data.<> with shell.data.<> || view.data.<> || <partial.id>.data.<>
-                    // 3. replace all handlers.<> with shell.handlers<> || view.handlers<> || <partial.id>.handlers.<>
+            var defineHost = function defineHost() {
+                var $host = null;
+                switch (_this.type) {
+                    case 'shell':
+                        $host = document.querySelector(_this.settings('view.stage', '#stage'));
+                        if (!$host) {
+                            var $stage = document.createElement('div');
+                            $stage.setAttribute('id', 'stage');
+                            document.body.append($stage);
+                            $host = $stage;
+                        }
+                        _this.$host = $host;
+                        break;
+                    case 'view':
+                        $host = _this.parent.$el.querySelector(_this.settings('view.container', '#container'));
+                        if (!$host) {
+                            var $container = document.createElement('div');
+                            $container.setAttribute('id', 'container');
+                            _this.parent.$el.append($container);
+                            $host = $container;
+                        }
+                        _this.$host = $host;
+                        break;
+                    case 'partial':
+                        // already defined in constructor
+                        break;
+                }
+            };
+            var loadHtml = function loadHtml() {
+                return new Promise(function (resolve, reject) {
+                    var template = _this.url('index.html');
+                    include([template]).then(function (html) {
+                        // process html
+                        // 1. replace all {.min}.<> with .min.<> or .<> as per debug mode
+                        // 2. replace all ~/<> paths with this component's root url + <>
+                        // 3. replace all @:<> with shell.<> || view.<> || partials.<partial.id>.<>
+                        html = replaceAll(html, '{.min}', _this.env.isProd ? '.min' : '');
+                        html = replaceAll(html, '~/', _this.url());
+                        switch (_this.type) {
+                            case 'shell':
+                                html = replaceAll(html, '@:', 'shell.');
+                                break;
+                            case 'view':
+                                html = replaceAll(html, '@:', 'view.');
+                                break;
+                            case 'partial':
+                                html = replaceAll(html, '@:', 'partials.' + _this._.id + '.');
+                                break;
+                        }
 
+                        // build element
+                        var template = document.createElement('template');
+                        template.innerHTML = html;
+                        _this.$el = template.content.firstElementChild;
+                        _this.$el.setAttribute('id', _this._.id);
 
-                    // build element
-                    var template = document.createElement('template');
-                    template.innerHTML = html;
-                    _this.$el = template.content.firstElementChild;
+                        // done
+                        resolve();
+                    }).catch(reject);
+                });
+            };
+            var initPartials = function initPartials() {
+                return new Promise(function (_resolve, _reject) {
+                    // find partials
+                    // a partial is defined in html as:
+                    //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
+                    var $partials = _this.$el.querySelectorAll('[ag-partial]'),
+                        partials = [],
+                        partialArgs = [],
+                        partialObjects = [],
+                        className = '',
+                        args = null;
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
 
-                    // define host
-                    var $host = null;
-                    switch (_this.type) {
-                        case 'shell':
-                            $host = document.querySelector(_this.settings('view.stage', '#stage'));
-                            if (!$host) {
-                                var $stage = document.createElement('div');
-                                $stage.setAttribute('id', 'stage');
-                                document.body.append($stage);
-                                $host = $stage;
+                    try {
+                        for (var _iterator = $partials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var $partial = _step.value;
+
+                            className = use($partial.getAttribute('ag-partial'));
+                            args = $partial.getAttribute('ag-args');
+                            args = args ? _this.env.queryStringToObject(args) : null;
+                            partials.push(className);
+                            partialArgs.push(args);
+                        }
+
+                        // get partials
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                _iterator.return();
                             }
-                            _this.$host = $host;
-                            break;
-                        case 'view':
-                            $host = _this.parent.$el.querySelector(_this.settings('view.container', '#container'));
-                            if (!$host) {
-                                var $container = document.createElement('div');
-                                $container.setAttribute('id', 'container');
-                                _this.parent.$el.append($container);
-                                $host = $container;
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
                             }
-                            _this.$host = $host;
-                            break;
-                        case 'partial':
-                            // already defined in constructor
-                            break;
+                        }
                     }
 
-                    // init partials
-                    var initPartials = function initPartials() {
-                        var queryStringToObject = function queryStringToObject(qs) {
-                            var parts = qs.split('&'),
-                                items = null,
-                                args = {};
-                            var _iteratorNormalCompletion = true;
-                            var _didIteratorError = false;
-                            var _iteratorError = undefined;
-
-                            try {
-                                for (var _iterator = parts[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                    var part = _step.value;
-
-                                    items = part.split('=');
-                                    args[items[0]] = items[1].trim();
-                                }
-                            } catch (err) {
-                                _didIteratorError = true;
-                                _iteratorError = err;
-                            } finally {
-                                try {
-                                    if (!_iteratorNormalCompletion && _iterator.return) {
-                                        _iterator.return();
-                                    }
-                                } finally {
-                                    if (_didIteratorError) {
-                                        throw _iteratorError;
-                                    }
-                                }
-                            }
-
-                            return args;
-                        };
-                        return new Promise(function (_resolve, _reject) {
-                            // find partials
-                            // a partial is defined in html as:
-                            //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
-                            var $partials = _this.$el.querySelectorAll('[ag-partial]'),
-                                partials = [],
-                                partialArgs = [],
-                                partialObjects = [],
-                                className = '',
-                                args = null;
+                    include(partials, true).then(function (PartialClasses) {
+                        // instantiate all partials
+                        if (PartialClasses) {
+                            var i = 0;
                             var _iteratorNormalCompletion2 = true;
                             var _didIteratorError2 = false;
                             var _iteratorError2 = undefined;
 
                             try {
-                                for (var _iterator2 = $partials[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                                    var $partial = _step2.value;
+                                for (var _iterator2 = PartialClasses[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                    var PartialClass = _step2.value;
 
-                                    className = use($partial.getAttribute('ag-partial'));
-                                    args = $partial.getAttribute('ag-args');
-                                    args = args ? queryStringToObject(args) : null;
-                                    partials.push(className);
-                                    partialArgs.push(args);
+                                    partialObjects.push(new PartialClass(_this, $partials[i], partialArgs[i]));
+                                    i++;
                                 }
 
-                                // get partials
+                                // init all partials
                             } catch (err) {
                                 _didIteratorError2 = true;
                                 _iteratorError2 = err;
@@ -1497,71 +1684,131 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
                                 }
                             }
 
-                            include(partials, true).then(function (PartialClasses) {
-                                // instantiate all partials
-                                var i = 0;
-                                var _iteratorNormalCompletion3 = true;
-                                var _didIteratorError3 = false;
-                                var _iteratorError3 = undefined;
+                            forAsync(partialObjects, function (__resolve, __reject, partialObject) {
+                                partialObject.init().then(__resolve).catch(__reject);
+                            }).then(function () {
+                                _partials = partialObjects;
+                                _resolve();
+                            }).catch(_reject);
+                        } else {
+                            _resolve();
+                        }
+                    }).catch(_reject);
+                });
+            };
+            var loadDeps = function loadDeps() {
+                return new Promise(function (resolve, reject) {
+                    // deps are defined on main node as <div ag-deps="..., ..., ..."></div>
+                    // each dep is scoped to current component's home url and are seperated by a ','
+                    var deps = _this.$el.getAttribute('ag-deps');
+                    if (deps) {
+                        var items = deps.split(','),
+                            styles = [],
+                            others = [];
+                        var _iteratorNormalCompletion3 = true;
+                        var _didIteratorError3 = false;
+                        var _iteratorError3 = undefined;
 
-                                try {
-                                    for (var _iterator3 = PartialClasses[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                                        var PartialClass = _step3.value;
+                        try {
+                            for (var _iterator3 = items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                var item = _step3.value;
 
-                                        partialObjects.push(new PartialClass(_this, $partials[i], partialArgs[i]));
-                                        i++;
-                                    }
+                                item = _this.url(item); // add relativity
+                                if (item.startsWith('text!')) {
+                                    styles.push(item);
+                                } else {
+                                    others.push(item);
+                                }
+                            }
+                        } catch (err) {
+                            _didIteratorError3 = true;
+                            _iteratorError3 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                    _iterator3.return();
+                                }
+                            } finally {
+                                if (_didIteratorError3) {
+                                    throw _iteratorError3;
+                                }
+                            }
+                        }
 
-                                    // init all partials
-                                } catch (err) {
-                                    _didIteratorError3 = true;
-                                    _iteratorError3 = err;
-                                } finally {
+                        include(others).then(function () {
+                            include(styles, true).then(function (allStyles) {
+                                if (allStyles) {
+                                    var _iteratorNormalCompletion4 = true;
+                                    var _didIteratorError4 = false;
+                                    var _iteratorError4 = undefined;
+
                                     try {
-                                        if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                                            _iterator3.return();
+                                        for (var _iterator4 = allStyles[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                                            var thisStyle = _step4.value;
+
+                                            _styles += '\n\n /* next */ \n\n' + thisStyle;
                                         }
+                                    } catch (err) {
+                                        _didIteratorError4 = true;
+                                        _iteratorError4 = err;
                                     } finally {
-                                        if (_didIteratorError3) {
-                                            throw _iteratorError3;
+                                        try {
+                                            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                                                _iterator4.return();
+                                            }
+                                        } finally {
+                                            if (_didIteratorError4) {
+                                                throw _iteratorError4;
+                                            }
                                         }
                                     }
                                 }
+                                resolve();
+                            }).catch(reject);
+                        }).catch(reject);
+                    } else {
+                        resolve();
+                    }
+                });
+            };
 
-                                forAsync(partialObjects, function (__resolve, __reject, partialObject) {
-                                    partialObject.init().then(__resolve).catch(__reject);
-                                }).then(function () {
-                                    _partials = partialObjects;
-                                    _resolve();
-                                });
-                            }).catch(_reject);
-                        });
-                    };
-                    initPartials().then(function () {
-                        _this.afterInit().then(function () {
-                            _isInit = true;
-                            resolve();
+            // init
+            _this.cfas('beforeInit').then(function () {
+                loadHtml().then(function () {
+                    defineHost();
+                    loadDeps().then(function () {
+                        initPartials().then(function () {
+                            _this.cfas('afterInit').then(function () {
+                                _isInit = true;
+                                resolve();
+                            }).catch(reject);
                         }).catch(reject);
                     }).catch(reject);
                 }).catch(reject);
             }).catch(reject);
         });
 
+        attr('protected');
         attr('async');
         this.func('beforeInit', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('afterInit', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('beforeShow', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('afterShow', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('beforeHide', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('afterHide', this.noopAsync);
 
@@ -1570,7 +1817,12 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
             return _partials;
         });
 
-        attr('readonly');
+        var _styles = null;
+        this.prop('styles', function () {
+            return _styles;
+        });
+
+        attr('private');
         this.prop('type', '');
 
         attr('readonly');
@@ -1588,22 +1840,177 @@ define('sys.core.ui.Component', [use('[Base]')], function (Base) {
         attr('once');
         this.prop('args', null);
 
+        this.prop('$style', null);
+
         var _root = '';
         this.func('url', function () {
             var relativeUrl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
             if (!_root) {
                 _root = use(_this._.name, 'server'); // e.g., web.sample.shells.Full --> /web/modules/sample/members/shell/Full.js
-                _root = '.' + _root.replace('modules/', '').replace('.js', '') + '/'; // ./web/sample/members/shell/Full/
+                _root = _root.replace('modules/', '').replace('.js', '') + '/'; // /web/sample/members/shell/Full/
             }
             if (relativeUrl.substr(0, 1) === '/') {
                 relativeUrl = relativeUrl.substr(1);
             }
-            return _root + relativeUrl;
+
+            // add correct loader
+            var _path = _root + relativeUrl;
+            if (_path.endsWith('.css')) {
+                _path = 'text!' + _path;
+            } else if (_path.endsWith('.html')) {
+                _path = 'text!' + _path;
+            }
+            return _path;
+        });
+
+        attr('async');
+        this.func('cfas', function (resolve, reject, asyncFuncName) {
+            for (var _len = arguments.length, args = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+                args[_key - 3] = arguments[_key];
+            }
+
+            var _parent;
+
+            var callOnPartials = function callOnPartials(obj) {
+                return new Promise(function (_resolve, _reject) {
+                    if (obj.partials) {
+                        forAsync(obj.partials, function (__resolve, __reject, partial) {
+                            partial.cfas.apply(partial, [asyncFuncName].concat(args)).then(__resolve).catch(__reject);
+                        }).then(_resolve).catch(_reject);
+                    } else {
+                        _resolve();
+                    }
+                });
+            };
+
+            // cumulative function call (async)
+            switch (_this.type) {
+                case 'view':
+                    (_parent = _this.parent).cfas.apply(_parent, [asyncFuncName].concat(args)).then(function () {
+                        if (typeof _this[asyncFuncName] === 'function') {
+                            _this[asyncFuncName].apply(_this, args).then(function () {
+                                callOnPartials(_this).then(resolve).catch(reject);
+                            }).catch(reject);
+                        } else {
+                            resolve();
+                        }
+                    }).catch(reject);
+                    break;
+                case 'shell':
+                case 'partial':
+                    if (typeof _this[asyncFuncName] === 'function') {
+                        _this[asyncFuncName].apply(_this, args).then(function () {
+                            callOnPartials(_this).then(resolve).catch(reject);
+                        }).catch(reject);
+                    } else {
+                        resolve();
+                    }
+                    break;
+            }
+        });
+
+        this.func('cfs', function (syncFuncName) {
+            var _parent2;
+
+            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                args[_key2 - 1] = arguments[_key2];
+            }
+
+            var callOnPartials = function callOnPartials(obj) {
+                if (obj.partials) {
+                    var _iteratorNormalCompletion5 = true;
+                    var _didIteratorError5 = false;
+                    var _iteratorError5 = undefined;
+
+                    try {
+                        for (var _iterator5 = obj.partials[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                            var partial = _step5.value;
+
+                            partial.cfs.apply(partial, [syncFuncName].concat(args));
+                        }
+                    } catch (err) {
+                        _didIteratorError5 = true;
+                        _iteratorError5 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                                _iterator5.return();
+                            }
+                        } finally {
+                            if (_didIteratorError5) {
+                                throw _iteratorError5;
+                            }
+                        }
+                    }
+                }
+            };
+
+            // cumulative function call (sync)
+            switch (_this.type) {
+                case 'view':
+                    (_parent2 = _this.parent).cfs.apply(_parent2, [syncFuncName].concat(args));
+                    if (typeof _this[syncFuncName] === 'function') {
+                        _this[syncFuncName].apply(_this, args);
+                    }
+                    callOnPartials(_this);
+                    break;
+                case 'shell':
+                case 'partial':
+                    if (typeof _this[syncFuncName] === 'function') {
+                        _this[syncFuncName].apply(_this, args);
+                    }
+                    callOnPartials(_this);
+                    break;
+            }
         });
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Component.js)
+'use strict';
+
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Formatter.js)
+define('sys.core.ui.Formatter', [use('[Base]'), use('sys/core/libs/rivets{.min}.js')], function (Base, rivets) {
+    /**
+     * @class sys.core.ui.Formatter
+     * @classdesc sys.core.ui.Formatter
+     * @desc Formatter base class to define custom formatters for rivets.
+     */
+    return Class('sys.core.ui.Formatter', Base, function (attr) {
+        var _this = this;
+
+        attr('override');
+        attr('abstract');
+        this.func('constructor', function (base) {
+            base();
+
+            // validate
+            if (!_this.name) {
+                throw 'Formatter name is not defined. (' + _this._.name + ')';
+            }
+
+            // define formatter
+            if (!rivets.formatters[_this.name]) {
+                if (!_this.isTwoWay) {
+                    // one-way formatter
+                    rivets.formatters[_this.name] = _this.read;
+                } else {
+                    // two-way formatter
+                    rivets.formatters[_this.name] = {
+                        read: _this.read,
+                        publish: _this.publish
+                    };
+                }
+            }
+        });
+
+        this.prop('name', '');
+        this.func('read', this.noop);
+        this.func('publish', this.noop);
+        this.func('isTwoWay', false);
+    });
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Formatter.js)
 'use strict';
 
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Partial.js)
@@ -1622,18 +2029,13 @@ define('sys.core.ui.Partial', [use('sys.core.ui.Component')], function (Componen
             base('partial', parent, args);
             _this.$host = $host;
         });
-
-        attr('readonly');
-        this.prop('id', function () {
-            return _this._.id;
-        });
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Partial.js)
 'use strict';
 
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/Shell.js)
-define('sys.core.ui.Shell', [use('sys.core.ui.Component')], function (CompositeComponent) {
+define('sys.core.ui.Shell', [use('sys.core.ui.Component')], function (Component) {
     /**
      * @class sys.core.ui.Shell
      * @classdesc sys.core.ui.Shell
@@ -1649,7 +2051,7 @@ define('sys.core.ui.Shell', [use('sys.core.ui.Component')], function (CompositeC
             _this.view = view;
         });
 
-        attr('readonly');
+        attr('protected');
         this.prop('view', null);
     });
 });
@@ -1670,7 +2072,7 @@ define('sys.core.ui.Transition', [use('[Base]')], function (Base) {
             if (currentView) {
                 currentView.$el.style.display = 'none';
             }
-            newView.style.display = 'block';
+            newView.$el.style.display = 'block';
         });
         this.func('out', function (currentView) {
             var newView = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
@@ -1686,7 +2088,7 @@ define('sys.core.ui.Transition', [use('[Base]')], function (Base) {
 'use strict';
 
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/View.js)
-define('sys.core.ui.View', [use('[Base]'), use('sys.core.ui.Component'), use('sys.core.ui.Transition'), use('sys/core/libs/rivets{.min}.js')], function (Base, CompositeComponent, Transition, rivets) {
+define('sys.core.ui.View', [use('[Base]'), use('sys.core.ui.Component'), use('sys.core.ui.Transition'), use('sys.core.bootwares.client.DataBinder')], function (Base, Component, DefaultTransition, DataBinder) {
     /**
      * @class sys.core.ui.View
      * @classdesc sys.core.ui.View
@@ -1697,73 +2099,76 @@ define('sys.core.ui.View', [use('[Base]'), use('sys.core.ui.Component'), use('sy
 
         attr('override');
         attr('abstract');
-        this.func('constructor', function (base, Shell) {
+        this.func('constructor', function (base, Shell, Transition) {
             _this.shell = new Shell(null, _this);
             base('view', _this.shell, null);
+            if (Transition) {
+                _this.transition = new Transition();
+            } else {
+                _this.transition = new DefaultTransition();
+            }
         });
 
-        attr('readonly');
+        attr('protected');
         this.prop('shell', null);
 
-        // this must be decorated with 'endpoint' attribute after overriding
-        // in every derived class, for routing to work and access control of views to kick-in
-        this.func('navigate', function (args) {
-            _this.args = args;
-            _this.push();
-        });
+        attr('protected');
+        this.prop('request', null);
 
-        attr('private');
+        // this must be decorated with 'endpoint' attribute after overriding
+        // in every derived class, for routing to work and access control of view to kick-in
         attr('async');
-        this.func('push', function (resolve, reject) {
-            if (_this.current !== _this) {
-                _this.last = _this.current;
-                _this.current = _this;
-                var last = _this.last;
-                _this.mount();
-                if (last) {
-                    last.beforeHide().then(function () {
-                        _this.beforeShow().then(function () {
-                            _this.bind();
-                            _this.transition.in(_this, last);
-                            last.afterHide().then(function () {
-                                last.unbind();
-                                last.unmount();
-                                _this.afterShow().then(resolve).catch(reject);
-                            }).catch(reject);
-                        });
-                    }).catch(reject);
-                } else {
-                    _this.beforeShow().then(function () {
-                        _this.bind();
-                        _this.transition.in(_this);
-                        _this.afterShow().then(resolve).catch(reject);
-                    }).catch(reject);
-                }
+        this.func('navigate', function (resolve, reject, request) {
+            if (request) {
+                _this.request = request;
+                _this.args = request.args;
+                _this.stage().then(resolve).catch(reject);
+            } else {
+                reject('request not defined.');
             }
         });
 
         attr('async');
+        attr('sealed');
         this.func('back', function (resolve, reject) {
             if (_this.current === _this) {
-                _this.beforeHide().then(function () {
+                // sequence
+                //  this beforeHide
+                // (partials are processed along with shell/view)
+                // EITHER (if last view exists)
+                //  last beforeShow
+                //  last mount
+                //  last bind
+                //  transtion last in and this out
+                //  this afterHide
+                //  this unbind
+                //  this unmount
+                //  last afterShow
+                // OR (when last view does not exists)
+                //  transtion this out
+                //  this afterHide
+                //  this unbind
+                //  this unmount
+                _this.cfas('beforeHide').then(function () {
                     var last = _this.last;
-                    _this.current = null;
+                    _this.current = last;
                     _this.last = null;
                     if (last) {
-                        last.beforeShow().then(function () {
-                            last.bind();
+                        last.cfas('beforeShow').then(function () {
+                            last.cfs('mount');
+                            last.cfs('bind');
                             _this.transition.out(_this, last);
-                            _this.afterHide().then(function () {
-                                _this.unbind();
-                                _this.unmount();
-                                last.afterShow().then(resolve).catch(reject);
+                            _this.cfas('afterHide').then(function () {
+                                _this.cfs('unbind');
+                                _this.cfs('unmount');
+                                last.cfas('afterShow').then(resolve).catch(reject);
                             }).catch(reject);
                         }).catch(reject);
                     } else {
                         _this.transition.out(_this);
-                        _this.afterHide().then(function () {
-                            _this.unbind();
-                            _this.unmount();
+                        _this.cfas('afterHide').then(function () {
+                            _this.cfs('unbind');
+                            _this.cfs('unmount');
                             resolve();
                         }).catch(reject);
                     }
@@ -1771,49 +2176,317 @@ define('sys.core.ui.View', [use('[Base]'), use('sys.core.ui.Component'), use('sy
             }
         });
 
-        this.prop('title', '');
-
-        attr('static');
-        this.prop('current', null);
-
-        attr('static');
-        this.prop('last', null);
-
-        attr('protected');
-        this.func('mount', function () {});
-
-        attr('protected');
-        this.prop('data', {
-            shell: {},
-            view: {}
+        attr('private');
+        attr('async');
+        this.func('stage', function (resolve, reject) {
+            if (_this.current !== _this) {
+                _this.last = _this.current;
+                _this.current = _this;
+                var last = _this.last;
+                // sequence
+                // (partials are processed along with shell/view)
+                // this init
+                // EITHER (if last view exists)
+                //  last beforeHide
+                //  this beforeShow
+                //  this mount
+                //  this bind
+                //  transtion this in and last out
+                //  last afterHide
+                //  last unbind
+                //  last unmount
+                //  this afterShow
+                // OR (when last view does not exists)
+                //  this beforeShow
+                //  this mount
+                //  this bind
+                //  transtion this in
+                //  this afterShow
+                _this.shell.init().then(function () {
+                    _this.init().then(function () {
+                        if (last) {
+                            last.cfas('beforeHide').then(function () {
+                                _this.cfas('beforeShow').then(function () {
+                                    _this.cfs('mount');
+                                    _this.cfs('bind');
+                                    _this.transition.in(_this, last);
+                                    last.cfas('afterHide').then(function () {
+                                        last.cfs('unbind');
+                                        last.cfs('unmount');
+                                        _this.cfas('afterShow').then(resolve).catch(reject);
+                                    }).catch(reject);
+                                });
+                            }).catch(reject);
+                        } else {
+                            _this.cfas('beforeShow').then(function () {
+                                _this.cfs('mount');
+                                _this.cfs('bind');
+                                _this.transition.in(_this);
+                                _this.cfas('afterShow').then(resolve).catch(reject);
+                            }).catch(reject);
+                        }
+                    }).catch(reject);
+                }).catch(reject);
+            } else {
+                resolve();
+            }
         });
 
         attr('private');
-        this.prop('bindedView', null);
-
-        attr('protected');
-        this.func('bind', function () {
-            if (!_this.bindedView) {
-                _this.bindedView = rivets.bind(_this.$el, _this.data);
-            }
-        });
-
-        attr('protected');
-        this.func('unbind', function () {
-            if (_this.bindedView) {
-                _this.bindedView.unbind();
-                _this.bindedView = null;
-            }
-        });
-
-        attr('inject', Transition);
         this.prop('transition', null);
 
+        attr('private');
+        this.prop('current', function () {
+            return _this.env.get('currentView', null);
+        }, function (view) {
+            _this.env.set('currentView', view);
+        });
+
+        attr('private');
+        this.prop('last', null);
+
         attr('protected');
-        this.func('unmount', function () {});
+        attr('sealed');
+        this.func('mount', function () {
+            // mount styles
+            var mountStyles = function mountStyles(obj) {
+                if (obj.styles) {
+                    obj.$style = document.createElement('style');
+                    obj.$style.setAttribute('scoped', '');
+                    obj.$style.innerText = obj.styles;
+                    obj.$el.prepend(obj.$style);
+                }
+            };
+
+            // mount partials
+            var mountPartial = function mountPartial(partial) {
+                partial.$host.append(partial.$el);
+                mountStyles(partial);
+                mountPartials(partial.partials);
+            };
+            var mountPartials = function mountPartials(partials) {
+                if (partials) {
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
+                    try {
+                        for (var _iterator = partials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var partial = _step.value;
+
+                            mountPartial(partial);
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator.return) {
+                                _iterator.return();
+                            }
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+                }
+            };
+
+            // mount shell to stage
+            _this.shell.$host.append(_this.shell.$el);
+            mountStyles(_this.shell);
+            mountPartials(_this.shell.partials);
+
+            // mount view to shell container
+            _this.$host.append(_this.$el);
+            mountStyles(_this);
+            mountPartials(_this.partials);
+        });
+
+        attr('protected');
+        attr('sealed');
+        this.func('unmount', function () {
+            if (_isMounted) {
+                _isMounted = false;
+
+                // unmount styles
+                var unmountStyles = function unmountStyles(obj) {
+                    if (obj.$style) {
+                        obj.$style.remove();
+                    }
+                };
+
+                // unmount partials
+                var unmountPartial = function unmountPartial(partial) {
+                    unmountStyles(partial);
+                    partial.$el.remove();
+                    unmountPartials(partial.partials);
+                };
+                var unmountPartials = function unmountPartials(partials) {
+                    if (partials) {
+                        var _iteratorNormalCompletion2 = true;
+                        var _didIteratorError2 = false;
+                        var _iteratorError2 = undefined;
+
+                        try {
+                            for (var _iterator2 = partials[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                var partial = _step2.value;
+
+                                unmountPartial(partial);
+                            }
+                        } catch (err) {
+                            _didIteratorError2 = true;
+                            _iteratorError2 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                    _iterator2.return();
+                                }
+                            } finally {
+                                if (_didIteratorError2) {
+                                    throw _iteratorError2;
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // unmount view from shell container
+                unmountStyles(_this);
+                _this.$el.remove();
+                unmountPartials(_this.partials);
+
+                // unmount shell from stage
+                unmountStyles(_this.shell);
+                _this.shell.$el.remove();
+                unmountPartials(_this.shell.partials);
+            }
+        });
+
+        var _bindedView = null;
+        attr('protected');
+        attr('sealed');
+        this.func('bind', function () {
+            if (!_bindedView) {
+                var getPartialBindings = function getPartialBindings(target, _obj) {
+                    if (_obj.partials) {
+                        var _iteratorNormalCompletion3 = true;
+                        var _didIteratorError3 = false;
+                        var _iteratorError3 = undefined;
+
+                        try {
+                            for (var _iterator3 = _obj.partials[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                var partial = _step3.value;
+
+                                target[partial.id] = partial;
+                                getPartialBindings(target, partial);
+                            }
+                        } catch (err) {
+                            _didIteratorError3 = true;
+                            _iteratorError3 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                    _iterator3.return();
+                                }
+                            } finally {
+                                if (_didIteratorError3) {
+                                    throw _iteratorError3;
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // get bindings
+                var obj = {
+                    partials: {},
+                    shell: _this.shell,
+                    view: _this
+                };
+                getPartialBindings(obj.partials, _this.shell);
+                getPartialBindings(obj.partials, _this);
+
+                // bind
+                binder = new DataBinder(); // its singleton, so no issue
+                _bindedView = binder.bind(_this.shell.$el, obj);
+            }
+        });
+
+        attr('protected');
+        attr('sealed');
+        this.func('unbind', function () {
+            if (_bindedView) {
+                binder = new DataBinder(); // its singleton, so no issue
+                binder.unbind(_bindedView);
+                _bindedView = null;
+            }
+        });
+
+        this.prop('title', '');
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/View.js)
+'use strict';
+
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/bootwares/client/DataBinder.js)
+define('sys.core.bootwares.client.DataBinder', [use('[Base]'), use('[IBootware]')], function (Base, IBootware) {
+    /**
+     * @class sys.core.bootwares.client.DataBinder
+     * @classdesc sys.core.bootwares.client.DataBinder
+     * @desc Load client-side data inding configuration.
+     */
+    return Class('sys.core.bootwares.client.DataBinder', Base, [IBootware], function (attr) {
+        var _this = this;
+
+        attr('singleton');
+        attr('override');
+        this.func('constructor', function (base) {
+            base();
+        });
+
+        attr('async');
+        this.func('boot', function (resolve, reject, app) {
+            // setup shim for require
+            var shimFor = { name: 'rivets', path: 'sys/core/libs/rivets{.min}.js' },
+                shimDeps = [{ name: 'sightglass', path: 'sys/core/libs/sightglass{.min}.js' }];
+            _this.env.addShim(shimFor, shimDeps);
+
+            // load rivets
+            include([use('rivets')]).then(function (rivets) {
+                // set
+                _this.rivets = rivets;
+
+                // configuration
+                var rivetsConfig = _this.settings('rivets.config', null);
+                if (rivetsConfig) {
+                    rivets.configure(rivetsConfig);
+                }
+
+                // custom binders
+                // TODO
+
+                // done
+                resolve();
+            }).catch(reject);
+        });
+
+        attr('async');
+        this.func('ready', this.noopAsync);
+
+        attr('private');
+        this.prop('rivets', null);
+
+        this.func('bind', function ($el, obj) {
+            return rivets.bind($el, obj);
+        });
+        this.func('unbind', function (bindedView) {
+            bindedView.unbind();
+        });
+    });
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/bootwares/client/DataBinder.js)
 'use strict';
 
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/bootwares/client/Dependencies.js)
@@ -1860,7 +2533,9 @@ define('sys.core.bootwares.client.Dependencies', [use('[Base]'), use('[IBootware
                 }
             }
 
-            include(deps).then(resolve).catch(reject);
+            forAsync(deps, function (resolve, reject, dep) {
+                _this.env.loadScript(dep).then(resolve).catch(reject);
+            }).then(resolve).catch(reject);
         });
 
         attr('async');
@@ -1984,3 +2659,22 @@ define('sys.core.bootwares.server.StaticServer', [use('[Base]'), use('[IBootware
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/bootwares/server/StaticServer.js)
+'use strict';
+
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/formatters/Percent.js)
+define('sys.core.ui.formatters.Percent', [use('sys.core.ui.Formatter')], function (Formatter) {
+    /**
+     * @class sys.core.ui.formatters.Percent
+     * @classdesc sys.core.ui.formatters.Percent
+     * @desc Percent formatter, adds % symbol to given value.
+     */
+    return Class('sys.core.ui.formatters.Percent', Formatter, function (attr) {
+        this.prop('name', 'percent');
+
+        attr('override');
+        this.func('read', function (value) {
+            return value + '%';
+        });
+    });
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/sys/modules/core/members/ui/formatters/Percent.js)

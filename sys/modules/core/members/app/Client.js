@@ -7,5 +7,10 @@ define([
      * @desc Starts client application.
      */       
     return Class('sys.core.app.Client', App, function(attr) {
+        attr('override');
+        this.func('navigate', (base, url) => {
+            base();
+            document.location.hash = url;
+        });
     });
 });

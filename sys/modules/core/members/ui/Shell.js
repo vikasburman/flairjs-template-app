@@ -1,6 +1,6 @@
 define([
     use('sys.core.ui.Component')
-], (CompositeComponent) => {
+], (Component) => {
     /**
      * @class sys.core.ui.Shell
      * @classdesc sys.core.ui.Shell
@@ -14,7 +14,7 @@ define([
             this.view = view;
         });
 
-        attr('readonly');
+        attr('protected');
         this.prop('view', null);
     });
 });

@@ -27,6 +27,8 @@ define([
         attr('async');
         this.func('auth', this.noopAsync);
 
+        this.func('navigate', this.noop);
+
         attr('readonly');
         this.prop('title', '');    
 

@@ -20,7 +20,9 @@ define([
             for(let dep of dependencies) {
                 deps.push(use(dep)); // resolve names
             }
-            include(deps).then(resolve).catch(reject);
+            forAsync(deps, (resolve, reject, dep) => { 
+                this.env.loadScript(dep).then(resolve).catch(reject);
+            }).then(resolve).catch(reject);
         });
 
         attr('async');

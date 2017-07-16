@@ -71,7 +71,7 @@ define([
             // boot configured bootwares
             include(this.bootwares, true).then((items) => {
                 forAsync(items, (_resolve, _reject, Bootware) => {
-                    if (Bootware) {
+                    if (Bootware && typeof Bootware === 'function') {
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.boot(this.app).then(_resolve).catch(_reject);
@@ -118,10 +118,14 @@ define([
             // setup event handlers
             this.server.on('error', this.onError);
             this.server.on('listening', () => {
+                // instantiate app in global variable
+                App = as(new ServerApp(this.app), IApp);
+                if (!App) { reject('Invalid app definition.'); return; }
+
                 // ready configured bootwares
                 include(this.bootwares, true).then((items) => {
                     forAsync(items, (_resolve, _reject, Bootware) => {
-                        if (Bootware) {
+                        if (Bootware && typeof Bootwate === 'function') {
                             let bootware = as(new Bootware(), IBootware);
                             if (bootware) {
                                 bootware.ready(this.app).then(_resolve).catch(_reject);
@@ -136,23 +140,19 @@ define([
                         this.env.isReady = true;
                         console.log(this.env.isProd ? `ready: (server, production)` : `ready: (server, dev)`);
 
-                        // load server app
-                        let serverApp = as(new ServerApp(this.app), IApp);
-                        if (serverApp) {
-                            // set
-                            App = serverApp;
+                        // start (if not test mode)
+                        if (!this.env.isTest) {
+                            App.start().then(() => {
+                                console.log(App.title + ' - ' + App.version);
 
-                            // start (if not test mode)
-                            if (!this.env.isTest) {
-                                serverApp.start().then(() => {
-                                    console.log(App.title + ' - ' + App.version);
-                                    resolve();
-                                }).catch(reject);
-                            } else {
+                                // perform default action: assume default is requested
+                                App.navigate('/');
+
+                                // done
                                 resolve();
-                            }
-                         } else {
-                            reject('Invalid app definition.');
+                            }).catch(reject);
+                        } else {
+                            resolve();
                         }
                     }).catch(reject);
                 }).catch(reject);

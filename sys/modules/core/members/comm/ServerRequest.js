@@ -1,6 +1,7 @@
 define([
-    use('sys.core.comm.Request')
-], (Request) => {
+    use('sys.core.comm.Request'),
+    use('sys.core.comm.ServerResponse'),
+], (Request, Response) => {
     /**
      * @class sys.core.comm.ServerRequest
      * @classdesc sys.core.comm.ServerRequest
@@ -9,20 +10,26 @@ define([
     return Class('sys.core.comm.ServerRequest', Request, function(attr) {
         attr('override');
         attr('sealed');
-        this.func('constructor', (base, req, response, access) => {
-            base(req, response, access);
+        this.func('constructor', (base, verb, req, res) => {
+            base(req.originalUrl, req.params);
+            this.verb = verb;
             this.req = req;
-            this.response = response;
+            this.res = res;
+            this.response = new Response(res);
             this.data = req.body;
             this.isSecure = req.secure;
             this.isFresh = req.fresh;
-            this.url = req.originalUrl;
-            this.args = req.params; // if url is -> abc/:name, .name will be available here
-            this.query = req.query; // query strings, if any
+            this.query = this.env.queryStringToObject(req.query); // query strings, if any
         });
 
         attr('private');
+        this.prop('verb', '');
+
+        attr('private');
         this.prop('req', null);
+
+        attr('private');
+        this.prop('res', null);
 
         attr('readonly');
         this.prop('response', null);

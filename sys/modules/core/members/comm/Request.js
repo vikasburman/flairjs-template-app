@@ -9,21 +9,24 @@ define([
     return Class('sys.core.comm.Request', Base, function(attr) {
         attr('override');
         attr('abstract');
-        this.func('constructor', (base, req, res, access) => {
+        this.func('constructor', (base, url, args) => {
             base();
-            this.access = access;
+            this.url = url;
+            this.args = args; // if url is -> abc/:name, .name will be available here
         });
 
         attr('readonly');
-        this.prop('url', null);
-
-        attr('readonly');
-        this.prop('access', null);
-
-        attr('readonly');
-        this.prop('query', null);
+        this.prop('url', '');
 
         attr('readonly');
         this.prop('args', null);
+
+        attr('readonly');
+        attr('once');
+        this.prop('access', null);
+
+        attr('readonly');
+        attr('once');
+        this.prop('query', null);
     });
 });

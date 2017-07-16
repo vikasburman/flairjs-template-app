@@ -13,7 +13,7 @@ define([
             base(res);
             this.error = err || null;
             this.data = data;
-            this.isError = !(res.ok);
+            this.isError = (err ? true : false);
             this.isRedirected = res.redirected;
             this.status = res.status;
             this.statusText = res.statusText;

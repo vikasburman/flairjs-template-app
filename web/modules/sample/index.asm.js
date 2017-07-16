@@ -46,6 +46,16 @@ define('web.sample.views.Home', [use('sys.core.ui.View'), use('web.sample.shells
         this.func('constructor', function (base) {
             base(Shell);
         });
+
+        attr('override');
+        attr('endpoint');
+        this.func('navigate', function (base, resolve, reject, request) {
+            console.log('initiating navigate');
+            base(request).then(function () {
+                console.log('navigation done.');
+                resolve();
+            }).catch(reject);
+        });
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/views/Home.js)

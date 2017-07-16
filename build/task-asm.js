@@ -83,6 +83,7 @@ const assembleFiles = (isProd, isTest, asms, root, whenDone) => {
                     asms.bundles[newAsmId] = [];
                 }
                 asms.bundles[newAsmId].push(newModuleName);
+                console.log('           Packing > ' + newModuleName + ' >> ' + newAsmUrl);
             } else {
                 file.contents = new Buffer(''); // empty string
             }

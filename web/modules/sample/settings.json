@@ -1,0 +1,7 @@
+{
+    "routes": {
+        "client": [
+            { "url": "home", "class": "web.sample.views.Home"}
+        ]
+    }
+}

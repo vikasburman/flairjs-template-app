@@ -2,8 +2,8 @@ define([
     use('[Base]'),
     use('sys.core.ui.Component'),
     use('sys.core.ui.Transition'),
-    use('sys/core/libs/rivets{.min}.js')
-], (Base, CompositeComponent, DefaultTransition, rivets) => {
+    use('sys.core.bootwares.client.DataBinder')
+], (Base, Component, DefaultTransition, DataBinder) => {
     /**
      * @class sys.core.ui.View
      * @classdesc sys.core.ui.View
@@ -22,39 +22,66 @@ define([
             }
         });
 
-        attr('readonly');
+        attr('protected');
         this.prop('shell', null);
 
+        attr('protected');
+        this.prop('request', null);
+
         // this must be decorated with 'endpoint' attribute after overriding
-        // in every derived class, for routing to work and access control of views to kick-in
-        this.func('navigate', (args) => {
-            this.args = args;
-            this.push();
+        // in every derived class, for routing to work and access control of view to kick-in
+        attr('async');
+        this.func('navigate', (resolve, reject, request) => {
+            if (request) {
+                this.request = request;
+                this.args = request.args;
+                this.stage().then(resolve).catch(reject);
+            } else {
+                reject('request not defined.');
+            }
         });
 
         attr('async');
         attr('sealed');
         this.func('back', (resolve, reject) => {
             if (this.current === this) {
-                this.beforeHide().then(() => {
+                // sequence
+                //  this beforeHide
+                // (partials are processed along with shell/view)
+                // EITHER (if last view exists)
+                //  last beforeShow
+                //  last mount
+                //  last bind
+                //  transtion last in and this out
+                //  this afterHide
+                //  this unbind
+                //  this unmount
+                //  last afterShow
+                // OR (when last view does not exists)
+                //  transtion this out
+                //  this afterHide
+                //  this unbind
+                //  this unmount
+                this.cfas('beforeHide').then(() => {
                     let last = this.last;
-                    this.current = null;
+                    this.current = last;
                     this.last = null;
                     if (last) {
-                        last.beforeShow().then(() => {
-                            last.bind();
+                        last.cfas('beforeShow').then(() => {
+                            last.cfs('mount');
+                            last.cfs('bind');
                             this.transition.out(this, last);
-                            this.afterHide().then(() => {
-                                this.unbind();
-                                this.unmount();
-                                last.afterShow().then(resolve).catch(reject);
+                            this.cfas('afterHide').then(() => {
+                                this.cfs('unbind');
+                                this.cfs('unmount');
+                                last.cfas('afterShow').then(resolve).catch(reject);
                             }).catch(reject);
                         }).catch(reject);
                     } else {
                         this.transition.out(this);
-                        this.afterHide().then(() => {
-                            this.unbind();
-                            this.unmount();
+                        this.cfas('afterHide').then(() => {
+                            this.cfs('unbind');
+                            this.cfs('unmount');
                             resolve();
                         }).catch(reject);
                     }
@@ -64,79 +91,126 @@ define([
 
         attr('private');
         attr('async');
-        this.func('push', (resolve, reject) => {
+        this.func('stage', (resolve, reject) => {
             if (this.current !== this) {
                 this.last = this.current;
                 this.current = this;
                 let last = this.last;
-                this.mount();
-                if (last) {
-                    last.beforeHide().then(() => {
-                        this.beforeShow().then(() => {
-                            this.bind();
-                            this.transition.in(this, last);
-                            last.afterHide().then(() => {
-                                last.unbind();
-                                last.unmount();
-                                this.afterShow().then(resolve).catch(reject);
+                // sequence
+                // (partials are processed along with shell/view)
+                // this init
+                // EITHER (if last view exists)
+                //  last beforeHide
+                //  this beforeShow
+                //  this mount
+                //  this bind
+                //  transtion this in and last out
+                //  last afterHide
+                //  last unbind
+                //  last unmount
+                //  this afterShow
+                // OR (when last view does not exists)
+                //  this beforeShow
+                //  this mount
+                //  this bind
+                //  transtion this in
+                //  this afterShow
+                this.shell.init().then(() => {
+                    this.init().then(() => {
+                        if (last) {
+                            last.cfas('beforeHide').then(() => {
+                                this.cfas('beforeShow').then(() => {
+                                    this.cfs('mount');
+                                    this.cfs('bind');
+                                    this.transition.in(this, last);
+                                    last.cfas('afterHide').then(() => {
+                                        last.cfs('unbind');
+                                        last.cfs('unmount');
+                                        this.cfas('afterShow').then(resolve).catch(reject);
+                                    }).catch(reject);
+                                })
                             }).catch(reject);
-                        })
+                        } else {
+                            this.cfas('beforeShow').then(() => {
+                                this.cfs('mount');
+                                this.cfs('bind');
+                                this.transition.in(this);
+                                this.cfas('afterShow').then(resolve).catch(reject);
+                            }).catch(reject);
+                        }
                     }).catch(reject);
-                } else {
-                    this.beforeShow().then(() => {
-                        this.bind();
-                        this.transition.in(this);
-                        this.afterShow().then(resolve).catch(reject);
-                    }).catch(reject);
-                }
+                }).catch(reject);
+            } else {
+                resolve();
             }
         });
 
         attr('private');
         this.prop('transition', null);
 
-        attr('static');
-        this.prop('current', null);
-
-        attr('static');
-        this.prop('last', null);
-
-        let _isMounted = false;
-        attr('sealed');
-        this.func('mount', () => {
-            if (!_isMounted) {
-                _isMounted = true;
-                
-                // mount partials
-                let mountPartial = (partial) => {
-                     partial.$host.append(partial.$el);
-                     mountPartials(partial.partials);
-                };
-                let mountPartials = (partials) => {
-                    if (partials) {
-                        for(let partial of partials) {
-                            mountPartial(partial);
-                        }
-                    }
-                };
-
-                // mount shell to stage
-                this.shell.$host.append(this.shell.$el);
-                mountPartials(this.shell.partials);
-
-                // mount view to shell container
-                this.$host.append(this.$el);
-                mountPartials(this.partials);
-            }
+        attr('private');
+        this.prop('current', 
+            () => { return this.env.get('currentView', null); }, 
+            (view) => { this.env.set('currentView', view); 
         });
 
+        attr('private');
+        this.prop('last', null);
+
+        attr('protected');
+        attr('sealed');
+        this.func('mount', () => {
+            // mount styles
+            let mountStyles = (obj) => {
+                if (obj.styles) {
+                    obj.$style = document.createElement('style');
+                    obj.$style.setAttribute('scoped', '');
+                    obj.$style.innerText = obj.styles;
+                    obj.$el.prepend(obj.$style);
+                }
+            };
+
+            // mount partials
+            let mountPartial = (partial) => {
+                    partial.$host.append(partial.$el);
+                    mountStyles(partial);
+                    mountPartials(partial.partials);
+            };
+            let mountPartials = (partials) => {
+                if (partials) {
+                    for(let partial of partials) {
+                        mountPartial(partial);
+                    }
+                }
+            };
+
+            // mount shell to stage
+            this.shell.$host.append(this.shell.$el);
+            mountStyles(this.shell);
+            mountPartials(this.shell.partials);
+
+            // mount view to shell container
+            this.$host.append(this.$el);
+            mountStyles(this);
+            mountPartials(this.partials);
+        });
+
+        attr('protected');
         attr('sealed');
         this.func('unmount', () => {
             if (_isMounted) {
                 _isMounted = false;
                 
+                // unmount styles
+                let unmountStyles = (obj) => {
+                    if (obj.$style) {
+                        obj.$style.remove();
+                    }
+                };
+
                 // unmount partials
                 let unmountPartial = (partial) => {
+                     unmountStyles(partial);
                      partial.$el.remove();
                      unmountPartials(partial.partials);
                 };
@@ -149,75 +223,52 @@ define([
                 };
 
                 // unmount view from shell container
+                unmountStyles(this);
                 this.$el.remove();
                 unmountPartials(this.partials);
 
                 // unmount shell from stage
+                unmountStyles(this.shell);
                 this.shell.$el.remove();
                 unmountPartials(this.shell.partials);
             }
         });
 
         let _bindedView = null;
+        attr('protected');
         attr('sealed');
         this.func('bind', () => {
             if (!_bindedView) {
-                // build bindable object
-                let obj = {};
-                let getData = (_obj) => {
-                    let items = {},
-                        refl = Reflector.get(_obj),
-                        members = refl.getMembers().prop('data'); // all props having 'data' attribute applied
-                    for(let member of members) {
-                        Object.defineProperty(items, member, {
-                            __proto__: null,
-                            configurable: true,
-                            enumerable: true,
-                            get: () => { return _obj[member]; },
-                            set: (value) => {
-                                _obj[member] = value;
-                            }                            
-                        });
-                    }
-                };
-                let getHandlers = (_obj) => {
-                    let items = {},
-                        refl = Reflector.get(_obj),
-                        members = refl.getMembers().func('handler'); // all functions having 'handler' attribute applied
-                    for(let member of members) {
-                        items[member] = _obj[member];
-                    }
-                };
-                let getBindings = (target, _obj) => {
-                    target.data = getData(_obj);
-                    target.handlers = getHandlers(_obj);
-                };
                 let getPartialBindings = (target, _obj) => {
                     if (_obj.partials) {
                         for(let partial of _obj.partials) {
-                            target[partial.id] = {
-                                data: getData(partial),
-                                handlers: getHandlers(partial)
-                            };
+                            target[partial.id] = partial;
+                            getPartialBindings(target, partial);
                         }
                     }
                 };
 
                 // get bindings
-                getBindings(obj.shell, this.shell);
+                let obj = {
+                    partials: {},
+                    shell: this.shell,
+                    view: this
+                };
                 getPartialBindings(obj.partials, this.shell);
-                getBindings(obj.view, this);
                 getPartialBindings(obj.partials, this);
 
                 // bind
-                _bindedView= rivets.bind(this.shell.$el, obj);
+                binder = new DataBinder(); // its singleton, so no issue
+                _bindedView = binder.bind(this.shell.$el, obj);
             }
         });
 
+        attr('protected');
         attr('sealed');
         this.func('unbind', () => {
             if (_bindedView) {
-                _bindedView.unbind();
+                binder = new DataBinder(); // its singleton, so no issue
+                binder.unbind(_bindedView);
                 _bindedView = null;
             }
         });

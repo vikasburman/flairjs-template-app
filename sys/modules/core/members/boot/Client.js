@@ -33,7 +33,7 @@ define([
             // boot configured bootwares
             include(this.bootwares, true).then((items) => {
                 forAsync(items, (_resolve, _reject, Bootware) => {
-                    if (Bootware) {
+                    if (Bootware && typeof Bootware === 'function') {
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.boot().then(_resolve).catch(_reject);
@@ -44,8 +44,7 @@ define([
                         _resolve();
                     }
                 }).then(() => {
-                    // boot client itself
-                    // (nothing as of now)
+                    // nothins as such
 
                     // done
                     resolve();                        
@@ -55,10 +54,14 @@ define([
 
         attr('async');
         this.func('ready', (resolve, reject) => {
+            // instantiate app in global variable
+            App = as(new ClientApp(), IApp);
+            if (!App) { reject('Invalid app definition.'); return; }
+
             // ready configured bootwares
             include(this.bootwares, true).then((items) => {
                 forAsync(items, (_resolve, _reject, Bootware) => {
-                    if (Bootware) {
+                    if (Bootware && typeof Bootware === 'function') {
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.ready().then(_resolve).catch(_reject);
@@ -73,23 +76,19 @@ define([
                     this.env.isReady = true;
                     console.log(this.env.isProd ? `ready: (client, production)` : `ready: (client, dev)`);
 
-                    // load client app
-                    let clientApp = as(new ClientApp(), IApp);
-                    if (clientApp) {
-                        // set
-                        App = clientApp;
+                    // start (if not test mode)
+                    if (!this.env.isTest) {
+                        App.start().then(() => {
+                            console.log(App.title + ' - ' + App.version);
 
-                        // start (if not test mode)
-                        if (!this.env.isTest) {
-                            clientApp.start().then(() => {
-                                console.log(App.title + ' - ' + App.version);
-                                resolve();
-                            }).catch(reject);
-                        } else {
+                            // perform default action: open home view
+                            App.navigate('home');
+
+                            // done
                             resolve();
-                        }
-                        } else {
-                        reject('Invalid app definition.');
+                        }).catch(reject);
+                    } else {
+                        resolve();
                     }
                 }).catch(reject);
             }).catch(reject);

@@ -17,150 +17,193 @@ define([
         });
 
         let _isInit = false;
-        attr('async');
         attr('sealed');
+        attr('async');
         this.func('init', (resolve, reject) => {
             if (_isInit) { resolve(); return; }
-            this.beforeInit().then(() => {
-                let template = this.getUrl('index.html');
-                include(['html!' + template]).then((html) => {
-                    // process html
-                    // 1. replace all {.min}.<> with .min.<> or .<> as per debug mode
-                    // 2. replace all ~/<> paths with this component's root url + <>
-                    // 3. replace all data:<> with shell.data.<> || view.data.<> || partials.<partial.id>.data.<>
-                    // 4. replace all handlers:<> with shell.handlers.<> || view.handlers.<> || partials.<partial.id>.handlers.<>
-                    html = replaceAll(html, '{.min}', (this.env.isProd ? '.min' : ''));
-                    html = replaceAll(html, '~/', this.url());
-                    switch(this.type) {
-                        case 'shell': 
-                            html = replaceAll(html, 'data:', 'shell.data'); 
-                            html = replaceAll(html, 'handlers:', 'shell.handlers'); 
-                            break;
-                        case 'view': 
-                            html = replaceAll(html, 'data:', 'view.data'); 
-                            html = replaceAll(html, 'handlers:', 'view.handlers'); 
-                            break;
-                        case 'partial': 
-                            html = replaceAll(html, 'data:', `partials.${this._.id}.data`); 
-                            html = replaceAll(html, 'handlers:', `partials.${this._.id}.handlers`); 
-                            break;
+            let defineHost = () => {
+                let $host = null;
+                switch(this.type) {
+                    case 'shell':
+                        $host = document.querySelector(this.settings('view.stage', '#stage'));
+                        if (!$host) {
+                            let $stage = document.createElement('div');
+                            $stage.setAttribute('id', 'stage');
+                            document.body.append($stage);
+                            $host = $stage;
+                        }
+                        this.$host = $host;
+                        break;
+                    case 'view':
+                        $host = this.parent.$el.querySelector(this.settings('view.container', '#container'));
+                        if (!$host) {
+                            let $container = document.createElement('div');
+                            $container.setAttribute('id', 'container');
+                            this.parent.$el.append($container);
+                            $host = $container;
+                        }
+                        this.$host = $host;
+                        break;
+                    case 'partial':
+                        // already defined in constructor
+                        break;
+                }
+            };
+            let loadHtml = () => {
+                return new Promise((resolve, reject) => {
+                    let template = this.url('index.html');
+                    include([template]).then((html) => {
+                        // process html
+                        // 1. replace all {.min}.<> with .min.<> or .<> as per debug mode
+                        // 2. replace all ~/<> paths with this component's root url + <>
+                        // 3. replace all @:<> with shell.<> || view.<> || partials.<partial.id>.<>
+                        html = replaceAll(html, '{.min}', (this.env.isProd ? '.min' : ''));
+                        html = replaceAll(html, '~/', this.url());
+                        switch(this.type) {
+                            case 'shell': 
+                                html = replaceAll(html, '@:', 'shell.'); 
+                                break;
+                            case 'view': 
+                                html = replaceAll(html, '@:', 'view.'); 
+                                break;
+                            case 'partial': 
+                                html = replaceAll(html, '@:', `partials.${this._.id}.`); 
+                                break;
+                        }
+
+                        // build element
+                        let template = document.createElement('template');
+                        template.innerHTML = html;
+                        this.$el = template.content.firstElementChild;
+                        this.$el.setAttribute('id', this._.id);
+
+                        // done
+                        resolve();
+                    }).catch(reject);
+                });
+            };
+            let initPartials = () => {
+                return new Promise((_resolve, _reject) => {
+                    // find partials
+                    // a partial is defined in html as:
+                    //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
+                    let $partials = this.$el.querySelectorAll('[ag-partial]'),
+                        partials = [],
+                        partialArgs = [],
+                        partialObjects = [],
+                        className = '',
+                        args = null;
+                    for(let $partial of $partials) {
+                        className = use($partial.getAttribute('ag-partial'));
+                        args = $partial.getAttribute('ag-args');
+                        args = (args ? this.env.queryStringToObject(args) : null);
+                        partials.push(className);
+                        partialArgs.push(args);
                     }
 
-                    // build element
-                    let template = document.createElement('template');
-                    template.innerHTML = html;
-                    this.$el = template.content.firstElementChild;
-                    this.$el.setAttribute('id', this._.id);
-
-                    // define host
-                    let $host = null;
-                    switch(this.type) {
-                        case 'shell':
-                            $host = document.querySelector(this.settings('view.stage', '#stage'));
-                            if (!$host) {
-                                let $stage = document.createElement('div');
-                                $stage.setAttribute('id', 'stage');
-                                document.body.append($stage);
-                                $host = $stage;
-                            }
-                            this.$host = $host;
-                            break;
-                        case 'view':
-                            $host = this.parent.$el.querySelector(this.settings('view.container', '#container'));
-                            if (!$host) {
-                                let $container = document.createElement('div');
-                                $container.setAttribute('id', 'container');
-                                this.parent.$el.append($container);
-                                $host = $container;
-                            }
-                            this.$host = $host;
-                            break;
-                        case 'partial':
-                            // already defined in constructor
-                            break;
-                    }
-
-                    // init partials
-                    let initPartials = () => {
-                        let queryStringToObject = (qs) => {
-                            let parts = qs.split('&'),
-                                        items = null,
-                                        args = {};
-                            for(let part of parts) {
-                                items = part.split('=');
-                                args[items[0]] = items[1].trim();
-                            }
-                            return args;
-                        };
-                        return new Promise((_resolve, _reject) => {
-                            // find partials
-                            // a partial is defined in html as:
-                            //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
-                            let $partials = this.$el.querySelectorAll('[ag-partial]'),
-                                partials = [],
-                                partialArgs = [],
-                                partialObjects = [],
-                                className = '',
-                                args = null;
-                            for(let $partial of $partials) {
-                                className = use($partial.getAttribute('ag-partial'));
-                                args = $partial.getAttribute('ag-args');
-                                args = (args ? queryStringToObject(args) : null);
-                                partials.push(className);
-                                partialArgs.push(args);
+                    // get partials
+                    include(partials, true).then((PartialClasses) => {
+                        // instantiate all partials
+                        if (PartialClasses) {
+                            let i = 0;
+                            for(let PartialClass of PartialClasses) {
+                                partialObjects.push(new PartialClass(this, $partials[i], partialArgs[i]));
+                                i++; 
                             }
 
-                            // get partials
-                            include(partials, true).then((PartialClasses) => {
-                                // instantiate all partials
-                                let i = 0;
-                                for(let PartialClass of PartialClasses) {
-                                   partialObjects.push(new PartialClass(this, $partials[i], partialArgs[i]));
-                                   i++; 
-                                }
-
-                                // init all partials
-                                forAsync(partialObjects, (__resolve, __reject, partialObject) => { 
-                                    partialObject.init().then(__resolve).catch(__reject);
-                                }).then(() => {
-                                    _partials = partialObjects;
-                                    _resolve();
-                                });
+                            // init all partials
+                            forAsync(partialObjects, (__resolve, __reject, partialObject) => { 
+                                partialObject.init().then(__resolve).catch(__reject);
+                            }).then(() => {
+                                _partials = partialObjects;
+                                _resolve();
                             }).catch(_reject);
-                        });
-                    };
-                    initPartials().then(() => {
-                        this.afterInit().then(() => {
-                            _isInit = true;
-                            resolve();
+                        } else {
+                            _resolve();
+                        }
+                    }).catch(_reject);
+                });
+            };
+            let loadDeps = () => {
+                return new Promise((resolve, reject) => {
+                    // deps are defined on main node as <div ag-deps="..., ..., ..."></div>
+                    // each dep is scoped to current component's home url and are seperated by a ','
+                    let deps = this.$el.getAttribute('ag-deps');
+                    if (deps) {
+                        let items = deps.split(','),
+                            styles = [],
+                            others = [];
+                        for(let item of items) {
+                            item = this.url(item); // add relativity
+                            if (item.startsWith('text!')) {
+                                styles.push(item);
+                            } else {
+                                others.push(item);
+                            }
+                        }
+                        include(others).then(() => {
+                            include(styles, true).then((allStyles) => {
+                                if (allStyles) {
+                                    for(let thisStyle of allStyles) {
+                                        _styles += '\n\n /* next */ \n\n' + thisStyle;
+                                    }
+                                }
+                                resolve();
+                            }).catch(reject);
+                        }).catch(reject);
+                    } else {
+                        resolve();
+                    }
+                });
+            };   
+
+            // init
+            this.cfas('beforeInit').then(() => {
+                loadHtml().then(() => {
+                    defineHost();
+                    loadDeps().then(() => {
+                        initPartials().then(() => {
+                            this.cfas('afterInit').then(() => {
+                                _isInit = true;
+                                resolve();
+                            }).catch(reject);
                         }).catch(reject);
                     }).catch(reject);
-                }).catch(reject);
+                }).catch(reject);                    
             }).catch(reject);
         });
 
+        attr('protected');
         attr('async');
         this.func('beforeInit', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('afterInit', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('beforeShow', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('afterShow', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('beforeHide', this.noopAsync);
 
+        attr('protected');
         attr('async');
         this.func('afterHide', this.noopAsync);
 
         let _partials = null;
         this.prop('partials', () => { return _partials; });
 
-        attr('readonly');
+        let _styles = null;
+        this.prop('styles', () => { return _styles; });
+
+        attr('private');
         this.prop('type', '');
 
         attr('readonly');
@@ -178,16 +221,94 @@ define([
         attr('once');
         this.prop('args', null);
 
+        this.prop('$style', null);
+
         let _root = '';
         this.func('url', (relativeUrl = '') => {
             if (!_root) {
                 _root = use(this._.name, 'server'); // e.g., web.sample.shells.Full --> /web/modules/sample/members/shell/Full.js
-                _root = '.' + _root.replace('modules/', '').replace('.js', '') + '/'; // ./web/sample/members/shell/Full/
+                _root = _root.replace('modules/', '').replace('.js', '') + '/'; // /web/sample/members/shell/Full/
             }
             if (relativeUrl.substr(0, 1) === '/') {
                 relativeUrl = relativeUrl.substr(1);
             }
-            return _root + relativeUrl;
+
+            // add correct loader
+            let _path = _root + relativeUrl;
+            if (_path.endsWith('.css')) {
+                _path = 'text!' + _path;
+            } else if (_path.endsWith('.html')) {
+                _path = 'text!' + _path;
+            }
+            return _path;
+        });
+
+        attr('async');
+        this.func('cfas', (resolve, reject, asyncFuncName, ...args) => {
+          let callOnPartials = (obj) => {
+              return new Promise((_resolve, _reject) => {
+                    if (obj.partials) {
+                        forAsync(obj.partials, (__resolve, __reject, partial) => {
+                            partial.cfas(asyncFuncName, ...args).then(__resolve).catch(__reject);
+                        }).then(_resolve).catch(_reject);
+                    } else {
+                        _resolve();
+                    }
+              });
+            };
+
+            // cumulative function call (async)
+            switch(this.type) {
+                case 'view':
+                    this.parent.cfas(asyncFuncName, ...args).then(() => {
+                        if (typeof this[asyncFuncName] === 'function') {
+                            this[asyncFuncName](...args).then(() => {
+                                callOnPartials(this).then(resolve).catch(reject);
+                            }).catch(reject);
+                        } else {
+                            resolve();
+                        }
+                    }).catch(reject);
+                    break;
+                case 'shell':
+                case 'partial':
+                    if (typeof this[asyncFuncName] === 'function') {
+                        this[asyncFuncName](...args).then(() => {
+                            callOnPartials(this).then(resolve).catch(reject);
+                        }).catch(reject);
+                    } else {
+                        resolve();
+                    }
+                    break;
+            }
+        });
+
+        this.func('cfs', (syncFuncName, ...args) => {
+          let callOnPartials = (obj) => {
+                if (obj.partials) {
+                    for(let partial of obj.partials) {
+                        partial.cfs(syncFuncName, ...args);
+                    }
+                }
+            };
+
+            // cumulative function call (sync)
+            switch(this.type) {
+                case 'view':
+                    this.parent.cfs(syncFuncName, ...args);
+                    if (typeof this[syncFuncName] === 'function') {
+                        this[syncFuncName](...args);
+                    }
+                    callOnPartials(this);
+                    break;
+                case 'shell':
+                case 'partial':
+                    if (typeof this[syncFuncName] === 'function') {
+                        this[syncFuncName](...args);
+                    }
+                    callOnPartials(this);
+                    break;
+            }
         });
     });
 });

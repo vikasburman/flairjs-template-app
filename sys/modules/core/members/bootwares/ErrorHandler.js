@@ -32,16 +32,6 @@ define([
                         next(err);
                     });
                 }
-            } else {
-                // setup global error handler
-                window.onerror = function(desc, url, line, col, err) {
-                    app.onError(new ErrorInfo('fatal_error', desc + ' at: ' + url + ', ' + line + ':' + col, '', err));
-                };
-
-                // global requirejs error handler
-                require.onError = function(err) {
-                    app.onError(new ErrorInfo(err));
-                };                        
             }
 
             // dome
@@ -49,6 +39,21 @@ define([
         });
 
         attr('async');
-        this.func('ready', this.noopAsync);        
+        this.func('ready', (resolve, reject) => {
+            if (!this.env.isServer) {
+                // setup global error handler
+                window.onerror = function(desc, url, line, col, err) {
+                    this.onError(new ErrorInfo('fatal_error', desc + ' at: ' + url + ', ' + line + ':' + col, '', err));
+                };
+
+                // global requirejs error handler
+                require.onError = function(err) {
+                    this.onError(new ErrorInfo(err));
+                };  
+            }
+
+            // done
+            resolve();
+        });        
     });
 });

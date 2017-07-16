@@ -9,7 +9,7 @@ define([
     return Class('sys.core.ui.Transition', Base, function(attr) {
         this.func('in', (newView, currentView = null) => {
             if (currentView) { currentView.$el.style.display = 'none'; }
-            newView.style.display = 'block';
+            newView.$el.style.display = 'block';
         });
         this.func('out', (currentView, newView = null) => {
             currentView.$el.style.display = 'none';

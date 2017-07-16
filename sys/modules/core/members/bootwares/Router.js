@@ -1,8 +1,10 @@
 define([
     use('[Base]'),
     use('[IBootware]'),
-    use('express | sys/core/libs/pathparser{.min}.js')
-], (Base, IBootware, RouteManager) => {
+    use('express | sys/core/libs/pathparser{.min}.js'),
+    use('sys.core.comm.ServerRequest | sys.core.comm.ClientRequest'),
+    use('sys.core.comm.Handler')
+], (Base, IBootware, RouteManager, Request, Handler) => {
     /**
      * @class sys.core.bootwares.Router
      * @classdesc sys.core.bootwares.Router
@@ -15,18 +17,7 @@ define([
                 routes = [],
                 router = (this.env.isServer ? RouteManager.Router() : new RouteManager({})),
                 theRoute = null,
-                routesKey = (this.env.isServer ? ':routesOrder.server' : ':routesOrder.client'),
-                theHandler = (url, verb, cls, func, req, res) => {
-                    include([use(cls)]).then((Handler) => {
-                        let handler = new Handler(),
-                            handlerInfo = Reflector.get(handler),
-                            funcInfo = handlerInfo.getMember(func);
-                        if (!!funcInfo || funcInfo.getMemberType() !== 'func' || !funcInfo.hasAttribute('endpoint')) {
-                            throw `Invalid handler endpoint for: ${url}#${verb}`;
-                        }
-                        handler[func](req, res);
-                    }).catch((err) => { throw err; });
-                };
+                routesKey = (this.env.isServer ? ':routesOrder.server' : ':routesOrder.client');
 
             // each route definition (both on server and client) is as:
             // { "url": "", "verb": "", "class": "", "func": ""}
@@ -39,22 +30,39 @@ define([
             //  on client, the view class that represents this route
             // func: 
             //  on server, the function name of the class that handles this
-            //  on client, this is fixed as 'mount'
+            //  on client, this is fixed as 'navigate'
             routesOrder = this.settings(routesKey);
+            routesKey = (this.env.isServer ? ':routes.server' : ':routes.client');
             for(let routesOf of routesOrder) {
                 routes = this.settings(routesOf + routesKey, []);
                 for(let route of routes) {
-                    if (route.url && route.class && route.func) {
+                    if (route.url && route.class) {
                         if (this.env.isServer) {
-                            theRoute = router.route(route.url);
-                            if (['get', 'post', 'put', 'delete'].indexOf(verb) === -1) { throw `Unknown verb for: ${route.url}`; }
-                            theRoute[verb]((req, res) => { theHandler(route.url, verb, route.class, route.func, req, res); });
+                            if (route.func && route.verb) {
+                                theRoute = router.route(route.url);
+                                if (['get', 'post', 'put', 'delete'].indexOf(route.verb) === -1) { throw `Unknown verb for: ${route.url}`; }
+                                theRoute[route.verb]((req, res) => { 
+                                    let request = new Request(route.verb, req, res),
+                                        handler = new Handler(route.class, route.func);                                    
+                                    handler.handle(request).catch((err) => {
+                                        throw err;
+                                    })
+                                });
+                            } else {
+                                 throw `Invalid route definiton: ${url}#${verb}`;
+                            }
                         } else {
                             router.add(route.url, function() {
                                 // "this"" will have all route values (e.g., abc/xyz when resolved against abc/:name will have name: 'xyz' in this object)
-                                theHandler(route.url, '', route.class, 'navigate', this, null);
+                                let request = new Request(route.url, this),
+                                    handler = new Handler(route.class, 'navigate');
+                                handler.handle(request).catch((err) => {
+                                    throw err;
+                                })
                             });
                         }
+                    } else {
+                        throw `Invalid route definiton: ${url}#${verb}`;
                     }
                 }
             }
