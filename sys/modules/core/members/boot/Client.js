@@ -81,8 +81,9 @@ define([
                         App.start().then(() => {
                             console.log(App.title + ' - ' + App.version);
 
-                            // perform default action: open home view
-                            App.navigate('home');
+                            // perform default action: open home view or currently opened view
+                            let url = document.location.hash.replace('#', '') || '/';
+                            App.navigate(url);
 
                             // done
                             resolve();

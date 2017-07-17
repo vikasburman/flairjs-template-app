@@ -10,8 +10,8 @@ define([
     return Class('sys.core.comm.ServerRequest', Request, function(attr) {
         attr('override');
         attr('sealed');
-        this.func('constructor', (base, verb, req, res) => {
-            base(req.originalUrl, req.params);
+        this.func('constructor', (base, handler, verb, req, res) => {
+            base(handler, req.originalUrl, req.params);
             this.verb = verb;
             this.req = req;
             this.res = res;

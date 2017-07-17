@@ -9,8 +9,8 @@ define([
     return Class('sys.core.comm.ClientRequest', Request, function(attr) {
         attr('override');
         attr('sealed');
-        this.func('constructor', (base, url, args) => {
-            base(url, args); 
+        this.func('constructor', (base, handler, url, args) => {
+            base(handler, url, args); 
         });
     });
 });

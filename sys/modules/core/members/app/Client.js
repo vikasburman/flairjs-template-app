@@ -10,7 +10,12 @@ define([
         attr('override');
         this.func('navigate', (base, url) => {
             base();
+            let currentHash = document.location.hash.replace('#', '');
             document.location.hash = url;
+            if (currentHash === url) {
+                // trigger onhashchange manually, since same hash was alredy there
+                window.dispatchEvent(new HashChangeEvent("hashchange"));
+            }
         });
     });
 });

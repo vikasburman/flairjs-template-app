@@ -822,6 +822,9 @@
                     }
                 }
 
+                // public instance interface
+                _this._.public = (isNeedProtected ? null : _exposed_this);
+
                 // singleton
                 if (isSingletonClass()) { // store for next use
                     Class._.isSingleton = () => { return true; };

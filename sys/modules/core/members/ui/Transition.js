@@ -8,12 +8,12 @@ define([
      */    
     return Class('sys.core.ui.Transition', Base, function(attr) {
         this.func('in', (newView, currentView = null) => {
-            if (currentView) { currentView.$el.style.display = 'none'; }
-            newView.$el.style.display = 'block';
+            if (currentView) { currentView._.$el.style.display = 'none'; }
+            newView._.$el.style.display = 'block';
         });
         this.func('out', (currentView, newView = null) => {
-            currentView.$el.style.display = 'none';
-            if (newView) { newView.$el.style.display = 'block'; }
+            currentView._.$el.style.display = 'none';
+            if (newView) { newView._.$el.style.display = 'block'; }
         });
     });
 });

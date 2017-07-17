@@ -43,8 +43,8 @@ define([
                                 theRoute = router.route(route.url);
                                 if (['get', 'post', 'put', 'delete'].indexOf(route.verb) === -1) { throw `Unknown verb for: ${route.url}`; }
                                 theRoute[route.verb]((req, res) => { 
-                                    let request = new Request(route.verb, req, res),
-                                        handler = new Handler(route.class, route.func);                                    
+                                    let handler = new Handler(route.class, route.func),
+                                        request = new Request(handler, route.verb, req, res);
                                     handler.handle(request).catch((err) => {
                                         throw err;
                                     })
@@ -55,8 +55,8 @@ define([
                         } else {
                             router.add(route.url, function() {
                                 // "this"" will have all route values (e.g., abc/xyz when resolved against abc/:name will have name: 'xyz' in this object)
-                                let request = new Request(route.url, this),
-                                    handler = new Handler(route.class, 'navigate');
+                                let handler = new Handler(route.class, 'navigate'),
+                                    request = new Request(handler, route.url, this);
                                 handler.handle(request).catch((err) => {
                                     throw err;
                                 })

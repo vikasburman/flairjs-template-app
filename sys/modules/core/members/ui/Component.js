@@ -17,166 +17,174 @@ define([
         });
 
         let _isInit = false;
-        attr('sealed');
-        attr('async');
-        this.func('init', (resolve, reject) => {
-            if (_isInit) { resolve(); return; }
-            let defineHost = () => {
-                let $host = null;
-                switch(this.type) {
-                    case 'shell':
-                        $host = document.querySelector(this.settings('view.stage', '#stage'));
-                        if (!$host) {
-                            let $stage = document.createElement('div');
-                            $stage.setAttribute('id', 'stage');
-                            document.body.append($stage);
-                            $host = $stage;
-                        }
-                        this.$host = $host;
-                        break;
-                    case 'view':
-                        $host = this.parent.$el.querySelector(this.settings('view.container', '#container'));
-                        if (!$host) {
-                            let $container = document.createElement('div');
-                            $container.setAttribute('id', 'container');
-                            this.parent.$el.append($container);
-                            $host = $container;
-                        }
-                        this.$host = $host;
-                        break;
-                    case 'partial':
-                        // already defined in constructor
-                        break;
-                }
-            };
-            let loadHtml = () => {
-                return new Promise((resolve, reject) => {
-                    let template = this.url('index.html');
-                    include([template]).then((html) => {
-                        // process html
-                        // 1. replace all {.min}.<> with .min.<> or .<> as per debug mode
-                        // 2. replace all ~/<> paths with this component's root url + <>
-                        // 3. replace all @:<> with shell.<> || view.<> || partials.<partial.id>.<>
-                        html = replaceAll(html, '{.min}', (this.env.isProd ? '.min' : ''));
-                        html = replaceAll(html, '~/', this.url());
-                        switch(this.type) {
-                            case 'shell': 
-                                html = replaceAll(html, '@:', 'shell.'); 
-                                break;
-                            case 'view': 
-                                html = replaceAll(html, '@:', 'view.'); 
-                                break;
-                            case 'partial': 
-                                html = replaceAll(html, '@:', `partials.${this._.id}.`); 
-                                break;
-                        }
-
-                        // build element
-                        let template = document.createElement('template');
-                        template.innerHTML = html;
-                        this.$el = template.content.firstElementChild;
-                        this.$el.setAttribute('id', this._.id);
-
-                        // done
-                        resolve();
-                    }).catch(reject);
-                });
-            };
-            let initPartials = () => {
-                return new Promise((_resolve, _reject) => {
-                    // find partials
-                    // a partial is defined in html as:
-                    //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
-                    let $partials = this.$el.querySelectorAll('[ag-partial]'),
-                        partials = [],
-                        partialClassParams = [],
-                        partialObjects = [],
-                        className = '',
-                        args = null;
-                    for(let $partial of $partials) {
-                        className = use($partial.getAttribute('ag-partial'));
-                        args = $partial.getAttribute('ag-args');
-                        args = (args ? this.env.queryStringToObject(args) : null);
-                        partials.push(className);
-                        partialClassParams.push({$host: $partial, args: args});
+        this._.init = () => {
+            return new Promise((resolve, reject) => {
+                if (_isInit) { resolve(); return; }
+                let defineHost = () => {
+                    let $host = null;
+                    switch(this.type) {
+                        case 'shell':
+                            $host = document.querySelector(this.settings('view.stage', '#stage'));
+                            if (!$host) {
+                                let $stage = document.createElement('div');
+                                $stage.setAttribute('id', 'stage');
+                                document.body.append($stage);
+                                $host = $stage;
+                            }
+                            this._.$host = $host;
+                            break;
+                        case 'view':
+                            $host = this.parent._.$el.querySelector(this.settings('view.container', '#container'));
+                            if (!$host) {
+                                let $container = document.createElement('div');
+                                $container.setAttribute('id', 'container');
+                                this.parent._.$el.append($container);
+                                $host = $container;
+                            }
+                            this._.$host = $host;
+                            break;
+                        case 'partial':
+                            // already defined where instantiated
+                            break;
                     }
-
-                    // get partials
-                    include(partials, true).then((PartialClasses) => {
-                        // instantiate all partials
-                        if (PartialClasses) {
-                            let i = 0,
-                                pa = null;
-                            for(let PartialClass of PartialClasses) {
-                                pa = partialClassParams[i];
-                                partialObjects.push(new PartialClass(this, pa.$host, pa.args));
-                                i++; 
+                };
+                let loadHtml = () => {
+                    return new Promise((resolve, reject) => {
+                        let template = this.url('index.html');
+                        include([template]).then((html) => {
+                            // process html
+                            // 1. replace all {.min}.<> with .min.<> or .<> as per debug mode
+                            // 2. replace all ~/<> paths with this component's root url + <>
+                            // 3. replace all @:<> with shell.<> || view.<> || partials.<partial.id>.<>
+                            html = replaceAll(html, '{.min}', (this.env.isProd ? '.min' : ''));
+                            html = replaceAll(html, '~/', this.url());
+                            switch(this.type) {
+                                case 'shell': 
+                                    html = replaceAll(html, '@:', 'shell.'); 
+                                    break;
+                                case 'view': 
+                                    html = replaceAll(html, '@:', 'view.'); 
+                                    break;
+                                case 'partial': 
+                                    html = replaceAll(html, '@:', `partials.${this._.id}.`); 
+                                    break;
                             }
 
-                            // init all partials
-                            forAsync(partialObjects, (__resolve, __reject, partialObject) => { 
-                                partialObject.init().then(__resolve).catch(__reject);
-                            }).then(() => {
-                                _partials = partialObjects;
-                                _resolve();
-                            }).catch(_reject);
-                        } else {
-                            _resolve();
+                            // build element
+                            let template = document.createElement('template');
+                            template.innerHTML = html;
+                            this._.$el = template.content.firstElementChild;
+                            this._.$el.setAttribute('id', this._.id);
+
+                            // done
+                            resolve();
+                        }).catch(reject);
+                    });
+                };
+                let initPartials = () => {
+                    return new Promise((_resolve, _reject) => {
+                        // find partials
+                        // a partial is defined in html as:
+                        //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
+                        let $partials = this._.$el.querySelectorAll('[ag-partial]'),
+                            partials = [],
+                            partialClassParams = [],
+                            partialObjects = [],
+                            className = '',
+                            args = null;
+                        for(let $partial of $partials) {
+                            className = use($partial.getAttribute('ag-partial'));
+                            args = $partial.getAttribute('ag-args');
+                            args = (args ? this.env.queryStringToObject(args) : null);
+                            partials.push(className);
+                            partialClassParams.push({$host: $partial, args: args});
                         }
-                    }).catch(_reject);
-                });
-            };
-            let loadDeps = () => {
-                return new Promise((resolve, reject) => {
-                    // deps are defined on main node as <div ag-deps="..., ..., ..."></div>
-                    // each dep is scoped to current component's home url and are seperated by a ','
-                    let deps = this.$el.getAttribute('ag-deps');
-                    if (deps) {
-                        let items = deps.split(','),
-                            styles = [],
-                            others = [];
-                        for(let item of items) {
-                            item = this.url(item); // add relativity
-                            if (item.startsWith('text!')) {
-                                styles.push(item);
+
+                        // get partials
+                        include(partials, true).then((PartialClasses) => {
+                            // instantiate all partials
+                            if (PartialClasses) {
+                                let i = 0,
+                                    pa = null,
+                                    po = null;
+                                for(let PartialClass of PartialClasses) {
+                                    pa = partialClassParams[i];
+                                    po = new PartialClass(this, pa.args);
+                                    po._.$host = pa.$host;
+                                    partialObjects.push(po);
+                                    i++; 
+                                }
+
+                                // init all partials
+                                forAsync(partialObjects, (__resolve, __reject, partialObject) => { 
+                                    partialObject._.init().then(__resolve).catch(__reject);
+                                }).then(() => {
+                                    _partials = partialObjects;
+                                    _resolve();
+                                }).catch(_reject);
                             } else {
-                                others.push(item);
+                                _resolve();
                             }
-                        }
-                        include(others).then(() => {
-                            include(styles, true).then((allStyles) => {
-                                if (allStyles) {
-                                    for(let thisStyle of allStyles) {
-                                        if (thisStyle) {
-                                            _styles += '\n/* next */\n' + thisStyle;
+                        }).catch(_reject);
+                    });
+                };
+                let loadDeps = () => {
+                    return new Promise((resolve, reject) => {
+                        // deps are defined on main node as <div ag-deps="..., ..., ..."></div>
+                        // each dep is scoped to current component's home url and are seperated by a ','
+                        let deps = this._.$el.getAttribute('ag-deps');
+                        if (deps) {
+                            let items = deps.split(','),
+                                styles = [],
+                                others = [];
+                            for(let item of items) {
+                                item = this.url(item); // add relativity
+                                if (item.startsWith('text!')) {
+                                    styles.push(item);
+                                } else {
+                                    others.push(item);
+                                }
+                            }
+                            include(others).then(() => {
+                                include(styles, true).then((allStyles) => {
+                                    if (allStyles) {
+                                        for(let thisStyle of allStyles) {
+                                            if (thisStyle) {
+                                                this._.styles += '\n/* next */\n' + thisStyle;
+                                            }
                                         }
                                     }
-                                }
-                                resolve();
+                                    resolve();
+                                }).catch(reject);
+                            }).catch(reject);
+                        } else {
+                            resolve();
+                        }
+                    });
+                };   
+
+                // init
+                this.beforeInit().then(() => {
+                    loadHtml().then(() => {
+                        defineHost();
+                        loadDeps().then(() => {
+                            initPartials().then(() => {
+                                this.afterInit().then(() => {
+                                    _isInit = true;
+                                    resolve();
+                                }).catch(reject);
                             }).catch(reject);
                         }).catch(reject);
-                    } else {
-                        resolve();
-                    }
-                });
-            };   
+                    }).catch(reject);                    
+                }).catch(reject);
+            });
+        };
 
-            // init
-            this.beforeInit().then(() => {
-                loadHtml().then(() => {
-                    defineHost();
-                    loadDeps().then(() => {
-                        initPartials().then(() => {
-                            this.afterInit().then(() => {
-                                _isInit = true;
-                                resolve();
-                            }).catch(reject);
-                        }).catch(reject);
-                    }).catch(reject);
-                }).catch(reject);                    
-            }).catch(reject);
-        });
-
+        this._.styles = '';
+        this._.$el = null;
+        this._.$host = null;
+        this._.$style = null;
+        
         attr('protected');
         attr('async');
         this.func('beforeInit', this.noopAsync);
@@ -204,9 +212,6 @@ define([
         let _partials = null;
         this.prop('partials', () => { return _partials; });
 
-        let _styles = '';
-        this.prop('styles', () => { return _styles; });
-
         attr('protected');
         this.prop('type', '');
 
@@ -215,19 +220,10 @@ define([
 
         attr('readonly');
         attr('once');
-        this.prop('$el', null);
-
-        attr('readonly');
-        attr('once');
-        this.prop('$host', null);
-
-        attr('readonly');
-        attr('once');
         this.prop('args', null);
 
-        this.prop('$style', null);
-
         let _root = '';
+        attr('protected');
         this.func('url', (relativeUrl = '') => {
             if (!_root) {
                 _root = use(this._.name, 'server'); // e.g., web.sample.shells.Full --> /web/modules/sample/members/shell/Full.js

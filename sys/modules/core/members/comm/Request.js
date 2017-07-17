@@ -9,11 +9,15 @@ define([
     return Class('sys.core.comm.Request', Base, function(attr) {
         attr('override');
         attr('abstract');
-        this.func('constructor', (base, url, args) => {
+        this.func('constructor', (base, handler, url, args) => {
             base();
+            this.handler = handler;
             this.url = url;
             this.args = args; // if url is -> abc/:name, .name will be available here
         });
+
+        attr('readonly');
+        this.prop('handler', null);
 
         attr('readonly');
         this.prop('url', '');
