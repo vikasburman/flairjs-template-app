@@ -13,18 +13,27 @@ define([
         attr('async');
         this.func('boot', (resolve, reject, app) => {
             // configure favicon
-            app.use(favicon(use('./web/www/' + this.settings('static.favIcon', ''))));
+            let fi = this.settings('static.favIcon', '');
+            if (fi) {
+                app.use(favicon(use(fi)));
+            }
 
             // configure static content serving
-            let age = this.settings('static.caching.age', 0) ;
+            let age = this.settings('static.caching.age', 0),
+                wwwFolders = this.settings(':www', []);
+                wwwFolders.unshift(this.assembly); // add sys.core on top as first default item
             if (this.settings('static.caching.enabled') && age !== 0) { 
-                app.use('/', express.static(use('./web/www/'), { maxAge: age }));
-                app.use('/', express.static(use('./sys/www/'), { maxAge: age }));
+                for(let wwwFolder of wwwFolders) {
+                    wwwFolder = use(wwwFolder).replace('members/', '').replace('.js', '') + 'www/';
+                    app.use('/', express.static(wwwFolder, { maxAge: age }));
+                }
                 app.use('/web', express.static(use('./web/modules/'), { maxAge: age }));
                 app.use('/sys', express.static(use('./sys/modules/'), { maxAge: age }));
             } else {
-                app.use('/', express.static(use('./web/www/')));
-                app.use('/', express.static(use('./sys/www/')));
+                for(let wwwFolder of wwwFolders) {
+                    wwwFolder = use(wwwFolder).replace('members/', '').replace('.js', '') + 'www/';
+                    app.use('/', express.static(wwwFolder));
+                }
                 app.use('/web', express.static(use('./web/modules/')));
                 app.use('/sys', express.static(use('./sys/modules/')));
             }

@@ -1,5 +1,5 @@
 const utils = require('./utils.js');
-const buildSettings = require('../.build.json');
+const buildSettings = require('./.build.json');
 const gulp = require('gulp');
 const gulpTap = require('gulp-tap');
 const babel = require('gulp-babel');
@@ -9,7 +9,7 @@ const injectFile = require('gulp-inject-file');
 const path = require('path');
 const fs = require('fs');
 
-const assembleFiles = (isProd, isTest, asms, root, whenDone) => {
+const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
     let folders = utils.getFolders(root);
     const babelConfig = require('./.babel.json');
     const processContent = (folder) => {
@@ -50,9 +50,9 @@ const assembleFiles = (isProd, isTest, asms, root, whenDone) => {
                         }
                     }
                     switch(root) {
-                        case buildSettings.source.sys:
+                        case 'sys/modules/':
                             rootName = 'sys.'; break;
-                        case buildSettings.source.web:
+                        case 'web/modules/':
                             rootName = 'web.'; break;
                     }
                     return rootName + folder + (namespace ? ('.' + namespace) : '') + (fileName ? ('.' + fileName) : '');
@@ -135,16 +135,16 @@ const assembleFiles = (isProd, isTest, asms, root, whenDone) => {
     };
     processAsms(folders, whenDone); 
 };
-exports.assembler = function (isProd, isTest, asms, cb) {
+exports.assembler = function (isDev, isProd, isTest, asms, cb) {
     // note: server side assemblies (.app) are explicitely left as assembling is not required/not used
-    let folders = [
-        buildSettings.source.sys,
-        buildSettings.source.web
+    let dirs = [
+        'sys/modules/',
+        'web/modules/'
     ];
     let doProcess = () => {
-        if (folders.length === 0) { cb(); return; }
-        let nextFolder = folders.shift();
-        assembleFiles(isProd, isTest, asms, nextFolder, doProcess);
+        if (dirs.length === 0) { cb(); return; }
+        let nextFolder = dirs.shift();
+        assembleFiles(isDev, isProd, isTest, asms, nextFolder, doProcess);
     };
     doProcess();
 };

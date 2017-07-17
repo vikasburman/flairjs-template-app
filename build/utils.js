@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const buildSettings = require('../.build.json');
+const buildSettings = require('./.build.json');
 
 // get folders under given root
 exports.getFolders = (root, excludeRoot) => {

@@ -1,8 +1,17 @@
+/** 
+ * appgears - Unified application framework for JavaScript
+ * @copyright (C) 2017
+ * @version v0.1.0
+ * @link 
+ * @license MIT
+ *
+ * (powered by appgears - https://github.com/vikasburman/appgears)
+ */
 (() => {
     let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
 
     // config
-    const config = JSON.parse(`<!-- inject: ./.config.json -->`);
+    const config = JSON.parse(`{"settings":{"appSettings":{"title":"My Application","version":"1.0.0"},"loader":{"tabletWidth":{"min":600,"max":992}},"routesOrder":{"server":[],"client":["web.sample"]},"www":["web.sample"],"source":{"sys":"sys/modules/","web":"web/modules/","app":"app/modules/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Transition":"sys.core.ui.Transition"},"container":{},"routes":{"server":[],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":[],"static":{"favIcon":"web/sample/www/images/icon.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{"prefix":"ag","preloadData":true,"rootInterface":".","templateDelimiters":["{","}"]}},"view":{"stage":"#stage","container":"#container"}},"web.sample":{"routes":{"client":[{"url":"home","class":"web.sample.views.Home"}]}}}`);
     config.env = {
         vars: {},
         isServer: isServer,
@@ -10,24 +19,27 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        isProd: [%]PROD[%],
-        isTest: [%]TEST[%],
+        isDev: true,
+        isProd: false,
+        isTest: false,
         isReady: false,
         root: (isServer ? (require('app-root-path') + '/') : '/'),
         require: {
             baseUrl: '/',
             paths: {
-                text: './libs/text{.min}',
-                json: './libs/json{.min}',
-                css: './libs/css{.min}'
+                text: './libs/text',
+                json: './libs/json',
+                css: './libs/css'
             },
             bundles: {}
         }
     };
     config.env.set = (varName, value) => { config.env.vars[varName] = value; };
     config.env.get = (varName, defaultValue = null) => { return config.env.vars[varName] || defaultValue; };
-    Object.assign(config.env.require.paths, JSON.parse('[%]PATHS[%]'));
-    Object.assign(config.env.require.bundles, JSON.parse('[%]BUNDLES[%]'));
+    if (!config.env.isDev) { // dev mode get files as is from server, instead of bundles, as there are no bundles
+        Object.assign(config.env.require.paths, JSON.parse('{}'));
+        Object.assign(config.env.require.bundles, JSON.parse('{}'));
+    }
     if (!config.env.isServer) {
         if (window.document) {
             config.env.isDevice = (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1);
@@ -65,7 +77,7 @@
      *
      * 2. Any file with relative path: 
      *    use('../../file1.js') --> '../../file1.js'
-     *    use('../../file1{.min}.js') --> '../../file1.js' (in debug) and '../../file1.min.js' (in prod)
+     *    use('../../file1.js') --> '../../file1.js' (in debug) and '../../file1.min.js' (in prod)
      *
      * 3. Any assembly member:
      *    use('sys.core.Base') --> 'sys/modules/core/members/Base.js'
@@ -126,13 +138,22 @@
             return _path; // requirejs/amdefine handles relative path with baseUrl automatically
         };
         const getAssemblyMemberPath = (_path, nsRoot, isMock) => {
-            // for server sys.core.Base becomes sys/core/members/Base.js
-            // for client it remains sys.core.Base and is loaded from corrosponding .asm file via requirejs bundle configuration
+            // for server sys.core.Base becomes sys/modules/core/members/Base.js
+            // for client 
+            //  if isDev -> false: it remains sys.core.Base and is loaded from corrosponding .asm file via requirejs bundle configuration
+            //  if isDev -> true: it becomes sys/core/members/Base.js
             if (isAsServer) {
                 let parts = _path.split('.');
                 parts.shift(); // remove sys    
                 let asmName = parts.shift(); // remove assembly name
                 _path =  config.env.root + nsRoot + asmName + '/members/' + parts.join('/') + (isMock ? '.mock.js' : '.js');
+            } else {
+                if (config.env.isDev) {
+                    let parts = _path.split('.'),
+                        rootName = parts.shift(), // remove sys    
+                        asmName = parts.shift(); // remove assembly name
+                    _path = rootName + '/' + asmName + '/members/' + parts.join('/') + (isMock ? '.mock.js' : '.js');
+                }
             }
             return _path;              
         };
@@ -214,8 +235,6 @@
             _path = getAssemblyFilePath(_path, config.settings.source.app);
         } else if (_path.startsWith('web/')) {
             _path = getAssemblyFilePath(_path, config.settings.source.web);
-        } else if (_path.startsWith('www/')) {
-            _path = getAssemblyFilePath(_path, config.settings.source.www);
         }
 
         // type #3: namespaced package members path
@@ -451,7 +470,7 @@
             require.config(config.env.require); // setup require config
         }
 
-        include([use('./libs/oojs{.min}.js')]).then((oojs) => {
+        include([use('./libs/oojs.js')]).then((oojs) => {
             // initialize OOJS
             let symbols = [];
             if (!config.env.isProd) { symbols.push('DEBUG'); }
@@ -502,9 +521,9 @@
                         if (isServer) {
                             bootstrapper.ready().then(onDone).catch(onError);
                         } else {
-                            include(['./libs/domReady{.min}.js']).then((domReady) => {
+                            include(['./libs/domReady.js']).then((domReady) => {
                                 domReady(() => {
-                                    include(['./libs/deviceReady{.min}.js']).then((deviceReady) => {
+                                    include(['./libs/deviceReady.js']).then((deviceReady) => {
                                         deviceReady((isCordova) => {
                                             config.env.isCordova = isCordova;
                                             bootstrapper.ready().then(onDone).catch(onError);
@@ -521,6 +540,6 @@
     if (isServer) {
         onLoad();
     } else {
-        _loadScript('./libs/require{.min}.js', onLoad, onError);
+        _loadScript('./libs/require.js', onLoad, onError);
     }
 })();

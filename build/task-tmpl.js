@@ -1,5 +1,5 @@
 const utils = require('./utils.js');
-const buildSettings = require('../.build.json');
+const buildSettings = require('./.build.json');
 const injectFile = require('gulp-inject-file');
 const gulpIf = require('gulp-if');
 const injectString = require('gulp-inject-string');
@@ -18,7 +18,7 @@ const JSBanner = `/**
  */
 `;
 
-const processTemplates = (isProd, isTest, root, whenDone) => {
+const processTemplates = (isDev, isProd, isTest, root, whenDone) => {
     let folders = utils.getFolders(root);
     const isJSFile = (file) => {
         return (file.path.toLowerCase().endsWith('.js.tmpl'));
@@ -64,18 +64,21 @@ const processTemplates = (isProd, isTest, root, whenDone) => {
     };
     processFolders(folders, whenDone);
 };
-exports.processor = function(isProd, isTest, cb) {
- let folders = [];
-    for(let dir in buildSettings.source) {
-        if (buildSettings.source.hasOwnProperty(dir)) {
-            folders.push(buildSettings.source[dir]);
-        }
+exports.processor = function(isDev, isProd, isTest, cb) {
+ let folders = [],
+     dirs = [
+        'sys/modules/',
+        'web/modules/',
+        'app/modules/'
+    ]; 
+    for(let dir of dirs) {
+        folders.push(dir);
     }
 
     let doProcess = () => {
         if (folders.length === 0) { cb(); return; }
         let nextFolder = folders.shift();
-        processTemplates(isProd, isTest, nextFolder, doProcess);
+        processTemplates(isDev, isProd, isTest, nextFolder, doProcess);
     };
     doProcess();    
 };

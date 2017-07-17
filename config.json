@@ -12,18 +12,19 @@
         },
         "routesOrder": {
             "server": [
-                "sys.core"
             ],
             "client": [
-                "sys.core",
                 "web.sample"
             ]
-        }
+        },
+        "www": [
+            "web.sample"
+        ]
     },
 
     "sys.core": {
         "static": {
-            "favIcon": "images/icon.png",
+            "favIcon": "web/sample/www/images/icon.png",
             "caching": {  
                 "enabled": true
             }  

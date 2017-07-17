@@ -33,6 +33,7 @@ define([
             //  on client, this is fixed as 'navigate'
             routesOrder = this.settings(routesKey);
             routesKey = (this.env.isServer ? ':routes.server' : ':routes.client');
+            routesOrder.unshift(this.assembly); // add sys.core by default, on top both in server and client side
             for(let routesOf of routesOrder) {
                 routes = this.settings(routesOf + routesKey, []);
                 for(let route of routes) {

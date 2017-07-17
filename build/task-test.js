@@ -1,20 +1,23 @@
 const utils = require('./utils.js');
-const buildSettings = require('../.build.json');
+const buildSettings = require('./.build.json');
 const gulp = require('gulp');
 const path = require('path');
 const jasmineNode = require('gulp-jasmine');
 
 // do test
-const doTest = (isProd, isTest, done) => {
+const doTest = (isDev, isProd, isTest, done) => {
     const jasminConfig = require('./.jasmine.json'),
         tests = [];
 
     // fill tests array
-    tests.push(require('app-root-path') + '/' + buildSettings.source.syswww + 'loader.js');
-    for(let root in buildSettings.source) {
-        if (buildSettings.source.hasOwnProperty(root)) {
-            tests.push(buildSettings.source[root] + '**/tests/*.spec.js');
-        }
+    tests.push(require('app-root-path') + '/' + 'sys/modules/core/www/loader.js');
+    let dirs = [
+        'sys/modules/',
+        'web/modules/',
+        'app/modules/'
+    ];   
+    for(let root of dirs) {
+        tests.push(root + '**/tests/*.spec.js');
     }
     gulp.src(tests)
         .pipe(jasmineNode(jasminConfig))
@@ -25,6 +28,6 @@ const doTest = (isProd, isTest, done) => {
     // so calling done() manually below - this seems to be working so far
     // but need to be revisited for a better solution
 };
-exports.tester = function(isProd, isTest, cb) {
-    doTest(isProd, isTest, cb);
+exports.tester = function(isDev, isProd, isTest, cb) {
+    doTest(isDev, isProd, isTest, cb);
 };

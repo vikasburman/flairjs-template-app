@@ -1,5 +1,5 @@
 const utils = require('./utils.js');
-const buildSettings = require('../.build.json');
+const buildSettings = require('./.build.json');
 const rename = require('gulp-rename');
 const gulp = require('gulp');
 const uglifyjs = require('uglify-js-harmony')
@@ -8,7 +8,7 @@ const minifier = require('gulp-uglify/minifier');
 
 //TODO: html templates compressor and css lint and minify is to be added
 
-const compressFiles = (isProd, isTest, root, whenDone) => {
+const compressFiles = (isDev, isProd, isTest, root, whenDone) => {
     let folders = utils.getFolders(root);
     const uglifyConfig = require('./.uglify.json');
     const processFile = (folder, _done) => {
@@ -44,16 +44,16 @@ const compressFiles = (isProd, isTest, root, whenDone) => {
     };
     processFiles(folders, whenDone);
 };
-exports.compressor = function(isProd, isTest, cb) {
+exports.compressor = function(isDev, isProd, isTest, cb) {
     // note: server side assemblies (.app) are explicitely left as compressing is not required/not used
-    let folders = [
-         buildSettings.source.sys,
-         buildSettings.source.web
+    let dirs = [
+        'sys/modules/',
+        'web/modules/'
     ];
     let doProcess = () => {
-        if (folders.length === 0) { cb(); return; }
-        let nextFolder = folders.shift();
-        compressFiles(isProd, isTest, nextFolder, doProcess);
+        if (dirs.length === 0) { cb(); return; }
+        let nextFolder = dirs.shift();
+        compressFiles(isDev, isProd, isTest, nextFolder, doProcess);
     };
     doProcess();
 };
