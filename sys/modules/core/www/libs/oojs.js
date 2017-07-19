@@ -505,8 +505,9 @@
                     // apply attributes in order they are defined
                     applyAttr(name);   
 
-                    // finally hold the reference for reflector
+                    // finally hold the references for reflector
                     meta[name].ref = _this[name];
+                    meta[name].raw = fn;
                 };
                 _this.prop = (name, valueOrGetter, setter) => {
                     // special names
@@ -678,6 +679,10 @@
                 _this._.isInstanceOf = (name) => {
                     return (_this._.instanceOf.findIndex((item) => { return item.name === name; }) !== -1);
                 };
+                _this._.raw = (name) => {
+                    if (meta[name] && meta[name].raw) { return meta[name].raw; }
+                    return null;
+                },
                 _this._.isMixed = (name) => {
                     let result = false;
                     for (let item of _this._.instanceOf) {
@@ -914,17 +919,17 @@
 
             // definition helpers
             _this.func = (name) => {
-                if (typeof meta[name] !== 'undefined') { throw `${className}.${name} is already defined.`; }
+                if (typeof meta[name] !== 'undefined') { throw `${interfaceName}.${name} is already defined.`; }
                 meta[name] = [];
                 meta[name].type = 'func';
             };
             _this.prop = (name) => {
-                if (typeof meta[name] !== 'undefined') { throw `${className}.${name} is already defined.`; }
+                if (typeof meta[name] !== 'undefined') { throw `${interfaceName}.${name} is already defined.`; }
                 meta[name] = [];
                 meta[name].type = 'prop';
             };
             _this.event = (name) => {
-                if (typeof meta[name] !== 'undefined') { throw `${className}.${name} is already defined.`; }
+                if (typeof meta[name] !== 'undefined') { throw `${interfaceName}.${name} is already defined.`; }
                 meta[name] = [];
                 meta[name].type = 'event';
             };
@@ -1408,7 +1413,7 @@
                 refl.isSerializable = () => { return target._._.isSerializableMember(name); }
                 return refl;
             };
-            const FuncReflector = function(target, name, ref) {
+            const FuncReflector = function(target, name, ref, raw) {
                 let refl = new CommonInstanceMemberReflector('func', target, name, ref);
                 refl.invoke = (...args) => { return ref(...args); };
                 refl.getAspects = () => {
@@ -1424,6 +1429,7 @@
                     }
                     return items;                    
                 };
+                refl.getRaw = () => { return raw; };
                 refl.isASync = () => { return target._._.hasAttrEx('async', name); }
                 refl.isConstructor = () => { return name === '_constructor'; }
                 refl.isDisposer = () => { return name === '_dispose'; }
@@ -1480,15 +1486,15 @@
                                     attrs = instance.meta[name];
                                     switch(instance.meta[name].type) {
                                         case 'func':
-                                            lastMember = new FuncReflector(target, name, instance.meta[name].ref, attrs);
+                                            lastMember = new FuncReflector(target, name, instance.meta[name].ref, instance.meta[name].raw);
                                             members.push(lastMember);
                                             break;
                                         case 'prop':
-                                            lastMember = new PropReflector(target, name, instance.meta[name].ref, attrs);
+                                            lastMember = new PropReflector(target, name, instance.meta[name].ref);
                                             members.push(lastMember);
                                             break;
                                         case 'event':
-                                            lastMember = new EventReflector(target, name, instance.meta[name].ref, attrs);
+                                            lastMember = new EventReflector(target, name, instance.meta[name].ref);
                                             members.push(lastMember);
                                             break;
                                         default:

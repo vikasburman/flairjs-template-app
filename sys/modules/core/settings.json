@@ -56,6 +56,12 @@
         }  
     },
     "rivets": {
+        "config": {},
+        "formatters": [
+            "sys.core.ui.formatters.Percent"
+        ],
+        "binders": [],
+        "adapters": []
     },
     "view": {
         "stage": "#stage",

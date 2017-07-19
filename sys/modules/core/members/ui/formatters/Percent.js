@@ -7,10 +7,16 @@ define([
      * @desc Percent formatter, adds % symbol to given value.
      */    
     return Class('sys.core.ui.formatters.Percent', Formatter, function(attr) {
-        this.prop('name', 'percent');
+        attr('override');
+        this.func('constructor', (base) => {
+            base();
+            this.formatterName = 'percent';
+            this.isTwoWay = false;
+        });
 
         attr('override');
-        this.func('read', (value) => {
+        this.func('read', (base, value) => {
+            base();
             return value + '%';
         });
     });
