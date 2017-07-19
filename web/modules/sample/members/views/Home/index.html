@@ -1,10 +1,10 @@
-<div ag-deps="index.css" class="view">
-    <span>Hello World!</span>
+<div ag-deps="index.css">
+    <span>Hello World! { @:title }</span>
     <a href="#/view1">goto View 1</a>
-    <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=1&xyz=2"></div>
+    <div ag-partial="web.sample.partials.SimpleList" ag-name="SimpleList1" ag-args="abc=1&xyz=2"></div>
     <div>
-        <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=3&xyz=4"></div>
+        <div ag-partial="web.sample.partials.SimpleList" ag-name="SimpleList2" ag-args="abc=3&xyz=4"></div>
     </div>
-    <button>I am Not In Focus</button>
-    <button ag-focus>I am In Focus</button>
+    <button>Not In Focus</button>
+    <button ag-focus rv-on-click="@:addCounter">Add Counter</button>
 </div>

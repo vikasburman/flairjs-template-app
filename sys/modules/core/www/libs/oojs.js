@@ -822,8 +822,9 @@
                     }
                 }
 
-                // public instance interface
-                _this._.public = (isNeedProtected ? null : _exposed_this);
+                // public and (protected+private) instance interface
+                _this._.pu = (isNeedProtected ? null : _exposed_this);
+                _this._.pr = (isNeedProtected ? null : _this);
 
                 // singleton
                 if (isSingletonClass()) { // store for next use

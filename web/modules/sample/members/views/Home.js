@@ -22,5 +22,17 @@ define([
                 resolve();
             }).catch(reject);
         });
+
+        attr('protected');
+        attr('override');
+        attr('async');
+        this.func('beforeShow', (base, resolve, reject) => {
+            this.data.title = 'This is View Title - vikas';
+            resolve();
+        });
+
+        this.handler('addCounter', ($el, e) => {
+            this.pub('AddCounter');
+        });
     });
 });

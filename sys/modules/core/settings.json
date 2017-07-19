@@ -56,12 +56,6 @@
         }  
     },
     "rivets": {
-        "config": {
-            "prefix": "ag",
-            "preloadData": true,
-            "rootInterface": ".",
-            "templateDelimiters": ["{", "}"]
-        }
     },
     "view": {
         "stage": "#stage",

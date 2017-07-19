@@ -2,10 +2,6 @@
 2. body-parser and multer needs to be used - especially to upload/use file(s)
 3. test cache attribute
 5. session as attr
-5. state as attr
+6. state as attr
 
-7. pub sub for view
 8. binders, adapters and formatters should be loaded via config of data binder
-10. 
-
-

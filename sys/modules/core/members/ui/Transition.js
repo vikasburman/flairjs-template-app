@@ -7,13 +7,13 @@ define([
      * @desc Transition base class with default transition.
      */    
     return Class('sys.core.ui.Transition', Base, function(attr) {
-        this.func('in', (newView, currentView = null) => {
-            if (currentView) { currentView._.$el.style.display = 'none'; }
-            newView._.$el.style.display = 'block';
+        this.func('in', ($new, $current = null) => {
+            if ($current) { $current.style.display = 'none'; }
+            $new.style.display = 'block';
         });
-        this.func('out', (currentView, newView = null) => {
-            currentView._.$el.style.display = 'none';
-            if (newView) { newView._.$el.style.display = 'block'; }
+        this.func('out', ($current, $new = null) => {
+            $current.style.display = 'none';
+            if ($new) { $new.style.display = 'block'; }
         });
     });
 });

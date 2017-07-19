@@ -28,6 +28,5 @@ define(() => {
         this.prop('details', '');
         this.prop('raw', null);
         this.prop('stack', '');
-        this.func('toString', () => { return this.code + ':' + this.desc; });
     });
 });
