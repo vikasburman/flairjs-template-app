@@ -11,7 +11,7 @@
     let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
 
     // config
-    const config = JSON.parse(`{"settings":{"appSettings":{"title":"My Application","version":"1.0.0"},"loader":{"tabletWidth":{"min":600,"max":992}},"routesOrder":{"server":[],"client":["web.sample"]},"www":["web.sample"],"source":{"sys":"sys/modules/","web":"web/modules/","app":"app/modules/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Transition":"sys.core.ui.Transition"},"container":{},"routes":{"server":[],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"}],"dependencies":[],"static":{"favIcon":"web/sample/www/images/icon.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{},"formatters":["sys.core.ui.formatters.Percent"],"binders":[],"adapters":[]},"view":{"stage":"#stage","container":"#container"}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}}}`);
+    const config = JSON.parse(`{"settings":{"app":{"title":"naarad","version":"0.1.0","edition":"alpha","copyright":"Ⓒ 2016-17, enbots services pvt ltd","tagline":"making enterprises digitally conversational","desc":"the complete chatbot solution on a pay as you go model","url":"http://www.enbots.com/naarad","org":"http://www.enbots.com"},"loader":{"tabletWidth":{"min":600,"max":992}},"routesOrder":{"server":["app.demo"],"client":["web.demo"]},"www":["web.demo"],"source":{"sys":"sys/modules/","web":"web/modules/","app":"app/modules/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Auth":"sys.core.security.server.Auth | sys.core.security.client.Auth","ClaimsChecker":"sys.core.security.ClaimsChecker","User":"sys.core.security.User","Credentials":"sys.core.security.Credentials","CredentialsValidator":"app.demo.security.CredentialsValidator","Crypt":"sys.core.security.Crypt","Transition":"sys.core.ui.Transition","View":"sys.core.ui.View","Shell":"sys.core.ui.Shell","Partial":"sys.core.ui.Partial"},"container":{},"routes":{"server":[{"root":"/auth","url":"/","verb":"post","class":"sys.core.security.server.Auth","func":"login"}],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"}],"dependencies":[],"static":{"favIcon":"web/demo/www/images/logo.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{},"formatters":["sys.core.ui.formatters.Percent"],"binders":["sys.core.ui.binders.xClass"],"adapters":[]},"view":{"stage":"#stage","container":"#container","login":"#/login"},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.demo":{"routes":{"client":[{"root":"/","url":"/","class":"web.demo.views.Home"},{"root":"/","url":"/chatbots/:name","class":"web.demo.views.Chatbot"},{"root":"/","url":"/login","class":"web.demo.views.Login"}]}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.demo":{"routes":{"server":[{"root":"/chatbots","url":"/","verb":"get","class":"app.demo.Chatbots","func":"getAll"},{"root":"/chatbots","url":"/:name","verb":"get","class":"app.demo.Chatbots","func":"getOne"}]},"data":{"demoDB":"data/db/demo"}},"app.nlp":{}}`);
     config.env = {
         vars: {},
         isServer: isServer,
@@ -19,6 +19,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
+        lupdate: 'Sun, 23 Jul 2017 17:50:44 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
@@ -51,7 +52,7 @@
         }
     }
 
-    const dummyJS = './libs/dummy.js';
+    const dummyJS = 'sys.core.dummy';
     const catalog = {};
     const getNestedKeyValue = (obj, keyPath = '', defaultValue = null) => {
         let result = defaultValue,
@@ -438,12 +439,14 @@
         require.config(requireConfig); // update config
     };
     config.env.queryStringToObject = (qs = '') => {
-        let parts = qs.split('&'),
-                    items = null,
-                    args = {};
-        for(let part of parts) {
-            items = part.split('=');
-            args[items[0]] = items[1].trim();
+        let args = {};
+        if (typeof qs === 'string') {
+            let parts = qs.split('&'),
+                        items = null;
+            for(let part of parts) {
+                items = part.split('=');
+                args[items[0]] = items[1].trim();
+            }
         }
         return args;
     };

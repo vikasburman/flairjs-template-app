@@ -1,0 +1,18 @@
+[
+    {
+        "_id": "1599ace7a5e94f288f2f5fa80a83cdaf",
+        "email": "guest@enbots.com",
+        "pwd": "084e0343a0486ff05530df6c705c8bb4",
+        "roles": ["guest"],
+        "name": "Guest",
+        "phone": "8920055736"
+    },
+    {
+        "_id": "aa5b8a1ffbca4af1814ab9278dee2894",
+        "email": "admin@enbots.com",
+        "pwd": "d41e98d1eafa6d6011d3a70f1a5b92f0",
+        "roles": ["admin"],
+        "name": "Administrator",
+        "phone": "8920055736"
+    }        
+]

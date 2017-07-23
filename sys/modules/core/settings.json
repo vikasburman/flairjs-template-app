@@ -5,12 +5,23 @@
         "ErrorInfo": "sys.core.ErrorInfo",
         "Bootstrapper": "sys.core.boot.Server | sys.core.boot.Client",
         "App": "sys.core.app.Server | sys.core.app.Client",
-        "Transition": "sys.core.ui.Transition"
+        "Auth": "sys.core.security.server.Auth | sys.core.security.client.Auth",
+        "ClaimsChecker": "sys.core.security.ClaimsChecker",
+        "User": "sys.core.security.User",
+        "Credentials": "sys.core.security.Credentials",
+        "CredentialsValidator": "sys.core.security.CredentialsValidator",
+        "Crypt": "sys.core.security.Crypt",
+        "Transition": "sys.core.ui.Transition",
+        "View": "sys.core.ui.View",
+        "Shell": "sys.core.ui.Shell",
+        "Partial": "sys.core.ui.Partial"
     },
     "container": {
     },
     "routes": {
-        "server": [],
+        "server": [
+            { "root": "/auth", "url": "/", "verb": "post", "class": "sys.core.security.server.Auth", "func": "login" }
+        ],
         "client": []
     },
     "express": {
@@ -44,7 +55,8 @@
     "middlewares": [
         { "name": "morgan", "args": ["dev"] },
         { "name": "compression" },
-        { "name": "cookie-parser" }
+        { "name": "cookie-parser" },
+        { "name": "express-bearer-token" }
     ],
     "dependencies": [
     ],
@@ -60,11 +72,23 @@
         "formatters": [
             "sys.core.ui.formatters.Percent"
         ],
-        "binders": [],
+        "binders": [
+            "sys.core.ui.binders.xClass"            
+        ],
         "adapters": []
     },
     "view": {
         "stage": "#stage",
-        "container": "#container"
+        "container": "#container",
+        "login": "#/login"
+    },
+    "security": {
+        "crypt": {
+            "secretKey": "adfdef1d-ce1a-470d-a652-f466292acf85"
+        },
+        "jwt": {
+            "secretKey": "adfdef1d-ce1a-470d-a652-f466292acf85",
+            "expiresInMinutes": 30
+        }
     }
 }

@@ -81,11 +81,11 @@
                     classArgs = args;
                 } else {
                     staticInterface = Class._.static;
-                    if (_flag) {
+                    if (typeof _flag !== 'undefined') { // as it can be a null value as well
                         classArgs = classArgs.concat([_flag]);
-                        if (_static) {
+                        if (typeof _static !== 'undefined') { // as it can be a null value as well
                             classArgs = classArgs.concat([_static]);
-                            if (args) {
+                            if (typeof args !== 'undefined') { // as it can be a null value as well
                                 classArgs = classArgs.concat(args);
                             }
                         }
@@ -554,33 +554,69 @@
 
                     // define or redefine
                     if (typeof valueOrGetter !== 'function') {
-                        let propHost = null;
+                        let propHost = null,
+                            uniqueName = '',
+                            isStorageHost = false;
                         if (hasAttrEx('static', name)) { 
+                            uniqueName = name;
+                            if (hasAttrEx('session', name) || hasAttrEx('state', name)) {
+                                throw `A static property cannot be stored in session/state. (${className}.${name})`;
+                            }
                             propHost = staticInterface;
-                            if (!propHost[name]) {
-                                propHost[name] = valueOrGetter; // shared (static) copy
+                            if (!propHost[uniqueName]) { 
+                                propHost[uniqueName] = valueOrGetter; // shared (static) copy
+                            }
+                        } else if (hasAttrEx('session', name)) {
+                            uniqueName = className + '_' + name;
+                            propHost = sessionStorage;
+                            isStorageHost = true;
+                            if (typeof propHost[uniqueName] === 'undefined') {
+                                propHost[uniqueName] = JSON.stringify({value: valueOrGetter}); 
+                            }
+                        } else if (hasAttrEx('state', name)) {
+                            uniqueName = className + '_' + name;
+                            propHost = localStorage;
+                            isStorageHost = true;
+                            if (typeof propHost[uniqueName] === 'undefined') {
+                                propHost[uniqueName] = JSON.stringify({value: valueOrGetter});
                             }
                         } else {
+                            uniqueName = name;
                             propHost = props;
-                            propHost[name] = valueOrGetter; // private copy
+                            propHost[uniqueName] = valueOrGetter; // private copy
                         }
                         Object.defineProperty(_this, name, {
                             __proto__: null,
                             configurable: true,
                             enumerable: true,
-                            get: () => { return propHost[name]; },
+                            get: () => { 
+                                if (isStorageHost) { 
+                                    return JSON.parse(propHost[uniqueName]).value;
+                                } else {
+                                    return propHost[uniqueName]; 
+                                }
+                            },
                             set: hasAttr('readonly', attrs) ? (value) => {
-                                if (_this._.constructing || (hasAttr('once', attrs) && !propHost[name])) {
-                                    propHost[name] = value;
+                                if (_this._.constructing || (hasAttr('once', attrs) && !propHost[uniqueName])) {
+                                    if (isStorageHost) {
+                                        propHost[uniqueName] = JSON.stringify({value: value});
+                                    } else {
+                                        propHost[uniqueName] = value;
+                                    }
                                 } else {
                                     throw `${name} is readonly.`;
                                 }
                             } : (value) => {
-                                propHost[name] = value;
+                                if (isStorageHost) { 
+                                    propHost[uniqueName] = JSON.stringify({value: value});
+                                } else {
+                                    propHost[uniqueName] = value;
+                                }
                             }                            
                         });
                     } else {
-                        if (hasAttr('static', attrs)) { throw `Static properties cannot be defined with a getter/setter. (${className}.${name})`}
+                        if (hasAttr('static', attrs)) { throw `Static properties cannot be defined with a getter/setter. (${className}.${name})`; }
+                        if (hasAttr('session', attrs) || hasAttr('state', attrs)) { throw `Properties defined with a getter/setter cannot be stored in session/state. (${className}.${name})`; }
                         Object.defineProperty(_this, name, {
                             __proto__: null,
                             configurable: true,
@@ -730,7 +766,7 @@
 
                 // abstract consideration
                 if (_flag !== theFlag && isAbstractClass()) {
-                    throw 'Cannot create instance of an abstract class.';
+                    throw `Cannot create instance of an abstract class. (${className})`;
                 }
 
                 // apply mixins

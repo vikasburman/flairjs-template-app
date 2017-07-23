@@ -79,7 +79,7 @@ define([
                     // start (if not test mode)
                     if (!this.env.isTest) {
                         App.start().then(() => {
-                            console.log(App.title + ' - ' + App.version);
+                            console.log(App.tags.title + ' - ' + App.tags.version);
 
                             // perform default action: open home view or currently opened view
                             let url = document.location.hash.replace('#', '') || '/';

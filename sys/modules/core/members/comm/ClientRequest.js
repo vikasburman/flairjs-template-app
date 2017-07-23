@@ -11,6 +11,9 @@ define([
         attr('sealed');
         this.func('constructor', (base, handler, url, args) => {
             base(handler, url, args); 
+            if (url.indexOf('?') !== -1) {
+                this.query = this.env.queryStringToObject(url.split('?')[1]); // query strings
+            }
         });
     });
 });

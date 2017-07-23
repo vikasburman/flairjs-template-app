@@ -12,20 +12,15 @@ define(() => {
         this.func('start');
 
         /**
-         * @param {Request} request - current request object
-         * @return {object} - promise object
-         * @desc Authenticates and authorizes the current request as per given access information.
-         */ 
-        this.func('auth');
-
-        /**
          * @param {string} url - url to send to router
          * @return {void} - none
          * @desc Initiate routing for given url.
          */ 
         this.func('navigate');
 
-        this.prop('title');
-        this.prop('version');
+        /**
+         * @desc App level tags defined to describe various aspects of app in app settings in config.json
+         */ 
+        this.prop('tags');
     });
 });

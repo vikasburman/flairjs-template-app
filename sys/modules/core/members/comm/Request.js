@@ -27,7 +27,11 @@ define([
 
         attr('readonly');
         attr('once');
-        this.prop('access', null);
+        this.prop('user', null);
+
+        attr('readonly');
+        attr('once');
+        this.prop('claims', null);
 
         attr('readonly');
         attr('once');

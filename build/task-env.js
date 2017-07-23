@@ -6,6 +6,7 @@ const fs = require('fs');
 const generateEnv = (isDev, isProd, isTest, asms) => {
     let fileName = 'sys/modules/core/www/loader.js',
         fileContent = fs.readFileSync(fileName).toString();
+    fileContent = fileContent.replace('[%]DATE[%]', (new Date()).toUTCString());
     fileContent = fileContent.replace('[%]DEV[%]', isDev.toString());
     fileContent = fileContent.replace('[%]PROD[%]', isProd.toString());
     fileContent = fileContent.replace('[%]TEST[%]', isTest.toString());

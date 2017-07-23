@@ -1,0 +1,33 @@
+[
+    {
+        "_id": "0883730ac91e44a4b476670fbcb51a4c",
+        "role": "guest",
+        "name": "Guest",
+        "access": [
+            "c1",
+            "c2"
+        ]
+    },
+    {
+        "_id": "219214c35e694ad0a011950d5de3a64f",
+        "role": "prospect",
+        "name": "Prospect",
+        "access": [
+            "c1",
+            "c2",
+            "c3"
+        ]
+    },
+    {
+        "_id": "f758f6fddb994f718411a338e7d3f52c",
+        "role": "admin",
+        "name": "Administrator",
+        "access": [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5"
+        ]
+    }
+]

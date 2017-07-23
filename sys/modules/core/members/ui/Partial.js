@@ -1,6 +1,7 @@
 define([
-    use('sys.core.ui.Component')
-], (Component) => {
+    use('sys.core.ui.Component'),
+    use('sys.core.ui.ComponentTypes')
+], (Component, ComponentTypes) => {
     /**
      * @class sys.core.ui.Partial
      * @classdesc sys.core.ui.Partial
@@ -10,7 +11,7 @@ define([
         attr('override');
         attr('abstract');
         this.func('constructor', (base, parent, args) => {
-            base('partial', parent, args);
+            base(ComponentTypes.Partial, parent, args);
         });
 
         attr('protected');

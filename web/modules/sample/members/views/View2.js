@@ -1,5 +1,5 @@
 define([
-    use('sys.core.ui.View'),
+    use('[View]'),
     use('web.sample.shells.Full')
 ], (View, Shell) => {
     /**

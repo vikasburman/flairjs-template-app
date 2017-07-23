@@ -21,17 +21,18 @@ define([
         attr('private');
         this.prop('funcName', null);
 
-        attr('async');
-        this.func('handle', (resolve, reject, request) => {
+        this.func('handle', (request) => {
             include([use(this.className)]).then((Handler) => {
-                let handler = new Handler(),
+                let handler = new Handler();
                     handlerInfo = Reflector.get(handler),
                     funcInfo = handlerInfo.getMember(this.funcName);
-                    if (!funcInfo || funcInfo.getMemberType() !== 'func' || !funcInfo.hasAttribute('endpoint')) {
-                        throw (this.env.isServer ? `Invalid handler endpoint for: ${request.url}#${request.verb}` : `Invalid handler endpoint for: ${request.url}`);
-                    } 
-                handler[this.funcName](request).then(resolve).catch(reject);            
-            }).catch(reject);
+                if (typeof handler[this.funcName] !== 'function') {
+                    throw (this.env.isServer ? `Invalid handler endpoint for: ${request.url}#${request.verb}` : `Invalid handler endpoint for: ${request.url}`);
+                }
+                handler[this.funcName](request);           
+            }).catch((err) => {
+                throw err;
+            });
         });
     });
 });

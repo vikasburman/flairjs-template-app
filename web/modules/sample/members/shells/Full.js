@@ -1,5 +1,5 @@
 define([
-    use('sys.core.ui.Shell')
+    use('[Shell]')
 ], (Shell) => {
     /**
      * @class web.sample.shells.Full

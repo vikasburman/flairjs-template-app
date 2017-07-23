@@ -1,9 +1,10 @@
 define([
     use('[Base]'),
     use('sys.core.ui.Component'),
+    use('sys.core.ui.ComponentTypes'),
     use('sys.core.ui.Transition'),
     use('sys.core.bootwares.client.DataBinder')
-], (Base, Component, DefaultTransition, DataBinder) => {
+], (Base, Component, ComponentTypes, DefaultTransition, DataBinder) => {
     /**
      * @class sys.core.ui.View
      * @classdesc sys.core.ui.View
@@ -14,7 +15,7 @@ define([
         attr('abstract');
         this.func('constructor', (base, Shell, Transition) => {
             let shell = new Shell(null, this);
-            base('view', shell, null);
+            base(ComponentTypes.View, shell, null);
             if (Transition) {
                 this.transition = new Transition();
             } else {
@@ -25,19 +26,19 @@ define([
         attr('protected');
         this.prop('request', null);
 
-        // this must be decorated with 'endpoint' attribute after overriding
-        // in every derived class, for routing to work and access control of view to kick-in
-        attr('async');
-        this.func('navigate', (resolve, reject, request) => {
-            if (request) {
+        this.func('navigate', (request) => {
+            if (request.isError) {
+                if (request.error === 401) { // auth error
+
+                }
+            } else {
                 this.request = request;
                 this.args = request.args;
                 this.stage().then(() => {
                     this.current = this._.pu; // store public reference
-                    resolve();
-                }).catch(reject);
-            } else {
-                reject('request not defined.');
+                }).catch((err) => {
+                    console.log(`Failed to navigate to ${request.url}. (${err || ''});`);
+                });
             }
         });
 
@@ -86,7 +87,7 @@ define([
                                             resolve();
                                         }).catch(reject);
                                     }).catch(reject);
-                                })
+                                }).catch(reject);
                             }).catch(reject);
                         } else {
                             current._.cfas('beforeShow').then(() => {
@@ -241,6 +242,13 @@ define([
                 $focus.focus();
             }
         });
+
+        attr('private');
+        this.func('redirect', () => {
+            if (this.query && this.query.returnUrl) {
+                App.navigate(this.query.returnUrl, true);
+            }
+        });        
 
         this.data('title', '');
     });

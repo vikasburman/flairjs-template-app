@@ -1,0 +1,11 @@
+{
+    "routes": {
+        "server": [
+            { "root": "/chatbots", "url": "/", "verb": "get", "class": "app.demo.Chatbots", "func": "getAll" },
+            { "root": "/chatbots", "url": "/:name", "verb": "get", "class": "app.demo.Chatbots", "func": "getOne" }
+        ]
+    },
+    "data": {
+        "demoDB": "data/db/demo"
+    }
+}

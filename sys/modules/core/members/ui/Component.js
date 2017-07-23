@@ -1,6 +1,7 @@
 define([
-    use('[Base]')
-], (Base) => {
+    use('[Base]'),
+    use('sys.core.ui.ComponentTypes')
+], (Base, ComponentTypes) => {
     /**
      * @class sys.core.ui.Component
      * @classdesc sys.core.ui.Component
@@ -24,7 +25,7 @@ define([
                     let $host = null,
                         elClass = '';
                     switch(this.type) {
-                        case 'shell':
+                        case ComponentTypes.Shell:
                             $host = document.querySelector(this.settings('view.stage', '#stage'));
                             if (!$host) {
                                 let $stage = document.createElement('div');
@@ -35,12 +36,12 @@ define([
 
                             // set class
                             elClass = $host.getAttribute('class') || '';
-                            elClass = 'stage ' + elClass;
+                            elClass = 'ag-stage ' + elClass;
                             $host.setAttribute('class', elClass.trim());
                             
                             this._.pr.$host = $host;
                             break;
-                        case 'view':
+                        case ComponentTypes.View:
                             $host = this.parent._.pr.$el.querySelector(this.settings('view.container', '#container'));
                             if (!$host) {
                                 let $container = document.createElement('div');
@@ -51,12 +52,12 @@ define([
 
                             // set class
                             elClass = $host.getAttribute('class') || '';
-                            elClass = 'container ' + elClass;
+                            elClass = 'ag-container ' + elClass;
                             $host.setAttribute('class', elClass.trim());
                             
                             this._.pr.$host = $host;
                             break;
-                        case 'partial':
+                        case ComponentTypes.Partial:
                             // already defined where instantiated
                             break;
                     }
@@ -71,13 +72,13 @@ define([
                             html = replaceAll(html, '{.min}', (this.env.isProd ? '.min' : ''));
                             html = replaceAll(html, '~/', this.url());
                             switch(this.type) {
-                                case 'shell': 
+                                case ComponentTypes.Shell: 
                                     html = replaceAll(html, '@:', 'shell.'); 
                                     break;
-                                case 'view': 
+                                case ComponentTypes.View: 
                                     html = replaceAll(html, '@:', 'view.'); 
                                     break;
-                                case 'partial': 
+                                case ComponentTypes.Partial: 
                                     html = replaceAll(html, '@:', `partials.${this._.id}.`); 
                                     break;
                             }
@@ -89,8 +90,14 @@ define([
                             this._.pr.$el.setAttribute('id', this._.id);
 
                             // add class
-                            let elClass = this._.pr.$el.getAttribute('class') || '';
-                            elClass = this.type + ' ' + elClass;
+                            let elClass = this._.pr.$el.getAttribute('class') || '',
+                                elClassName = '';
+                            switch(this.type) {
+                                case ComponentTypes.Shell: elClassName = 'shell'; break;
+                                case ComponentTypes.View: elClassName = 'view'; break;
+                                case ComponentTypes.Partial: elClassName = 'partial'; break;
+                            }
+                            elClass = 'ag-' + elClassName + ' ' + elClass;
                             this._.pr.$el.setAttribute('class', elClass.trim());
 
                             // done
@@ -136,7 +143,7 @@ define([
                                     pa = partialClassParams[i];
                                     po = new PartialClass(this, pa.args);
                                     po._.pr.$host = pa.$host;
-                                    po._.pr.tagName = pa.tagName;
+                                    po._.pr.tagName = pa.tagName || po._.id;
                                     partialObjects.push(po);
                                     i++; 
                                 }
@@ -249,7 +256,7 @@ define([
         this.prop('partials', {});
 
         attr('readonly');
-        this.prop('type', '');
+        this.prop('type', -1);
 
         attr('readonly');
         this.prop('parent', null);
@@ -378,7 +385,7 @@ define([
 
                 // cumulative function call (async)
                 switch(this.type) {
-                    case 'shell':
+                    case ComponentTypes.Shell:
                         if (typeof this._.pr[asyncFuncName] === 'function') {
                             this._.pr[asyncFuncName](...args).then(() => {
                                 if (!isSkipPartials) {
@@ -391,7 +398,7 @@ define([
                             resolve();
                         }  
                         break;                  
-                    case 'view':
+                    case ComponentTypes.View:
                         this.parent._.cfas(asyncFuncName, isSkipPartials, ...args).then(() => {
                             if (typeof this._.pr[asyncFuncName] === 'function') {
                                 this._.pr[asyncFuncName](...args).then(() => {
@@ -406,7 +413,7 @@ define([
                             }
                         }).catch(reject);
                         break;
-                    case 'partial':
+                    case ComponentTypes.Partial:
                         if (typeof this._.pr[asyncFuncName] === 'function') {
                             this._.pr[asyncFuncName](...args).then(() => {
                                 callOnPartials(this).then(resolve).catch(reject);

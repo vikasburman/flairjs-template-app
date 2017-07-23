@@ -3,5 +3,3 @@
 3. test cache attribute
 5. session as attr
 6. state as attr
-
-8. binders, adapters and formatters should be loaded via config of data binder

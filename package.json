@@ -50,6 +50,10 @@
     "body-parser": "^1.17.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
+    "diskdb": "^0.1.17",
+    "express-bearer-token": "^2.1.0",
+    "fs-extra": "^4.0.0",
+    "jsonwebtoken": "^7.4.1",
     "morgan": "^1.8.2",
     "node-fetch": "^1.7.1",
     "serve-favicon": "^2.4.3"

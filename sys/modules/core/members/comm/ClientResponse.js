@@ -14,9 +14,9 @@ define([
             this.error = err || null;
             this.data = data;
             this.isError = (err ? true : false);
-            this.isRedirected = res.redirected;
-            this.status = res.status;
-            this.statusText = res.statusText;
+            this.isRedirected = (res ? res.redirected : false);
+            this.status = (res ? res.status : err);
+            this.statusText = (res ? res.statusText : 'Error: ' + err);
         });        
 
         attr('readonly');

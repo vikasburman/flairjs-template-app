@@ -1,5 +1,5 @@
 define([
-    use('sys.core.ui.Partial')
+    use('[Partial]')
 ], (Partial) => {
     /**
      * @class web.sample.partials.SimpleList

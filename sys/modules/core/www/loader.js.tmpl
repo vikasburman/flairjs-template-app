@@ -10,6 +10,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
+        lupdate: '[%]DATE[%]',         
         isDev: [%]DEV[%],
         isProd: [%]PROD[%],
         isTest: [%]TEST[%],
@@ -42,7 +43,7 @@
         }
     }
 
-    const dummyJS = './libs/dummy.js';
+    const dummyJS = 'sys.core.dummy';
     const catalog = {};
     const getNestedKeyValue = (obj, keyPath = '', defaultValue = null) => {
         let result = defaultValue,
@@ -429,12 +430,14 @@
         require.config(requireConfig); // update config
     };
     config.env.queryStringToObject = (qs = '') => {
-        let parts = qs.split('&'),
-                    items = null,
-                    args = {};
-        for(let part of parts) {
-            items = part.split('=');
-            args[items[0]] = items[1].trim();
+        let args = {};
+        if (typeof qs === 'string') {
+            let parts = qs.split('&'),
+                        items = null;
+            for(let part of parts) {
+                items = part.split('=');
+                args[items[0]] = items[1].trim();
+            }
         }
         return args;
     };

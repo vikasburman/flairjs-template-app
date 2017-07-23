@@ -1,6 +1,7 @@
 define([
-    use('sys.core.ui.Component')
-], (Component) => {
+    use('sys.core.ui.Component'),
+    use('sys.core.ui.ComponentTypes')
+], (Component, ComponentTypes) => {
     /**
      * @class sys.core.ui.Shell
      * @classdesc sys.core.ui.Shell
@@ -10,7 +11,7 @@ define([
         attr('override');
         attr('abstract');
         this.func('constructor', (base, args, view) => {
-            base('shell', null, args);
+            base(ComponentTypes.Shell, null, args);
             this.child = view;
         });
 
