@@ -16,34 +16,39 @@ define([
         attr('fetch', '/chatbots/', {
             responseDataType: 'json'
         });
-        this.func('getDemos', (resolve, reject, response) => {
-            if (response.isError) {
-                reject(response.error);
-            } else {
-                let items = response.data;
-                for(let item of items) {
-                    item.url = '#/chatbots/' + item.name;
-                    item.img = './images/demos/' + item.img;
-                    item.isDisabled = !item.isAvailable;
+        this.func('getDemos', (doFetch, resolve, reject) => {
+            doFetch().then((response) => {
+                if (response.isError) {
+                    reject(response.error);
+                } else {
+                    let items = response.data;
+                    for(let item of items) {
+                        item.url = '#/chatbots/' + item.name;
+                        item.img = './images/demos/' + item.img;
+                        item.isDisabled = !item.isAvailable;
+                    }
+                    resolve(items);
                 }
-                resolve(items);
-            }
+            }).catch(reject);
         });
 
         attr('fetch', '/chatbots/:name', {
             responseDataType: 'json',
             pre: (args) => { args.url = { name: args.url }; }
         });
-        this.func('getDemo', (resolve, reject, response) => {
-            if (response.isError) {
-                reject(response.error);
-            } else {            
-                let item = response.data;
-                item.url = '#/chatbots/' + item.name;
-                item.img = './images/demos/' + item.img;
-                item.isDisabled = !item.isAvailable;
-                resolve(item);
-            }
+        this.func('getDemo', (doFetch, resolve, reject, name) => {
+            doFetch.updateUrl({ name: name });
+            doFetch().then((response) => {
+                if (response.isError) {
+                    reject(response.error);
+                } else {            
+                    let item = response.data;
+                    item.url = '#/chatbots/' + item.name;
+                    item.img = './images/demos/' + item.img;
+                    item.isDisabled = !item.isAvailable;
+                    resolve(item);
+                }
+            }).catch(reject);
         });
     });
 });

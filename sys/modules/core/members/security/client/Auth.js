@@ -38,19 +38,21 @@ define([
 
         attr('fetch', '/auth', {
             method: 'POST',
-            requestDataType: 'json',
+            requestDataType: 'application/json',
             responseDataType: 'json',
-            pre: (args) => { args.body = { credentials: Serializer.serialize(args.body) }; }
+            pre: (args) => { args.body = { credentials: args.body }; }
         });
-        this.func('login', (resolve, reject, response) => {
-            if (response.isError) {
-                reject(response.error);
-            } else {
-                let loginResult = response.data;
-                this.token = loginResult.token;
-                this.user = Serializer.deserialize(User, loginResult.user);
-                resolve(this.user);
-            }
+        this.func('login', (doFetch, resolve, reject, credentials) => {
+            doFetch({credentials : credentials}).then((response) => {
+                if (response.isError) {
+                    reject(response.error);
+                } else {
+                    let loginResult = response.data;
+                    this.token = loginResult.token;
+                    this.user = loginResult.user;
+                    resolve(this.user);
+                }
+            }).catch(reject);
         });
 
         this.func('logout', () => {

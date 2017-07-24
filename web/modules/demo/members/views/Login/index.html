@@ -1,21 +1,26 @@
-<div ag-deps="index.css">
+<div>
     <div class="container-fluid px-0 py-0">
         <div class="row py-2">
             <div class="col-4">
             </div>
             <div class="col-4">
-                <div class="card px-3 py-3 bg-info">
+                <div class="card px-2 py-2 bg-info">
                 <img class="card-img-top w-100" src="./images/logo.png">
                 <div class="card-block">
-                    <h4 class="card-title text-center mb-3">{@:title}</h4>
                     <div class="form-group row">
-                        <input type="email" class="card-text form-control" placeholder="Email">
+                        <div class="alert alert-danger" rv-if="@:error" role="alert">{@:error}</div>
                     </div>
                     <div class="form-group row">
-                        <input type="password" class="card-text form-control" placeholder="Password">
+                        <input type="email" ag-focus class="card-text form-control" placeholder="Email" rv-value="@:email">
                     </div>
                     <div class="form-group row">
-                        <button type="submit" class="card-text btn btn-primary btn-block">Go</button>
+                        <input type="password" class="card-text form-control" placeholder="Password" rv-value="@:pwd">
+                    </div>
+                    <div class="form-group row">
+                        <div id="recaptcha" class="g-recaptcha" data-sitekey="6LeIKyMUAAAAACnvLxKlBUUT0PpEMQTB0rvtooSD"></div>
+                    </div>
+                    <div class="form-group row">
+                        <button type="submit" class="btn btn-primary" rv-on-click="@:go">Go</button>
                     </div>
                 </div>
                 </div>

@@ -1,7 +1,8 @@
 define([
     use('[Base]'),
-    use('[User]')
-], (Base, User) => {
+    use('[User]'),
+    use('sys.core.data.DiskDB')
+], (Base, User, DiskDB) => {
     /**
      * @class app.demo.security.CredentialsValidator
      * @classdesc app.demo.security.CredentialsValidator
@@ -21,6 +22,8 @@ define([
         this.func('validate', (resolve, reject, credentials) => {
             let userDocument = this.users.get({email: credentials.loginId});
             if (userDocument) {
+                console.log(userDocument.pwdHash);
+                console.log(credentials.pwdHash);
                 if (userDocument.pwdHash !== credentials.pwdHash) {
                     reject('Invalid password.');
                 } else {

@@ -5,7 +5,7 @@ define([
     use('[Credentials]'),
     use('[CredentialsValidator]'),
     use('sys.core.security.server.JwtToken')
-], (Base, User, ClaimsChecker, Credentials, CredentialsValidator, jwt) => {
+], (Base, User, ClaimsChecker, Credentials, CredentialsValidator, Jwt) => {
     /**
      * @class sys.core.security.server.Auth
      * @classdesc sys.core.security.server.Auth
@@ -22,10 +22,10 @@ define([
         this.func('validate', (resolve, reject, request) => {
             let token = request.getToken();
             if (token) {
-                jwt.verify(token).then((serializedUser) => {
-                    if (serializedUser) {
-                        let user = Serializer.deserialize(User, serializedUser),
-                            claimsChecker = new ClaimsChecker();
+                let jwt = new Jwt();
+                jwt.verify(token).then((user) => {
+                    if (user) {
+                        let claimsChecker = new ClaimsChecker();
                         if (claimsChecker.check(request.claims, user.access)) {
                             request.user = user;
                             resolve();
@@ -42,30 +42,26 @@ define([
         });
 
         this.func('login', (request) => {
-            if (request.isError) {
-                request.response.send.error(request.error, request.errorMessage);
-            } else {
-                let credentials = Serializer.deserialize(Credentials, request.data.credentials || {}),
-                    credentialsValidator = new CredentialsValidator();
-                credentialsValidator(credentials).then((user) => {
-                    if (user) {
-                        let serializedUser = Serializer.serialize(user);
-                        jwt.create(serializedUser).then((token) => {
-                            if (token) {
-                                request.response.send.json({token: token, user: serializedUser});
-                            } else {
-                                request.response.send.error(401, 'Failed to generate auth token.');
-                            }
-                        }).catch((err) => {
-                            request.response.send.error(401, `Failed to generate auth token. (${err || ''})`);
-                        });
-                    } else {
-                        request.response.send.error(401, 'User not found.');
-                    }
-                }).catch((err) => {
-                    request.response.send.error(401, `Invalid user name or password. (${err || ''})`);
-                });
-            }
+            let credentials = request.data.credentials || {},
+                credentialsValidator = new CredentialsValidator();
+            credentialsValidator.validate(credentials).then((user) => {
+                if (user) {
+                    jwt = new Jwt();
+                    jwt.create(user).then((token) => {
+                        if (token) {
+                            request.response.send.json({token: token, user: user});
+                        } else {
+                            request.response.send.error(401, 'Failed to generate auth token.');
+                        }
+                    }).catch((err) => {
+                        request.response.send.error(401, `Failed to generate auth token. (${err || ''})`);
+                    });
+                } else {
+                    request.response.send.error(401, 'User not found.');
+                }
+            }).catch((err) => {
+                request.response.send.error(401, `Invalid user name or password. (${err || ''})`);
+            });
         });
     });
 });

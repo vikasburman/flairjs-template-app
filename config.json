@@ -48,7 +48,8 @@
             "login": "#/login"        
         },
         "catalog": {
-            "CredentialsValidator": "app.demo.security.CredentialsValidator"
+            "CredentialsValidator": "app.demo.security.CredentialsValidator",
+            "CredentialsCreator": "web.demo.security.CredentialsCreator"        
         }
     }
 }

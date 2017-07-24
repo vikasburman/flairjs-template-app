@@ -26,16 +26,22 @@ define([
                 for(let wwwFolder of wwwFolders) {
                     wwwFolder = use(wwwFolder).replace('members/', '').replace('.js', '') + 'www/';
                     app.use('/', express.static(wwwFolder, { maxAge: age }));
+                    if (this.env.isDev) { console.log('static: / = ' + wwwFolder); }
                 }
                 app.use('/web', express.static(use('./web/modules/'), { maxAge: age }));
+                if (this.env.isDev) { console.log('static: /web = ' + use('./web/modules/')); }
                 app.use('/sys', express.static(use('./sys/modules/'), { maxAge: age }));
+                if (this.env.isDev) { console.log('static: /sys = ' + use('./sys/modules/')); }
             } else {
                 for(let wwwFolder of wwwFolders) {
                     wwwFolder = use(wwwFolder).replace('members/', '').replace('.js', '') + 'www/';
                     app.use('/', express.static(wwwFolder));
+                    if (this.env.isDev) { console.log('static: / = ' + wwwFolder); }
                 }
                 app.use('/web', express.static(use('./web/modules/')));
+                if (this.env.isDev) { console.log('static: /web = ' + use('./web/modules/')); }
                 app.use('/sys', express.static(use('./sys/modules/')));
+                if (this.env.isDev) { console.log('static: /sys = ' + use('./sys/modules/')); }
             }
 
             // dome

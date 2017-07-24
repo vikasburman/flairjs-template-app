@@ -7,9 +7,10 @@
         "App": "sys.core.app.Server | sys.core.app.Client",
         "Auth": "sys.core.security.server.Auth | sys.core.security.client.Auth",
         "ClaimsChecker": "sys.core.security.ClaimsChecker",
-        "User": "sys.core.security.User",
-        "Credentials": "sys.core.security.Credentials",
+        "User": "sys.core.security.dto.User",
+        "Credentials": "sys.core.security.dto.Credentials",
         "CredentialsValidator": "sys.core.security.CredentialsValidator",
+        "CredentialsCreator": "sys.core.security.CredentialsCreator",
         "Crypt": "sys.core.security.Crypt",
         "Transition": "sys.core.ui.Transition",
         "View": "sys.core.ui.View",
@@ -45,8 +46,8 @@
         ]
     },
     "bootwares": [
-        "sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies",
         "sys.core.bootwares.server.StaticServer | ",
+        "sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies",
         "sys.core.bootwares.Router",
         "sys.core.bootwares.ErrorHandler",
         "sys.core.bootwares.Attributes",
@@ -56,7 +57,9 @@
         { "name": "morgan", "args": ["dev"] },
         { "name": "compression" },
         { "name": "cookie-parser" },
-        { "name": "express-bearer-token" }
+        { "name": "express-bearer-token" },
+        { "name": "body-parser", "func": "urlencoded", "args": [{"extended": true}] },
+        { "name": "body-parser", "func": "json" }
     ],
     "dependencies": [
     ],

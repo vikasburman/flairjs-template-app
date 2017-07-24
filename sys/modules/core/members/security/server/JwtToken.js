@@ -13,7 +13,7 @@ define([
             let secret = this.settings('security.jwt.secretKey', 'adfdef1d-ce1a-470d-a652-f466292acf85'),
                 expiresInMinutes = this.settings('security.jwt.expiresInMinutes', 30),
                 token = jwt.sign(payload, secret, {
-                    expiresInMinutes: expiresInMinutes
+                    expiresIn: (expiresInMinutes * 60)
                 });
             resolve(token);
         });

@@ -19,23 +19,15 @@ define([
         this.prop('chatbots', null);
 
         this.func('getAll', (request) => {
-            if (request.isError) {
-                request.response.send.error(request.error, request.errorMessage);
-            } else {
-                let list = this.chatbots.getAll();
-                request.response.send.json(list);
-            }
+            let list = this.chatbots.getAll();
+            request.response.send.json(list);
         });
         this.func('getOne', (request) => {
-            if (request.isError) {
-                request.response.send.error(request.error, request.errorMessage);
+            let item = this.chatbots.get({name: request.args.name});
+            if (item) {
+                request.response.send.json(item);
             } else {
-                let item = this.chatbots.get({name: request.args.name});
-                if (item) {
-                    request.response.send.json(item);
-                } else {
-                    request.response.send.error(204, `${request.args.name} not found.`);
-                }
+                request.response.send.error(204, `${request.args.name} not found.`);
             }
         });
     });

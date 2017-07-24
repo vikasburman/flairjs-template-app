@@ -41,117 +41,69 @@ define([
                         staticOpts = this.args[1] || {},
                         fn = descriptor.value,
                         fnArgs = null,
-                        inputArgs = {},
                         enableCookies = staticOpts.enableCookies || false,
                         responseDataType = staticOpts.responseDataType || null,
                         requestDataType = staticOpts.requestDataType || null,
-                        auth = staticOpts.auth || null;
+                        auth = staticOpts.auth || null,
+                        pre =  staticOpts.pre || null;
                     if (staticOpts.responseDataType) { delete staticOpts.responseDataType; }
                     if (staticOpts.requestDataType) { delete staticOpts.requestDataType; }
                     if (staticOpts.auth) { delete staticOpts.auth; }    
+                    if (staticOpts.pre) { delete staticOpts.pre; }    
                     if (staticOpts.enableCookies) { delete staticOpts.enableCookies; }    
                     descriptor.value = function(urlFillsOrInputData, inputData) {
+                        // pre-processing of args
+                        let inputArgs = {
+                            url: null,
+                            body: null
+                        },
                         _fetchUrl = fetchUrl;
                         if (_fetchUrl.indexOf('/:') === -1) { // e.g., items/:id or http://www.abc.com/items/:type/:id or /home#/pages/:page
                             inputArgs.body = urlFillsOrInputData; // that means, only inputData is passed as first argument and not urlFills
                         } else {
-                            inputArgs.urlFills = urlFillsOrInputData;
+                            inputArgs.url = urlFillsOrInputData;
                             inputArgs.body = inputData;
+                        }
+                        if (typeof pre === 'function') {
+                            pre(inputArgs);
+                        }
+
+                        // build url
+                        if (inputArgs.url) {
+                            for(let fill in inputArgs.url) {
+                                if (inputArgs.url.hasOwnProperty(fill)) {
+                                    _fetchUrl = _fetchUrl.replace('/:' + fill, encodeURIComponent('/' + inputArgs.url[fill].toString()));
+                                }
+                            }
                         }
 
                         // fetch
                         return new Promise((resolve, reject) => {
-                            // actual fetch
-                            let doFetch = (updatedBody = null) => {
-                                return new Promise((_resolve, _reject) => {
-                                    let onFetch = (err, response, data) => {
-                                        let _response = new FetchResponse(response, err, data);
-                                        if (err) {
-                                            _reject(_response);
-                                        } else {
-                                            _resolve(_response);
-                                        }
-                                    };
-
-                                    // build url
-                                    if (inputArgs.urlFills) {
-                                        for(let fill in inputArgs.urlFills) {
-                                            if (inputArgs.urlFills.hasOwnProperty(fill)) {
-                                                _fetchUrl = _fetchUrl.replace('/:' + fill, encodeURIComponent('/' + inputArgs.urlFills[fill].toString()));
-                                            }
-                                        }
-                                    }
-
-                                    // update body
-                                    if (updatedBody) {
-                                        inputArgs.body = updatedBody;
-                                    }
-
-                                    // prepare call options
-                                    if (_fetchUrl) {
-                                        // staticOpts: can be all that fetch's init argument expects
-                                        //             additionally it can have
-                                        if(inputArgs.body) {
-                                            if (requestDataType) {
-                                                if (staticOpts.headers && staticOpts.headers['Content-Type']) {
-                                                    // both are defined, give Conteny-Type precedence and ignore requestDataType
-                                                } else {
-                                                    staticOpts.headers = staticOpts.headers || {};
-                                                    staticOpts.headers['Content-Type'] = requestDataType;
-                                                }
-                                            }
-                                            if (staticOpts.headers && staticOpts.headers['Content-Type'] && staticOpts.headers['Content-Type'].indexOf('json') !== -1) {
-                                                staticOpts.body = JSON.stringify(inputArgs.body); // json
-                                            } else {
-                                                staticOpts.body = inputArgs.body; // could be text, buffer, array, object or formData
-                                            }
-                                        }
-
-                                        // cookies
-                                        if (enableCookies) {
-                                            staticOpts.headers = staticOpts.headers || {};
-                                            if (enableCookies === 'all') {
-                                                staticOpts.headers.credentials = 'include';
-                                            } else {
-                                                staticOpts.headers.credentials = 'same-origin';
-                                            }
+                            let onFetch = (err, response, data) => {
+                                fnArgs = [resolve, reject, new FetchResponse(response, err, data)];
+                                fn(...fnArgs);
+                            };
+                            if (_fetchUrl) {
+                                // staticOpts: can be all that fetch's init argument expects
+                                //             additionally it can have
+                                if(inputArgs.body) {
+                                    if (requestDataType) {
+                                        if (staticOpts.headers && staticOpts.headers['Content-Type']) {
+                                            // both are defined, give Conteny-Type precedence and ignore requestDataType
                                         } else {
                                             staticOpts.headers = staticOpts.headers || {};
-                                            staticOpts.headers.credentials = 'omit';
+                                            staticOpts.headers['Content-Type'] = requestDataType;
                                         }
-
-                                        // auth
-                                        if (auth) {
-                                            let applyHeaders = (authHeaders) => {
-                                                for(let authHeader in authHeaders) {
-                                                    if (authHeaders.hasOwnProperty(authHeader)) {
-                                                        staticOpts.headers = staticOpts.headers || {};
-                                                        staticOpts.headers[authHeader] = authHeaders[authHeader];
-                                                    }
-                                                }
-                                            };
-                                            if (typeof auth === 'function') {
-                                                auth(name).then((authHeaders) => {
-                                                    applyHeaders(authHeaders);
-                                                }).catch((err) => {
-                                                    onFetch(err, null, null);
-                                                });
-                                            } else if (typeof auth === 'string' && auth === 'auto') {
-                                                if (this.env.isServer) {
-                                                    onFetch('invalid auth settings for server.', null, null);
-                                                } else {
-                                                    let auth = new Auth();
-                                                    applyHeaders(auth.getTokenHeader());
-                                                }
-                                            } else {
-                                                onFetch('invalid auth settings.', null, null);
-                                            }
-                                        }
+                                     }
+                                    if (staticOpts.headers && staticOpts.headers['Content-Type'] && staticOpts.headers['Content-Type'].indexOf('json') !== -1) {
+                                        staticOpts.body = JSON.stringify(inputArgs.body); // json
                                     } else {
-                                        onFetch('invalid fetch url', null, null);
-                                    }                                    
+                                        staticOpts.body = inputArgs.body; // could be text, buffer, array, object or formData
+                                    }
+                                }
 
-                                    // actual call
+                                // actual fetch
+                                let doFetch = () => {
                                     fetch(_fetchUrl, staticOpts).then((response) => {
                                         if (response.ok) {
                                             switch(responseDataType) {
@@ -205,19 +157,55 @@ define([
                                     }).catch((err) => {
                                         onFetch(err, null, null);
                                     });
-                                });
-                            };
+                                };
 
-                            // helper methods
-                            doFetch.updateUrl = (urlFills) => {
-                                inputArgs.urlFills = urlFills;
-                            };
-                            doFetch.post = (updatedBody) => { // updated body can also be provided via 
-                                inputArgs.body = updatedBody;
-                            };
+                                // cookies
+                                if (enableCookies) {
+                                    staticOpts.headers = staticOpts.headers || {};
+                                    if (enableCookies === 'all') {
+                                        staticOpts.headers.credentials = 'include';
+                                    } else {
+                                        staticOpts.headers.credentials = 'same-origin';
+                                    }
+                                } else {
+                                    staticOpts.headers = staticOpts.headers || {};
+                                    staticOpts.headers.credentials = 'omit';
+                                }
 
-                            fnArgs = [doFetch, resolve, reject, inputArgs.body];
-                            fn(...fnArgs);
+                                // auth
+                                if (auth) {
+                                    let applyHeaders = (authHeaders) => {
+                                        for(let authHeader in authHeaders) {
+                                            if (authHeaders.hasOwnProperty(authHeader)) {
+                                                staticOpts.headers = staticOpts.headers || {};
+                                                staticOpts.headers[authHeader] = authHeaders[authHeader];
+                                            }
+                                        }
+                                    };
+                                    if (typeof auth === 'function') {
+                                        auth(name).then((authHeaders) => {
+                                            applyHeaders(authHeaders);
+                                            doFetch();
+                                        }).catch((err) => {
+                                            onFetch(err, null, null);
+                                        });
+                                    } else if (typeof auth === 'string' && auth === 'auto') {
+                                        if (this.env.isServer) {
+                                            onFetch('invalid auth settings for server.', null, null);
+                                        } else {
+                                            let auth = new Auth();
+                                            applyHeaders(auth.getTokenHeader());
+                                            doFetch();
+                                        }
+                                    } else {
+                                        onFetch('invalid auth settings.', null, null);
+                                    }
+                                } else {
+                                    doFetch();
+                                }
+                            } else {
+                                onFetch('invalid fetch url', null, null);
+                            }
                         });
                     }.bind(obj);
                 });
