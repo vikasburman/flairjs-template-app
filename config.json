@@ -1,14 +1,14 @@
 {
     "settings": {
         "app": {
-            "title": "naarad",
-            "version": "0.1.0",
+            "title": "My Application",
+            "version": "1.0.0",
             "edition": "alpha",
-            "copyright": "Ⓒ 2016-17, enbots services pvt ltd",
-            "tagline": "making enterprises digitally conversational",
-            "desc": "the complete chatbot solution on a pay as you go model",
-            "url": "http://www.enbots.com/naarad",
-            "org": "http://www.enbots.com" 
+            "copyright": "Ⓒ xxxx, ...",
+            "tagline": "...",
+            "desc": "...",
+            "url": "...",
+            "org": "..."
         },
         "loader": {
             "tabletWidth": {
@@ -18,20 +18,19 @@
         },
         "routesOrder": {
             "server": [
-                "app.demo"
             ],
             "client": [
-                "web.demo"
+                "web.sample"
             ]
         },
         "www": [
-            "web.demo"
+            "web.sample"
         ]
     },
 
     "sys.core": {
         "static": {
-            "favIcon": "web/demo/www/images/logo.png",
+            "favIcon": "web/sample/www/images/logo.png",
             "caching": {  
                 "enabled": true
             }  
@@ -48,8 +47,6 @@
             "login": "#/login"        
         },
         "catalog": {
-            "CredentialsValidator": "app.demo.security.CredentialsValidator",
-            "CredentialsCreator": "web.demo.security.CredentialsCreator"        
         }
     }
 }

@@ -1,9 +1,0 @@
-{
-    "routes": {
-        "client": [
-            { "root": "/", "url": "/", "class": "web.demo.views.Home"},
-            { "root": "/", "url": "/chatbots/:name", "class": "web.demo.views.Chatbot"},
-            { "root": "/", "url": "/login", "class": "web.demo.views.Login"}
-        ]
-    }
-}

@@ -36,14 +36,14 @@ define([
             }           
         });
 
-        attr('fetch', '/auth', {
+        attr('service', '/auth', {
             method: 'POST',
             requestDataType: 'application/json',
             responseDataType: 'json',
             pre: (args) => { args.body = { credentials: args.body }; }
         });
-        this.func('login', (doFetch, resolve, reject, credentials) => {
-            doFetch({credentials : credentials}).then((response) => {
+        this.func('login', (service, resolve, reject, credentials) => {
+            service({credentials : credentials}).then((response) => {
                 if (response.isError) {
                     reject(response.error);
                 } else {

@@ -12,8 +12,8 @@ define([
     return Class('sys.core.bootwares.Attributes', Base, [IBootware], function(attr) {
         attr('async');
         this.func('boot', (resolve, reject, app) => {
-            // fetch
-            // fetch(url, [options])
+            // service
+            // service(url, [options])
             //  url: can be relative, full or url pattern with /:<key> as part of url
             //  options: can be a literal having:
             //      - enableCookies: true (for same origin), false (no cookies sent), all (even for cross-origin calls)
@@ -30,7 +30,7 @@ define([
             //          'auto': automatically picks the auth header from the session (only on client, throws on server)
             //          fn: a function reference, that gives access headers for fetch operation (key-value pairs returned from here are added under headers)
             //      - Additionally it can have everything else that 'init' option of fetch request looks for (https://developer.mozilla.org/en/docs/Web/API/Fetch_API)
-            Container.register(Class('fetch', Attribute, function() {
+            Container.register(Class('service', Attribute, function() {
                 this.decorator((obj, type, name, descriptor) => {
                     // validate
                     if (['func'].indexOf(type) === -1) { throw `fetch attribute cannot be applied on ${type} members. (${name})`; }
@@ -212,7 +212,7 @@ define([
                             doFetch.updateUrl = (urlFills) => {
                                 inputArgs.urlFills = urlFills;
                             };
-                            doFetch.post = (updatedBody) => { // updated body can also be provided via 
+                            doFetch.updateData = (updatedBody) => { // updated body can also be provided via direct doFetch() call
                                 inputArgs.body = updatedBody;
                             };
 
