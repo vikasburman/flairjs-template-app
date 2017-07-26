@@ -62,6 +62,7 @@ const updateBP = (cb) => {
     downloader(repo, tempFolder, (e) => {
         if (e) {
             console.log(e);
+            onDone();
         } else {
             // copy all folders as is from downloaded to here
             let tempName = '';
@@ -99,7 +100,7 @@ const updateBP = (cb) => {
             }
             if (added > 0) {
                 fs.writeJSONSync('./package.json', packageJson);
-                console.log(added + ' packages added in package.json. Run yarn install to install these new dependencies.');
+                console.log(added + ' packages added in package.json. Run yarn install to add these new dependencies.');
             } else {
                 console.log('No new dependency is found.');
             }
