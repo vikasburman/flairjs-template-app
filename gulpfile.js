@@ -4,6 +4,19 @@ let isDev = false;
 let isProd = false;
 let isTest = false;
 
+// task: upd-oojs (to update oojs library from oojs repo, in appgears development)
+gulp.task('upd-oojs', (done) => {
+    let updater = require('./build/task-upd-oojs.js').updater;
+    updater(isDev, isProd, isTest, done);    
+});
+
+// task: upd-ag (to update appgears files from appgears repo)
+// to be used during development of a project based on appgears
+gulp.task('upd-ag', (done) => {
+    let updater = require('./build/task-upd-ag.js').updater;
+    updater(isDev, isProd, isTest, done);
+});
+
 // task: clean (to delete all generated files)
 gulp.task('clean', (done) => {
     let cleaner = require('./build/task-clean.js').cleaner;
