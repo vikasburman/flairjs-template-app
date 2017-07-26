@@ -1,3 +1,4 @@
+// vikas
 const utils = require('./utils.js');
 const buildSettings = require('./.build.json');
 const fs = require('fs-extra');
@@ -52,7 +53,7 @@ const updateBP = (cb) => {
             };
 
             // update package json
-            let repoPackageJson = require(tempFolder + '/package.json'),
+            let repoPackageJson = require('.' + tempFolder + '/package.json'), // one level back
                 added = 0;
             for(let dep in repoPackageJson.devDependencies) {
                 if (repoPackageJson.devDependencies.hasOwnProperty(dep)) {
