@@ -6,40 +6,12 @@ const packageJson = require('../package.json');
 const prompt = require('prompt');
 
 // update appgears files
-const updateFile = (src, dest, tempFolder, fileName, onDone) => {
-    let tempFileName = tempFolder + '/' + fileName,
-        tempFile = fs.createWriteStream(tempFileName);
-
-    // download file in temp folder    
-    https.get(src + fileName, (res) => {
-        res.pipe(tempFile);
-
-        // update
-        try {
-            let targetFileName = dest + fileName;
-            console.log('updating: ' + tempFileName + ' --> ' + targetFileName);
-            fs.createReadStream(tempFileName).pipe(fs.createWriteStream(targetFileName));
-            onDone(true);
-        } catch (e) {
-            console.log(e);
-            onDone(false);
-        }
-    }).on('error', (e) => {
-        console.log(e);
-        onDone(false);
-    });
-};
-const updateFolder = (src, dest, tempFolder, folderName, onDone) => {
-    let tempFolderName = tempFolder + '/' + folderName;
-
-
-};
 const updateBP = (cb) => {
     let repo = 'vikasburman/appgears#master',
         tempFolder = './temp.download',
         folders = [
-            'app/sample',
-            'web/sample',
+            'app/modules/sample',
+            'web/modules/sample',
             'build',
             'sys',
         ],
