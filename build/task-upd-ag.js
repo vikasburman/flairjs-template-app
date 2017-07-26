@@ -70,10 +70,11 @@ const updateBP = (cb) => {
                     }
                 }
             }
+            packageJson.agversion = repoPackageJson.version; // update framework version
+            fs.writeJSONSync('./package.json', packageJson, {
+                spaces: '\t'
+            });
             if (added > 0) {
-                fs.writeJSONSync('./package.json', packageJson, {
-                    spaces: '\t'
-                });
                 console.log(added + ' packages added in package.json. Run yarn install to add these new dependencies.');
             } else {
                 console.log('No new dependency is found.');
