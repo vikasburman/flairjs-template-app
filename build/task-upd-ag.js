@@ -1,4 +1,3 @@
-// vikas
 const utils = require('./utils.js');
 const buildSettings = require('./.build.json');
 const fs = require('fs-extra');
@@ -72,7 +71,9 @@ const updateBP = (cb) => {
                 }
             }
             if (added > 0) {
-                fs.writeJSONSync('./package.json', packageJson);
+                fs.writeJSONSync('./package.json', packageJson, {
+                    spaces: '\t'
+                });
                 console.log(added + ' packages added in package.json. Run yarn install to add these new dependencies.');
             } else {
                 console.log('No new dependency is found.');
