@@ -43,7 +43,7 @@ define([
         attr('readonly');
         this.prop('isFresh', false);
 
-        this.func('getLocale', () => { return this.getHeader('userLocale') || this.env.locales.default; })
+        this.func('getLocale', () => { return this.getHeader('userLocale') || this.env.getLocate(); })
         this.func('getToken', () => { return this.req.token || null; });
         this.func('getHeader', (...args) => { return this.req.get(...args); });
         this.func('getCookie', (name, isSigned) => { 

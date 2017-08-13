@@ -122,7 +122,7 @@ define([
 
                                         // locale
                                         staticOpts.headers = staticOpts.headers || {};
-                                        staticOpts.headers.userLocale = this.env.getLocale();
+                                        staticOpts.headers.userLocale = this.env.getLocale(); // this is full locale object
 
                                         // auth
                                         if (auth) {
