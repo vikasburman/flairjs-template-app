@@ -102,7 +102,7 @@ define([
                         let credentials = { key: privateKey, cert: certificate };
 
                         let https = require('https');
-                        let port = this.settings('port.dev', 443);
+                        let port = this.settings('port.prod', 443);
                         this.app.set('port', port);
                         this.server = https.createServer(credentials, this.app);
                     }

@@ -1,3 +1,4 @@
 1. multer needs to be used - especially to upload/use file(s)
 2. reCaptcha implementation must be very clean
-3. 
+3. replace www folder name to static folder name
+4. oojs update is not working correctly - half file is getting downloaded -- check...
