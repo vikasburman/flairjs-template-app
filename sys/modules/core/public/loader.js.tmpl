@@ -6,9 +6,9 @@
     config.env = {
         vars: {},
         locales: {
-            default: 'en-US',
+            default: 'en-us',
             supported: {
-                'en-US': { lcid: '1033', display: 'English (United States)', rtl: false }
+                'en-us': { lcid: '1033', display: 'English (United States)', rtl: false }
             }
         }, 
         isServer: isServer,
@@ -459,7 +459,7 @@
             let locale = sessionStorage.getItem('locale') || config.env.locales.default || 'en-US',
                 localeObj = config.env.locales.supported[locale];
             if (!localeObj) {
-                localeObj =  { name:'en-US', lcid: '1033', display: 'English (United States)', rtl: false }
+                localeObj =  { name:'en-us', lcid: '1033', display: 'English (United States)', rtl: false }
             } else {
                 localeObj.name = locale;
             }

@@ -15,9 +15,9 @@
     config.env = {
         vars: {},
         locales: {
-            default: 'en-US',
+            default: 'en-us',
             supported: {
-                'en-US': { lcid: '1033', display: 'English (United States)', rtl: false }
+                'en-us': { lcid: '1033', display: 'English (United States)', rtl: false }
             }
         }, 
         isServer: isServer,
@@ -25,7 +25,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Sun, 13 Aug 2017 17:51:11 GMT',         
+        lupdate: 'Sun, 13 Aug 2017 18:39:48 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
@@ -468,7 +468,7 @@
             let locale = sessionStorage.getItem('locale') || config.env.locales.default || 'en-US',
                 localeObj = config.env.locales.supported[locale];
             if (!localeObj) {
-                localeObj =  { name:'en-US', lcid: '1033', display: 'English (United States)', rtl: false }
+                localeObj =  { name:'en-us', lcid: '1033', display: 'English (United States)', rtl: false }
             } else {
                 localeObj.name = locale;
             }
