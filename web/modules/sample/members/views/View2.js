@@ -14,15 +14,5 @@ define([
         });
 
         this.template = '<div><a href="#/">goto Home</a></div>';
-
-        attr('override');
-        attr('endpoint');
-        this.func('navigate', (base, resolve, reject, request) => {
-            console.log('initiating navigate');
-            base(request).then(() => {
-                console.log('navigation done.');
-                resolve();
-            }).catch(reject);
-        });
     });
 });

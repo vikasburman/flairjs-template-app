@@ -36,7 +36,9 @@ define([
 
                             // set class
                             elClass = $host.getAttribute('class') || '';
-                            elClass = 'ag-stage ' + elClass;
+                            if (elClass.indexOf('ag-stage') === -1) {
+                                elClass = 'ag-stage ' + elClass;
+                            }
                             $host.setAttribute('class', elClass.trim());
                             
                             this._.pr.$host = $host;
@@ -52,7 +54,9 @@ define([
 
                             // set class
                             elClass = $host.getAttribute('class') || '';
-                            elClass = 'ag-container ' + elClass;
+                            if (elClass.indexOf('ag-container') === -1) {
+                                elClass = 'ag-container ' + elClass;
+                            }
                             $host.setAttribute('class', elClass.trim());
                             
                             this._.pr.$host = $host;
@@ -97,7 +101,9 @@ define([
                                 case ComponentTypes.View: elClassName = 'view'; break;
                                 case ComponentTypes.Partial: elClassName = 'partial'; break;
                             }
-                            elClass = 'ag-' + elClassName + ' ' + elClass;
+                            if (elClass.indexOf('ag-' + elClassName) === -1) {
+                                elClass = 'ag-' + elClassName + ' ' + elClass;
+                            }
                             this._.pr.$el.setAttribute('class', elClass.trim());
 
                             // done

@@ -20,23 +20,23 @@ define([
 
             // configure static content serving
             let age = this.settings('static.caching.age', 0),
-                wwwFolders = this.settings(':www', []);
-                wwwFolders.unshift(this.assembly); // add sys.core on top as first default item
+                publicFolders = this.settings(':public', []);
+                publicFolders.unshift(this.assembly); // add sys.core on top as first default item
             if (this.settings('static.caching.enabled') && age !== 0) { 
-                for(let wwwFolder of wwwFolders) {
-                    wwwFolder = use(wwwFolder).replace('members/', '').replace('.js', '') + 'www/';
-                    app.use('/', express.static(wwwFolder, { maxAge: age }));
-                    if (this.env.isDev) { console.log('static: / = ' + wwwFolder); }
+                for(let publicFolder of publicFolders) {
+                    publicFolder = use(publicFolder).replace('members/', '').replace('.js', '') + 'public/';
+                    app.use('/', express.static(publicFolder, { maxAge: age }));
+                    if (this.env.isDev) { console.log('static: / = ' + publicFolder); }
                 }
                 app.use('/web', express.static(use('./web/modules/'), { maxAge: age }));
                 if (this.env.isDev) { console.log('static: /web = ' + use('./web/modules/')); }
                 app.use('/sys', express.static(use('./sys/modules/'), { maxAge: age }));
                 if (this.env.isDev) { console.log('static: /sys = ' + use('./sys/modules/')); }
             } else {
-                for(let wwwFolder of wwwFolders) {
-                    wwwFolder = use(wwwFolder).replace('members/', '').replace('.js', '') + 'www/';
-                    app.use('/', express.static(wwwFolder));
-                    if (this.env.isDev) { console.log('static: / = ' + wwwFolder); }
+                for(let publicFolder of publicFolders) {
+                    publicFolder = use(publicFolder).replace('members/', '').replace('.js', '') + 'public/';
+                    app.use('/', express.static(publicFolder));
+                    if (this.env.isDev) { console.log('static: / = ' + publicFolder); }
                 }
                 app.use('/web', express.static(use('./web/modules/')));
                 if (this.env.isDev) { console.log('static: /web = ' + use('./web/modules/')); }

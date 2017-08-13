@@ -8,9 +8,9 @@
   "link": "http://",
   "repository": "https://github.com/vikasburman/appgears.git",
   "scripts": {
-    "dev": "gulp dev && nodemon sys/modules/core/www/loader.js",
-    "dbg": "gulp dbg && nodemon sys/modules/core/www/loader.js",
-    "prod": "gulp prod && forever sys/modules/core/www/loader.js",
+    "dev": "gulp dev && nodemon sys/modules/core/public/loader.js",
+    "dbg": "gulp dbg && nodemon sys/modules/core/public/loader.js",
+    "prod": "gulp prod && forever sys/modules/core/public/loader.js",
     "test": "gulp test",
     "build": "gulp"
   },

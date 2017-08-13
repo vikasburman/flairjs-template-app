@@ -23,14 +23,14 @@
                 "web.sample"
             ]
         },
-        "www": [
+        "public": [
             "web.sample"
         ]
     },
 
     "sys.core": {
         "static": {
-            "favIcon": "web/sample/www/images/logo.png",
+            "favIcon": "web/sample/public/images/logo.png",
             "caching": {  
                 "enabled": true
             }  

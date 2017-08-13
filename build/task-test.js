@@ -10,7 +10,7 @@ const doTest = (isDev, isProd, isTest, done) => {
         tests = [];
 
     // fill tests array
-    tests.push(require('app-root-path') + '/' + 'sys/modules/core/www/loader.js');
+    tests.push(require('app-root-path') + '/' + 'sys/modules/core/public/loader.js');
     let dirs = [
         'sys/modules/',
         'web/modules/',
