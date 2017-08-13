@@ -16,7 +16,7 @@ define([
 
         attr('async');
         this.func('validate', (resolve, reject, credentials) => {
-            let validatedUser = new User(credentials.loginId, '(Dummy)', [], []);
+            let validatedUser = new User(credentials.loginId, '(Dummy)', [], [], credentials.clientId);
             resolve(validatedUser);
         });
     });

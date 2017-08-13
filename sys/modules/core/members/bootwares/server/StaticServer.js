@@ -20,7 +20,7 @@ define([
 
             // configure static content serving
             let age = this.settings('static.caching.age', 0),
-                publicFolders = this.settings(':public', []);
+                publicFolders = this.settings(':static', []);
                 publicFolders.unshift(this.assembly); // add sys.core on top as first default item
             if (this.settings('static.caching.enabled') && age !== 0) { 
                 for(let publicFolder of publicFolders) {

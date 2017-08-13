@@ -53,6 +53,7 @@ define([
                 //  this beforeShow
                 //  this mount
                 //  this bind
+                //  set direction
                 //  transtion this in and last out
                 //  last afterHide
                 //  last unbind
@@ -62,6 +63,7 @@ define([
                 //  this beforeShow
                 //  this mount
                 //  this bind
+                //  set direction
                 //  transtion this in
                 //  this afterShow
                 // this focus
@@ -72,6 +74,7 @@ define([
                                 current._.cfas('beforeShow').then(() => {
                                     current._.pr.mount();
                                     current._.pr.bind();
+                                    this.setDirection();
                                     this.transition.in(current._.pr.$el, last._.pr.$el);
                                     last._.cfas('afterHide').then(() => {
                                         last._.pr.unbind();
@@ -87,6 +90,7 @@ define([
                             current._.cfas('beforeShow').then(() => {
                                 current._.pr.mount();
                                 current._.pr.bind();
+                                this.setDirection();
                                 this.transition.in(current._.pr.$el);
                                 current._.cfas('afterShow').then(() => {
                                     current._.pr.focus();
@@ -108,6 +112,21 @@ define([
         this.prop('current', 
             () => { return this.env.get('currentView', null); }, 
             (view) => { this.env.set('currentView', view); 
+        });
+
+        attr('private');
+        this.func('setDirection', () => {
+            // set/reset rtl
+            let currentRTL = document.body.getAttribute('dir');
+            if (this.env.getLocale().rtl) {
+                if (currentRTL !== 'rtl') {
+                    document.body.setAttribute('dir', 'rtl');
+                }
+            } else {
+                if (currentRTL === 'rtl') {
+                    document.body.setAttribute('dir', '');
+                }
+            }
         });
 
         attr('protected');

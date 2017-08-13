@@ -14,6 +14,12 @@
             "tabletWidth": {
                 "min": 600,
                 "max": 992
+            },
+            "locales": {
+                "default": "en-US",
+                "supported": {
+                    "en-US": { "lcid": "1033", "display": "English (United States)", "rtl": false }
+                }
             }
         },
         "routesOrder": {
@@ -23,7 +29,7 @@
                 "web.sample"
             ]
         },
-        "public": [
+        "static": [
             "web.sample"
         ]
     },

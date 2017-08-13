@@ -4,7 +4,8 @@ define(() => {
      * @classdesc sys.core.security.dto.User
      * @desc User information.
      */
-    return Structure('sys.core.security.dto.User', function(loginId, name, roles, claims) {
+    return Structure('sys.core.security.dto.User', function(loginId, name, roles, claims, clientId = '') {
+        this.clientId = clientId;
         this.loginId = loginId;
         this.name = name;
         this.roles = roles;

@@ -5,6 +5,12 @@
     const config = JSON.parse(`<!-- inject: ./.config.json -->`);
     config.env = {
         vars: {},
+        locales: {
+            default: 'en-US',
+            supported: {
+                'en-US': { lcid: '1033', display: 'English (United States)', rtl: false }
+            }
+        }, 
         isServer: isServer,
         isDevice: false,
         isCordova: false,
@@ -26,13 +32,11 @@
             bundles: {}
         }
     };
-    config.env.set = (varName, value) => { config.env.vars[varName] = value; };
-    config.env.get = (varName, defaultValue = null) => { return config.env.vars[varName] || defaultValue; };
     if (!config.env.isDev) { // dev mode get files as is from server, instead of bundles, as there are no bundles
         Object.assign(config.env.require.paths, JSON.parse('[%]PATHS[%]'));
         Object.assign(config.env.require.bundles, JSON.parse('[%]BUNDLES[%]'));
     }
-    if (!config.env.isServer) {
+    if (!isServer) {
         if (window.document) {
             config.env.isDevice = (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1);
         }
@@ -41,6 +45,11 @@
         } else if (window.innerWidth > config.settings.loader.tabletWidth.min && window.innerWidth <= config.settings.loader.tabletWidth.max) {
             config.env.isTablet = true;
         }
+    }
+
+    if (config.settings.loader.locales) {
+        config.env.locales.default = config.settings.loader.locales.default;
+        config.env.locales.supported = config.settings.loader.locales.supported;
     }
 
     const dummyJS = 'sys.core.dummy';
@@ -390,45 +399,9 @@
     g.forAsync = forAsync; g.replaceAll = replaceAll; 
     g.App = null;
 
-    // extend environment
-    config.env.loadScript = (url) => {
-        return new Promise((resolve, reject) => {
-            _loadScript(url, resolve, reject);
-        });
-    };
-    config.env.addShim = (shim, deps) => {
-        // shim: { name: '', path: '' }
-        // deps: [ { name: '', path: '' } ]
-        let requireConfig = config.env.require,
-            requireShim = requireConfig.shim || {},
-            requirePaths = requireConfig.paths || {};
-        
-        // add shim path
-        if (requirePaths[shim.name] || requireShim[shim.name]) { throw `${shim.name} already added.`; }
-        requirePaths[shim.name] = use(shim.path).replace('.js', '');       
-        requireShim[shim.name] = {
-            exports: shim.name
-        };
-
-        // add dependencies
-        if (deps) {
-            let allDeps = [];
-            for(let dep of deps) {
-                if (requirePaths[dep.name] || requireShim[dep.name]) { throw `${dep.name} already added.`; }
-                allDeps.push(dep.name);
-                requirePaths[dep.name] = use(dep.path).replace('.js', '');
-                requireShim[dep.name] = {
-                    exports: dep.name
-                };
-            }
-            requireShim[shim.name].deps = allDeps;
-        }
-
-        // update config
-        requireConfig.shim = requireShim;
-        requireConfig.paths = requirePaths;
-        require.config(requireConfig); // update config
-    };
+    // extend environment (server and client)
+    config.env.set = (varName, value) => { config.env.vars[varName] = value; };
+    config.env.get = (varName, defaultValue = null) => { return config.env.vars[varName] || defaultValue; };
     config.env.queryStringToObject = (qs = '') => {
         let args = {};
         if (typeof qs === 'string') {
@@ -440,7 +413,79 @@
             }
         }
         return args;
-    };
+    };  
+
+    // extend env (client only)
+    if (!isServer) {
+        config.env.loadScript = (url) => {
+            return new Promise((resolve, reject) => {
+                _loadScript(url, resolve, reject);
+            });
+        };
+        config.env.addShim = (shim, deps) => {
+            // shim: { name: '', path: '' }
+            // deps: [ { name: '', path: '' } ]
+            let requireConfig = config.env.require,
+                requireShim = requireConfig.shim || {},
+                requirePaths = requireConfig.paths || {};
+            
+            // add shim path
+            if (requirePaths[shim.name] || requireShim[shim.name]) { throw `${shim.name} already added.`; }
+            requirePaths[shim.name] = use(shim.path).replace('.js', '');       
+            requireShim[shim.name] = {
+                exports: shim.name
+            };
+
+            // add dependencies
+            if (deps) {
+                let allDeps = [];
+                for(let dep of deps) {
+                    if (requirePaths[dep.name] || requireShim[dep.name]) { throw `${dep.name} already added.`; }
+                    allDeps.push(dep.name);
+                    requirePaths[dep.name] = use(dep.path).replace('.js', '');
+                    requireShim[dep.name] = {
+                        exports: dep.name
+                    };
+                }
+                requireShim[shim.name].deps = allDeps;
+            }
+
+            // update config
+            requireConfig.shim = requireShim;
+            requireConfig.paths = requirePaths;
+            require.config(requireConfig); // update config
+        };
+        config.env.getLocale = () => { 
+            let locale = sessionStorage.getItem('locale') || config.env.locales.default || 'en-US',
+                localeObj = config.env.locales.supported[locale];
+            if (!localeObj) {
+                localeObj =  { name:'en-US', lcid: '1033', display: 'English (United States)', rtl: false }
+            } else {
+                localeObj.name = locale;
+            }
+            return localeObj;
+        };
+        config.env.getLocales = () => {
+            let items = [],
+                item = null;
+            for(let locale in config.env.locales.supported) {
+                if (config.env.locales.supported.hasOwnProperty(locale)) {
+                    item = config.env.locales.supported[locale];
+                    item.name = locale;
+                    items.push(item);
+                }
+            }
+            return items;
+        };
+        config.env.setLocale = (locale, isSupressRefresh) => { 
+            if (config.env.locales.supported[locale]) {
+                sessionStorage.setItem('locale', locale);
+                if (!isSupressRefresh) {
+                    location.reload();
+                }
+            }
+        };
+    }
 
     // setup
     const _loadScript = (src, success, error) => {

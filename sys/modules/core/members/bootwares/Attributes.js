@@ -33,8 +33,8 @@ define([
             Container.register(Class('service', Attribute, function() {
                 this.decorator((obj, type, name, descriptor) => {
                     // validate
-                    if (['func'].indexOf(type) === -1) { throw `fetch attribute cannot be applied on ${type} members. (${name})`; }
-                    if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `fetch attribute cannot be applied on special function. (${name})`; }
+                    if (['func'].indexOf(type) === -1) { throw `service attribute cannot be applied on ${type} members. (${name})`; }
+                    if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `service attribute cannot be applied on special function. (${name})`; }
 
                     // decorate
                     let fetchUrl = this.args[0] || '',
@@ -119,6 +119,10 @@ define([
                                             staticOpts.headers = staticOpts.headers || {};
                                             staticOpts.headers.credentials = 'omit';
                                         }
+
+                                        // locale
+                                        staticOpts.headers = staticOpts.headers || {};
+                                        staticOpts.headers.userLocale = this.env.getLocale();
 
                                         // auth
                                         if (auth) {

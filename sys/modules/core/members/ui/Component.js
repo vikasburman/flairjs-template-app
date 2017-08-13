@@ -15,13 +15,14 @@ define([
             this.type = type;
             this.parent = parent;
             this.args = args;
+            this.data.assets = {}; // special data name, where all assets are loaded
         });
 
         attr('protected');
         attr('sealed');
         this.func('init', () => {
             return new Promise((resolve, reject) => {
-                let defineHost = () => {
+                const defineHost = () => {
                     let $host = null,
                         elClass = '';
                     switch(this.type) {
@@ -66,7 +67,7 @@ define([
                             break;
                     }
                 };
-                let loadHtml = () => {
+                const loadHtml = () => {
                     return new Promise((resolve, reject) => {
                         let onLoadHtml = (html) => {
                             // process html
@@ -117,7 +118,7 @@ define([
                         }
                     });
                 };
-                let initPartials = () => {
+                const initPartials = () => {
                     return new Promise((_resolve, _reject) => {
                         // find partials
                         // a partial is defined in html as:
@@ -170,7 +171,7 @@ define([
                         }).catch(_reject);
                     });
                 };
-                let loadDeps = () => {
+                const loadDeps = () => {
                     return new Promise((resolve, reject) => {
                         // deps are defined on main node as <div ag-deps="..., ..., ..."></div>
                         // each dep is scoped to current component's home url and are seperated by a ','
@@ -203,18 +204,72 @@ define([
                             resolve();
                         }
                     });
-                };   
+                };
+                const loadAssets = () => {
+                    return new Promise((resolve, reject) => {
+                        // assets are non-nested resource bundle JSON files
+                        // { 
+                        //      "key1": "stringValue",
+                        //      "key2": number / boolean / date / ...
+                        //      "key3": "/url/of/a/file" <-- must start with "/" to identify it as a relative url
+                        // }
+                        //
+                        // assets can be defined in a UI component as:
+                        // this.asset('myAsset1', 'sys/core/assets/myAsset1.json');
+                        // 
+                        // this will be available after init as:
+                        // this.data.assets.myAsset1 object having 
+                        // {
+                        //      key1: "stringValue",
+                        //      key2: ...
+                        //      key3: "sys/core/assets/<lcId>/url/of/a/file"    
+                        // }
+
+                        // files to load
+                        let assetNames = [],
+                            assets = [];
+                        for(let assetName in _assets) {
+                            if (this.asset.hasOwnProperty(assetName)) {
+                                assetNames.push(assetName);
+                                assets.push(this.asset[assetName]);
+                            }
+                        }
+
+                        // load files
+                        include(assets, true).then((objects = []) => {
+                            let i = 0,
+                                assetName = '', 
+                                assetValue = '';
+                            for(let assetObject of objects) {
+                                assetName = assetNames[i];
+                                this.data.assets[assetName] = assetObject;
+                                for(let assetKey in assetObject) {
+                                    if (assetObject.hasOwnProperty(assetKey)) {
+                                        assetValue = assetObject[assetKey];
+                                        if (assetValue.substr(0, 1) === '/') { // this is a url
+                                            assetObject[assetKey] = this.url(assetValue); // make it relative url
+                                        }
+                                    }
+                                }
+                                i++; // next asset
+                            }
+                            resolve();
+                        }).catch(reject);
+                    });
+                };
 
                 // init
                 this._.pr.beforeInit().then(() => {
-                    loadHtml().then(() => {
-                        defineHost();
-                        loadDeps().then(() => {
-                            initPartials().then(() => {
-                                this._.pr.afterInit().then(resolve).catch(reject);
+                    loadAssets().then(() => {
+                        loadHtml().then(() => {
+                            defineHost();
+                            loadDeps().then(() => {
+                                initPartials().then(() => {
+                                    this._.pr.afterInit().then(resolve).catch(reject);
+                                }).catch(reject);
                             }).catch(reject);
-                        }).catch(reject);
-                    }).catch(reject);                    
+                        }).catch(reject);                    
+                    }).catch(reject);
                 }).catch(reject);
             });
         });
@@ -283,6 +338,11 @@ define([
                 relativeUrl = relativeUrl.substr(1);
             }
 
+            // locale handling
+            if (relativeUrl.indexOf('/assets/') !== -1) {
+                relativeUrl = relativeUrl.replace('/assets/', '/assets/' + this.env.getLocate().lcid + '/');
+            }
+
             // add correct loader
             let _path = _root + relativeUrl;
             if (_path.endsWith('.css')) {
@@ -322,6 +382,7 @@ define([
         this.func('data', (name, value) => {
             if (typeof value === 'function') { throw 'data value cannot be a function.'; }
             this._.bindable = this._.bindable || {};
+            if (typeof this._.bindable[name] !== 'undefined') { throw `${name} already defined as data/handler.`; }
             this._.bindable[name] = value;
             Object.defineProperty(this.data, name, {
                 get: () => { return this._.bindable[name]; },
@@ -363,10 +424,19 @@ define([
                 fn(e.currentTarget, e);
             };
             this._.bindable = this._.bindable || {};
+            if (typeof this._.bindable[name] !== 'undefined') { throw `${name} already defined as data/handler.`; }
             this._.bindable[name] = wrappedFn;
             Object.defineProperty(this.handler, name, {
                 value: wrappedFn
             });
+        });
+
+        let _assets = {};
+        attr('protected');
+        this.func('asset', (name, bundleUrl) => {
+            if (typeof this.asset[name] !== 'undefined') { throw `${name} already defined.`; }
+            this.asset[name] = this.url(bundleUrl); // actual bundle object will be loaded at this.data.assets.<name> after init is executed
+            _assets[name] = this.asset[name];
         });
 
         this._.cfas = (asyncFuncName, isSkipPartials = false, ...args) => {

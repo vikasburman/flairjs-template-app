@@ -15,8 +15,8 @@ define([
             base();
         });
 
-        this.func('create', (loginId, pwd) => {
-            return new Credentials(loginId, pwd);
+        this.func('create', (loginId, pwd, clientId = '') => {
+            return new Credentials(loginId, pwd, clientId);
         });
     });
 });
