@@ -340,7 +340,7 @@ define([
 
             // locale handling
             if (relativeUrl.indexOf('/assets/') !== -1) {
-                relativeUrl = relativeUrl.replace('/assets/', '/assets/' + this.env.getLocate().lcid + '/');
+                relativeUrl = relativeUrl.replace('/assets/', '/assets/' + this.env.getLocate().name + '/');
             }
 
             // add correct loader
