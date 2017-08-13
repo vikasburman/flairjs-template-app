@@ -41,5 +41,32 @@ define(() => {
                 console.log(`${err}`);
             }
         });
+
+        attr('protected');
+        this.func('errorText', (err, list) => {
+            let errCode = 'default',
+                errText = `Unknown error. (${err})`;
+            if (err) {
+                if (typeof err === 'string' || typeof err === 'number') { // just any error code
+                    errCode = err.toString();
+                } else if (err.code) { // ErrorInfo object
+                    errCode = err.code;
+                } else if (err.error) { // ClientResponse object
+                    if (err.error.code) { // ErrorInfo object inside clientResponse object
+                        errCode = err.error.code;
+                    } else {
+                        errCode = err.error;
+                    }
+                }
+            }
+            if (list) {
+                if (list[errCode]) {
+                    errText = list[errCode];
+                } else if (errCode !== 'default' && list['default']) {
+                     errText = list['default'];
+                }
+            }
+            return errText;
+        });
     });
 });
