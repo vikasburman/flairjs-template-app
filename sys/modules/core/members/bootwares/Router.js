@@ -17,7 +17,7 @@ define([
                 routes = [],
                 router = (this.env.isServer ? app : new RouteManager({})),
                 fullUrl = '',
-                routesKey = (this.env.isServer ? ':routesOrder.server' : ':routesOrder.client');
+                routesKey = (this.env.isServer ? ':routes.server' : ':routes.client');
 
             // each route definition (both on server and client) is as:
             // { "root":"", url": "", "verb": "", "class": "", "func": ""}

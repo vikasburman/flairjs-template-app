@@ -22,7 +22,7 @@
                 }
             }
         },
-        "routesOrder": {
+        "routes": {
             "server": [
             ],
             "client": [
