@@ -34,10 +34,10 @@ define([
             //  on server, the function name of the class that handles this
             //  on client, this is fixed as 'navigate'
             routesOrder = this.settings(routesKey);
-            routesKey = (this.env.isServer ? ':routes.server' : ':routes.client');
             routesOrder.unshift(this.env.isServer ? 'app.' + mainModule : 'web.' + mainModule); // add main module by default, on top both in server and client side
             routesOrder.unshift(this.assembly); // add sys.core (current module) by default, on top of main module, both in server and client side
             for(let routesOf of routesOrder) {
+                if (this.env.isDev) { console.log('routes of: ' + routesOf); }
                 routes = this.settings(routesOf + routesKey, []);
                 for(let route of routes) {
                     if (route.url && route.class) {
@@ -56,7 +56,7 @@ define([
                                         res.status(500).end();
                                     }
                                 });
-                                if (this.env.isDev) { console.log(route.verb + ': ' + fullUrl); }
+                                if (this.env.isDev) { console.log('  ' + route.verb + ': ' + fullUrl); }
                             } else {
                                  throw `Invalid route definiton: ${fullUrl}#${route.verb}`;
                             }
@@ -72,7 +72,7 @@ define([
                                     throw err;
                                 }
                             });
-                            if (this.env.isDev) { console.log('navigate: ' + fullUrl); }
+                            if (this.env.isDev) { console.log('  navigate: ' + fullUrl); }
                         }
                     } else {
                         throw `Invalid route definiton: ${fullUrl}`;
