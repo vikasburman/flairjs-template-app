@@ -13,15 +13,19 @@ define([
         attr('async');
         this.func('boot', (resolve, reject, app) => {
             // configure favicon
-            let fi = this.settings('static.favIcon', '');
+            let mainModule = this.settings(':main', 'sample'),
+                fi = this.settings('static.favIcon', '');
             if (fi) {
+                fi = 'web/' + mainModule + '/static/' + fi;
                 app.use(favicon(use(fi)));
+                if (this.env.isDev) { console.log('favIcon: ' + fi); }
             }
 
             // configure static content serving
             let age = this.settings('static.caching.age', 0),
                 staticFolders = this.settings(':static', []);
-                staticFolders.unshift(this.assembly); // add sys.core on top as first default item
+                staticFolders.unshift(this.env.isServer ? 'app.' + mainModule : 'web.' + mainModule); // add main module by default, on top both in server and client side
+                staticFolders.unshift(this.assembly); // add sys.core (this module) on top as first default item
             if (this.settings('static.caching.enabled') && age !== 0) { 
                 for(let staticFolder of staticFolders) {
                     staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';

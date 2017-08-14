@@ -22,21 +22,20 @@
                 }
             }
         },
+        "main": "sample",
         "routes": {
             "server": [
             ],
             "client": [
-                "web.sample"
             ]
         },
         "static": [
-            "web.sample"
         ]
     },
 
     "sys.core": {
         "static": {
-            "favIcon": "web/sample/static/images/logo.png",
+            "favIcon": "images/logo.png",
             "caching": {  
                 "enabled": true
             }  
