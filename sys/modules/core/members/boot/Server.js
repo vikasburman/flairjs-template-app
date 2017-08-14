@@ -143,7 +143,7 @@ define([
                         // start (if not test mode)
                         if (!this.env.isTest) {
                             App.start().then(() => {
-                                console.log(App.tags.title + ' - ' + App.tags.version);
+                                console.log(App.info.title + ' - ' + App.info.version);
 
                                 // perform default action: assume default is requested
                                 App.navigate('/');

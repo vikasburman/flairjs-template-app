@@ -12,7 +12,7 @@ define([
         attr('abstract');
         this.func('constructor', (base) => {
             base();
-            this.tags = this.settings(':app');
+            this.info = this.settings(':app');
         });
 
         attr('async');
@@ -21,6 +21,6 @@ define([
         this.func('navigate', this.noop);
 
         attr('readonly');
-        this.prop('tags', {});    
+        this.prop('info', {});    
     });
 });

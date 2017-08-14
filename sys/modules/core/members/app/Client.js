@@ -22,7 +22,7 @@ define([
                 document.location.hash = url;
             }
             if (currentHash === url) {
-                // trigger onhashchange manually, since same hash was alredy there
+                // trigger onhashchange manually, since same hash was already there
                 window.dispatchEvent(new HashChangeEvent("hashchange"));
             }
         });

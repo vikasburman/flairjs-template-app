@@ -19,8 +19,8 @@ define(() => {
         this.func('navigate');
 
         /**
-         * @desc App level tags defined to describe various aspects of app in app settings in config.json
+         * @desc App level info defined to describe various aspects of app in app settings in config.json
          */ 
-        this.prop('tags');
+        this.prop('info');
     });
 });

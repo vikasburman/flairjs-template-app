@@ -29,7 +29,7 @@ define([
                 if (typeof handler[this.funcName] !== 'function') {
                     throw (this.env.isServer ? `Invalid handler endpoint for: ${request.url}#${request.verb}` : `Invalid handler endpoint for: ${request.url}`);
                 }
-                handler[this.funcName](request);           
+                handler[this.funcName](request);          
             }).catch((err) => {
                 throw err;
             });
