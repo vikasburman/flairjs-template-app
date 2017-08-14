@@ -33,7 +33,7 @@ const updateFile = (src, dest, tempFolder, fileName, onDone) => {
 const updateOOJS = (cb) => {
     // delete this new config from sys/.config.json file to be used here
     let srcRepo = 'https://raw.githubusercontent.com/vikasburman/oojs/master/src/',
-        destFolder = 'sys/modules/core/public/libs/',
+        destFolder = 'sys/modules/core/static/libs/',
         tempFolder = 'temp.download',
         files = [
             'oojs.js',

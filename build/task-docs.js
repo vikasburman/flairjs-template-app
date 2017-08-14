@@ -11,7 +11,7 @@ const generateDocs = (isDev, isProd, isTest, done) => {
     jsdocsConfig.docs = [];
     jsdocsConfig.docs.push('README.md');
     if (buildSettings.docs.isAddSysDocs) {
-        jsdocsConfig.docs.push('sys/modules/core/public/loader.js');
+        jsdocsConfig.docs.push('sys/modules/core/static/loader.js');
     }
     let dirs = [
         'sys/modules/',

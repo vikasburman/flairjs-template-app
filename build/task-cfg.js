@@ -22,7 +22,7 @@ const generateConfig = () => {
         'web/modules/',
         'app/modules/'
     ],
-    configJSON = 'sys/modules/core/public/.config.json';
+    configJSON = 'sys/modules/core/static/.config.json';
     for(let dir of dirs) {
         let folders = utils.getFolders(dir, true),
             root = dir, 

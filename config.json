@@ -36,7 +36,7 @@
 
     "sys.core": {
         "static": {
-            "favIcon": "web/sample/public/images/logo.png",
+            "favIcon": "web/sample/static/images/logo.png",
             "caching": {  
                 "enabled": true
             }  

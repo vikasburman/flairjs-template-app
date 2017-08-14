@@ -163,7 +163,7 @@
             let parts = _path.split('/');
             parts.shift(); // remove sys
             _path = nsRoot + parts.join('/');
-            if (!isAsServer) { _path = _path.replace('modules/', '').replace('public/', ''); } // remove these invisible parts of path on client
+            if (!isAsServer) { _path = _path.replace('modules/', '').replace('static/', ''); } // remove these invisible parts of path on client
             if (!isAsServer) { _path = '/' + _path; } // add root relativity
             return _path;
         };
