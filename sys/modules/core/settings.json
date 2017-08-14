@@ -15,7 +15,9 @@
         "Transition": "sys.core.ui.Transition",
         "View": "sys.core.ui.View",
         "Shell": "sys.core.ui.Shell",
-        "Partial": "sys.core.ui.Partial"
+        "Partial": "sys.core.ui.Partial",
+        "Entity": "sys.core.data.Entity",
+        "Repository": "sys.core.data.Repository"
     },
     "container": {
     },
@@ -81,8 +83,8 @@
         "adapters": []
     },
     "view": {
-        "stage": "#stage",
-        "container": "#container",
+        "$stage": "#stage",
+        "$container": "#container",
         "login": "#/login"
     },
     "security": {

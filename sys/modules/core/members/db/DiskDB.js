@@ -4,11 +4,11 @@ define([
     use('diskdb | ')
 ], (Base, fs, diskdb) => {
     /**
-     * @class sys.core.data.DiskDB
-     * @classdesc sys.core.data.DiskDB
+     * @class sys.core.db.DiskDB
+     * @classdesc sys.core.db.DiskDB
      * @desc DiskDB access (for server as of now)
      */    
-    return Class('sys.core.data.DiskDB', Base, function(attr) {
+    return Class('sys.core.db.DiskDB', Base, function(attr) {
         attr('override');
         attr('sealed');
         this.func('constructor', (base, dbPath) => {

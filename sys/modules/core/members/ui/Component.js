@@ -27,7 +27,7 @@ define([
                         elClass = '';
                     switch(this.type) {
                         case ComponentTypes.Shell:
-                            $host = document.querySelector(this.settings('view.stage', '#stage'));
+                            $host = document.querySelector(this.settings('view.$stage', '#stage'));
                             if (!$host) {
                                 let $stage = document.createElement('div');
                                 $stage.setAttribute('id', 'stage');
@@ -45,7 +45,7 @@ define([
                             this._.pr.$host = $host;
                             break;
                         case ComponentTypes.View:
-                            $host = this.parent._.pr.$el.querySelector(this.settings('view.container', '#container'));
+                            $host = this.parent._.pr.$el.querySelector(this.settings('view.$container', '#container'));
                             if (!$host) {
                                 let $container = document.createElement('div');
                                 $container.setAttribute('id', 'container');
