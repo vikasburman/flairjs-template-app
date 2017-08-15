@@ -22,15 +22,23 @@ define([
         attr('protected');
         this.prop('automapper');
 
-        this.func('toEntity', (Entity, dbObject) => { return this.automapper.to(new Entity(), dbObject); });
+        this.func('toEntity', (Entity, dbObject) => { 
+            let entity = new Entity();
+            this.automapper.to(entity, dbObject);
+            return entity;
+        });
         this.func('toEntityList', (Entity, dbObjects) => { 
             let entities = [];
             for(let dbObject of dbObjects) {
-                entities.push(this.toEntity(new Entity(), dbObject));
+                entities.push(this.toEntity(Entity, dbObject));
             }
             return entities;
         });
-        this.func('fromEntity', (entity) => { return this.automapper.from(entity, {}); });
+        this.func('fromEntity', (entity) => { 
+            let object = {};
+            this.automapper.from(entity, object); 
+            return object;
+        });
         this.func('fromEntityList', (entities) => { 
             let dbObjects = [];
             for(let entity of entities) {

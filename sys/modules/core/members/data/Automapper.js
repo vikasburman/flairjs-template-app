@@ -71,13 +71,15 @@ define([
                         direction: 'o2e',
                         entity: {
                             prop: key,
-                            value: toEntity[e.entity.prop]
+                            value: null
                         },
                         object: {
                             prop: this.resolveObjectProp(key),
-                            value: getNestedKeyValue(fromObject, e.object.prop, null)
+                            value: null
                         }
                     };
+                    e.entity.value = toEntity[e.entity.prop];
+                    e.object.value = getNestedKeyValue(fromObject, e.object.prop, null);
 
                     if (e.object.prop) { // mapping configuration exists
                         // mapping interception
@@ -91,7 +93,6 @@ define([
                     }
                 }
             }
-            return toEntity;
         });
         this.func('from', (fromEntity, toObject) => {
             // iterate config to work on mapping
@@ -102,13 +103,16 @@ define([
                         direction: 'e2o',
                         entity: {
                             prop: key,
-                            value: fromEntity[e.entity.prop]
+                            value: null
                         },
                         object: {
                             prop: this.resolveObjectProp(key),
-                            value: getNestedKeyValue(toObject, e.object.prop, null)
+                            value: null
                         }
                     };
+                    e.entity.value = fromEntity[e.entity.prop];
+                    e.object.value = getNestedKeyValue(toObject, e.object.prop, null);
+                    
 
                     if (e.object.prop) { // mapping configuration exists
                         // mapping interception
@@ -122,7 +126,6 @@ define([
                     }
                 }
             }
-            return toObject;
         });
 
         this.prop('onMap');

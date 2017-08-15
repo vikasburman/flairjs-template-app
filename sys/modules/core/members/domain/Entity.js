@@ -18,7 +18,13 @@ define([
         attr('protected');
         this.prop('automapper');
 
-        this.func('toDTO', (dto) => { return this.automapper.to(this, dto); });
-        this.func('fromDTO', (dto) => { return this.automapper.from(this, dto); });        
+        this.func('toDTO', (dto) => { 
+            this.automapper.to(this, dto); 
+            return dto;
+        });
+        this.func('fromDTO', (dto) => { 
+            this.automapper.from(this, dto);
+            return this;
+        });
     });
 });

@@ -49,11 +49,14 @@ define(() => {
             if (err) {
                 if (typeof err === 'string' || typeof err === 'number') { // just any error code
                     errCode = err.toString();
+                    errText = 'Error: ' + errCode;
                 } else if (err.code) { // ErrorInfo object
                     errCode = err.code;
+                    errText = 'Error: ' + err.desc;
                 } else if (err.error) { // ClientResponse object
                     if (err.error.code) { // ErrorInfo object inside clientResponse object
                         errCode = err.error.code;
+                        errText = 'Error: ' + err.desc;
                     } else {
                         errCode = err.error;
                     }
