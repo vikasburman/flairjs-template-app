@@ -17,8 +17,8 @@
         "Shell": "sys.core.ui.Shell",
         "Partial": "sys.core.ui.Partial",
         "Service": "sys.core.comm.Service",
-        "Controller": "sys.core.comm.Controller",
-        "Entity": "sys.core.data.Entity",
+        "Controller": "sys.core.domain.Controller",
+        "Entity": "sys.core.domain.Entity",
         "DbContext": "sys.core.db.DbContext",
         "Repository": "sys.core.data.Repository",
         "Automapper": "sys.core.data.Automapper"

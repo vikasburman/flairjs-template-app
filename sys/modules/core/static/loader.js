@@ -11,7 +11,7 @@
     let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
 
     // config
-    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"loader":{"tabletWidth":{"min":600,"max":992},"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"main":"sample","routes":{"server":[],"client":[]},"static":[],"source":{"sys":"sys/modules/","web":"web/modules/","app":"app/modules/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Auth":"sys.core.security.server.Auth | sys.core.security.client.Auth","ClaimsChecker":"sys.core.security.ClaimsChecker","User":"sys.core.security.dto.User","Credentials":"sys.core.security.dto.Credentials","CredentialsValidator":"sys.core.security.CredentialsValidator","CredentialsCreator":"sys.core.security.CredentialsCreator","Crypt":"sys.core.security.Crypt","Transition":"sys.core.ui.Transition","View":"sys.core.ui.View","Shell":"sys.core.ui.Shell","Partial":"sys.core.ui.Partial","Service":"sys.core.comm.Service","Entity":"sys.core.data.Entity","Repository":"sys.core.data.Repository","Automapper":"sys.core.data.Automapper"},"container":{},"routes":{"server":[{"root":"/auth","url":"/","verb":"post","class":"sys.core.security.server.Auth","func":"login"}],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"dependencies":[],"static":{"favIcon":"web/sample/static/images/logo.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{},"formatters":["sys.core.ui.formatters.Percent"],"binders":["sys.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.sample":{"routes":{"server":[]}}}`);
+    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"loader":{"tabletWidth":{"min":600,"max":992},"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"main":"sample","routes":{"server":[],"client":[]},"static":[],"source":{"sys":"sys/modules/","web":"web/modules/","app":"app/modules/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Auth":"sys.core.security.server.Auth | sys.core.security.client.Auth","ClaimsChecker":"sys.core.security.ClaimsChecker","User":"sys.core.security.dto.User","Credentials":"sys.core.security.dto.Credentials","CredentialsValidator":"sys.core.security.CredentialsValidator","CredentialsCreator":"sys.core.security.CredentialsCreator","Crypt":"sys.core.security.Crypt","Transition":"sys.core.ui.Transition","View":"sys.core.ui.View","Shell":"sys.core.ui.Shell","Partial":"sys.core.ui.Partial","Service":"sys.core.comm.Service","Controller":"sys.core.domain.Controller","Entity":"sys.core.domain.Entity","DbContext":"sys.core.db.DbContext","Repository":"sys.core.data.Repository","Automapper":"sys.core.data.Automapper"},"container":{},"routes":{"server":[{"root":"/auth","url":"/","verb":"post","class":"sys.core.security.server.Auth","func":"login"}],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"dependencies":[],"static":{"favIcon":"web/sample/static/images/logo.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{},"formatters":["sys.core.ui.formatters.Percent"],"binders":["sys.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.sample":{"routes":{"server":[]}}}`);
     config.env = {
         vars: {},
         locales: {
@@ -25,7 +25,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Mon, 14 Aug 2017 08:17:07 GMT',         
+        lupdate: 'Tue, 15 Aug 2017 03:14:46 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
@@ -410,6 +410,7 @@
 
     // extend environment (server and client)
     config.env.set = (varName, value) => { config.env.vars[varName] = value; };
+    config.env.reset = (varName) => { delete config.env.vars[varName]; };
     config.env.get = (varName, defaultValue = null) => { return config.env.vars[varName] || defaultValue; };
     config.env.queryStringToObject = (qs = '') => {
         let args = {};
@@ -423,6 +424,35 @@
         }
         return args;
     };  
+    config.env.getLocale = () => { 
+        let locale = '';
+        if (!isServer) {
+            locale = sessionStorage.getItem('locale') || config.env.locales.default || 'en-US';
+        } else {
+            let currentRequest = config.env.currentRequest();
+            locale = (currentRequest ? currentRequest.getLocale() : '') || config.env.locales.default || 'en-US';
+        }
+        let localeObj = config.env.locales.supported[locale];
+        if (!localeObj) {
+            localeObj =  { name:'en-us', lcid: '1033', display: 'English (United States)', rtl: false }
+        } else {
+            localeObj.name = locale;
+        }
+        return localeObj;
+    };
+    config.env.getLocales = () => {
+        let items = [],
+            item = null;
+        for(let locale in config.env.locales.supported) {
+            if (config.env.locales.supported.hasOwnProperty(locale)) {
+                item = config.env.locales.supported[locale];
+                item.name = locale;
+                items.push(item);
+            }
+        }
+        return items;
+    };
+    config.env.currentRequest = () => { return config.env.get('currentRequest'); };
 
     // extend env (client only)
     if (!isServer) {
@@ -464,28 +494,6 @@
             requireConfig.paths = requirePaths;
             require.config(requireConfig); // update config
         };
-        config.env.getLocale = () => { 
-            let locale = sessionStorage.getItem('locale') || config.env.locales.default || 'en-US',
-                localeObj = config.env.locales.supported[locale];
-            if (!localeObj) {
-                localeObj =  { name:'en-us', lcid: '1033', display: 'English (United States)', rtl: false }
-            } else {
-                localeObj.name = locale;
-            }
-            return localeObj;
-        };
-        config.env.getLocales = () => {
-            let items = [],
-                item = null;
-            for(let locale in config.env.locales.supported) {
-                if (config.env.locales.supported.hasOwnProperty(locale)) {
-                    item = config.env.locales.supported[locale];
-                    item.name = locale;
-                    items.push(item);
-                }
-            }
-            return items;
-        };
         config.env.setLocale = (locale, isSupressRefresh) => { 
             if (config.env.locales.supported[locale]) {
                 sessionStorage.setItem('locale', locale);
@@ -494,6 +502,7 @@
                 }
             }
         };
+        config.env.currentView = () => { return config.env.get('currentView'); };
     }
 
     // setup

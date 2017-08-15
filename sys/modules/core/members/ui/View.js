@@ -26,13 +26,16 @@ define([
         attr('protected');
         this.prop('request', null);
 
-        this.func('navigate', (request) => {
+        attr('async');
+        this.func('navigate', (resolve, reject, request) => {
             this.request = request;
             this.args = request.args;
             this.stage().then(() => {
                 this.current = this._.pu; // store public reference
+                resolve(this.current);
             }).catch((err) => {
                 console.log(`Failed to navigate to ${request.url}. (${err || ''});`);
+                reject(err);
             });
         });
 

@@ -3,11 +3,11 @@ define([
     use('[Automapper]') 
 ], (Base, Automapper) => {
     /**
-     * @class sys.core.data.Entity
-     * @classdesc sys.core.data.Entity
+     * @class sys.core.domain.Entity
+     * @classdesc sys.core.domain.Entity
      * @desc Entity base.
      */    
-    return Class('sys.core.data.Entity', Base, function(attr) {
+    return Class('sys.core.domain.Entity', Base, function(attr) {
         attr('override');
         attr('abstract');
         this.func('constructor', (base) => {

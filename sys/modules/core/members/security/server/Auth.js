@@ -4,8 +4,9 @@ define([
     use('[ClaimsChecker]'),
     use('[Credentials]'),
     use('[CredentialsValidator]'),
-    use('sys.core.security.server.JwtToken')
-], (Base, User, ClaimsChecker, Credentials, CredentialsValidator, Jwt) => {
+    use('sys.core.security.server.JwtToken'),
+    use('sys.core.security.dto.AuthInfo')
+], (Base, User, ClaimsChecker, Credentials, CredentialsValidator, Jwt, AuthInfo) => {
     /**
      * @class sys.core.security.server.Auth
      * @classdesc sys.core.security.server.Auth
@@ -41,7 +42,8 @@ define([
             }
         });
 
-        this.func('login', (request) => {
+        attr('async');
+        this.func('login', (resolve, reject, request) => {
             let credentials = request.data.credentials || {},
                 credentialsValidator = new CredentialsValidator();
             credentialsValidator.validate(credentials).then((user) => {
@@ -49,18 +51,24 @@ define([
                     jwt = new Jwt();
                     jwt.create(user).then((token) => {
                         if (token) {
-                            request.response.send.json({token: token, user: user});
+                            let authInfo = new AuthInfo(token, user);
+                            request.response.send.json(authInfo);
+                            resolve(authInfo);
                         } else {
                             request.response.send.error(401, 'Failed to generate auth token.');
+                            reject(401);
                         }
                     }).catch((err) => {
                         request.response.send.error(401, `Failed to generate auth token. (${err || ''})`);
+                        reject(err);
                     });
                 } else {
                     request.response.send.error(401, 'User not found.');
+                    reject(401);
                 }
             }).catch((err) => {
                 request.response.send.error(401, `Invalid user name or password. (${err || ''})`);
+                reject(err);
             });
         });
     });

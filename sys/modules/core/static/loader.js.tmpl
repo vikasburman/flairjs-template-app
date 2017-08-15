@@ -401,6 +401,7 @@
 
     // extend environment (server and client)
     config.env.set = (varName, value) => { config.env.vars[varName] = value; };
+    config.env.reset = (varName) => { delete config.env.vars[varName]; };
     config.env.get = (varName, defaultValue = null) => { return config.env.vars[varName] || defaultValue; };
     config.env.queryStringToObject = (qs = '') => {
         let args = {};
@@ -414,6 +415,35 @@
         }
         return args;
     };  
+    config.env.getLocale = () => { 
+        let locale = '';
+        if (!isServer) {
+            locale = sessionStorage.getItem('locale') || config.env.locales.default || 'en-US';
+        } else {
+            let currentRequest = config.env.currentRequest();
+            locale = (currentRequest ? currentRequest.getLocale() : '') || config.env.locales.default || 'en-US';
+        }
+        let localeObj = config.env.locales.supported[locale];
+        if (!localeObj) {
+            localeObj =  { name:'en-us', lcid: '1033', display: 'English (United States)', rtl: false }
+        } else {
+            localeObj.name = locale;
+        }
+        return localeObj;
+    };
+    config.env.getLocales = () => {
+        let items = [],
+            item = null;
+        for(let locale in config.env.locales.supported) {
+            if (config.env.locales.supported.hasOwnProperty(locale)) {
+                item = config.env.locales.supported[locale];
+                item.name = locale;
+                items.push(item);
+            }
+        }
+        return items;
+    };
+    config.env.currentRequest = () => { return config.env.get('currentRequest'); };
 
     // extend env (client only)
     if (!isServer) {
@@ -455,28 +485,6 @@
             requireConfig.paths = requirePaths;
             require.config(requireConfig); // update config
         };
-        config.env.getLocale = () => { 
-            let locale = sessionStorage.getItem('locale') || config.env.locales.default || 'en-US',
-                localeObj = config.env.locales.supported[locale];
-            if (!localeObj) {
-                localeObj =  { name:'en-us', lcid: '1033', display: 'English (United States)', rtl: false }
-            } else {
-                localeObj.name = locale;
-            }
-            return localeObj;
-        };
-        config.env.getLocales = () => {
-            let items = [],
-                item = null;
-            for(let locale in config.env.locales.supported) {
-                if (config.env.locales.supported.hasOwnProperty(locale)) {
-                    item = config.env.locales.supported[locale];
-                    item.name = locale;
-                    items.push(item);
-                }
-            }
-            return items;
-        };
         config.env.setLocale = (locale, isSupressRefresh) => { 
             if (config.env.locales.supported[locale]) {
                 sessionStorage.setItem('locale', locale);
@@ -485,6 +493,7 @@
                 }
             }
         };
+        config.env.currentView = () => { return config.env.get('currentView'); };
     }
 
     // setup

@@ -2,11 +2,11 @@ define([
     use('[Base]')
 ], (Base) => {
     /**
-     * @class sys.core.comm.Controller
-     * @classdesc sys.core.comm.Controller
+     * @class sys.core.domain.Controller
+     * @classdesc sys.core.domain.Controller
      * @desc Controller base.
      */    
-    return Class('sys.core.comm.Controller', Base, function(attr) {
+    return Class('sys.core.domain.Controller', Base, function(attr) {
         this.func('toDTO', (entity, Dto) => { return entity.toDTO(new Dto()); });
         this.func('toDTOList', (entities, Dto) => {
             let dtos = [];

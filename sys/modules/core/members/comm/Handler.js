@@ -25,13 +25,17 @@ define([
             include([use(this.className)]).then((Handler) => {
                 let handler = new Handler();
                     handlerInfo = Reflector.get(handler),
-                    funcInfo = handlerInfo.getMember(this.funcName);
-                if (typeof handler[this.funcName] !== 'function') {
-                    throw (this.env.isServer ? `Invalid handler endpoint for: ${request.url}#${request.verb}` : `Invalid handler endpoint for: ${request.url}`);
-                }
-                handler[this.funcName](request);          
+                    funcInfo = handlerInfo.getMember(this.funcName),
+                    errorText = (this.env.isServer ? `Error handling: ${request.url}#${request.verb}` : `Error handling: ${request.url} (%ERROR%)`);
+                this.env.set('currentRequest', request);
+                handler[this.funcName](request).then((result) => {
+                    this.env.reset('currentRequest');
+                }).catch((err) => {
+                    this.env.reset('currentRequest');
+                    console.log(errorText.replace('%ERROR%', err));
+                });   
             }).catch((err) => {
-                throw err;
+                console.log(errorText.replace('%ERROR%', err));
             });
         });
     });

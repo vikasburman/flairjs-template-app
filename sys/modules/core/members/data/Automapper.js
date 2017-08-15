@@ -7,6 +7,18 @@ define([
      * @desc Data entity to DTO/DBObject mapper and vice-versa.
      */    
     return Class('sys.core.data.Automapper', Base, function(attr) {
+        attr('override');
+        this.func('constructor', (base) => {
+            base();
+            
+            // set special variables
+            let currentRequest = this.env.currentRequest();
+            this.vars.$loginId = (currentRequest ? currentRequest.user.loginId : '');
+            this.vars.$clientId = (currentRequest ? currentRequest.user.clientId : '');
+            this.vars.$locale = this.env.getLocale().name;
+            this.vars.$lcId = this.env.getLocale().lcId;
+        });
+
         // map can be defined as:
         // {
         //      entityPropertyName1: - OR objectPropertyName-Or-Path OR ArrayOfNames-Or-Paths, <-- '-', 'key1' OR 'path.to.key1' OR ['*', 'key1', 'key2', 'path.to.key1', '...']
@@ -23,6 +35,9 @@ define([
         //    i18n.$lcId.path.to.key <-- $lcId will be replaced by current user's locale's lcid
         attr('once');
         this.prop('config', {});
+
+        attr('private');
+        this.prop('vars', {});
 
         this.func('to', (toEntity, fromObject) => {
             // TODO:

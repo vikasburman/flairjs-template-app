@@ -4,11 +4,11 @@ define(() => {
      * @classdesc sys.core.security.dto.User
      * @desc User information.
      */
-    return Structure('sys.core.security.dto.User', function(loginId, name, roles, claims, clientId = '') {
+    return Structure('sys.core.security.dto.User', function(loginId, name, roles, access, clientId = '') {
         this.clientId = clientId;
         this.loginId = loginId;
         this.name = name;
         this.roles = roles;
-        this.claims = claims;
+        this.access = access;
     });
 });

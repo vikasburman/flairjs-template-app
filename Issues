@@ -1,6 +1,16 @@
 1. multer needs to be used - especially to upload/use file(s)
 2. reCaptcha implementation must be very clean
 3. oojs update is not working correctly - half file is getting downloaded -- check...
-4. set request in env and give way to read it from anywhere -- but response should not be available
-5. request handlers must have endpoint attribute -- auth should be defined in endpoint
-6. endpoints must be async, so that request object can be set in environment before and removed after
+
+6. Move Entity and Controller to some other folder --- domain folder
+7. add check attribute 
+
+attr('check', 'type', 'number');
+attr('check', 'range', 0, 10);
+
+attr('check', 'null', false);
+
+attr('check', 'type', 'number');
+attr('check', 'gte', 10);
+
+many more...

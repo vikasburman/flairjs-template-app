@@ -237,7 +237,6 @@ define([
             //             claims, auth is automatically checked
             //  claims can also include OR and AND logic
             //  to have OR relationship among claims, put them in the same claimName string
-            //  'name', 'name1 || name2', 'name1 || name2 || ...'
             //  to have AND relationship among claims, put them as a seperate claimName string
             //  e.g., all of these are valid examples (NOTE: only one claims attribute is allowed)
             //  attr('claims', 'auth');
@@ -252,20 +251,21 @@ define([
                     let fn = descriptor.value,
                         claims = this.args || null,
                         fnArgs = null;
-                    descriptor.value = function(request) {
+                    descriptor.value = function(resolve, reject, request) {
                         // authenticate and serve request
                         let onAuth = () => {
-                            fnArgs = [request];
+                            fnArgs = [resolve, reject, request];
                             fn(...fnArgs);                                    
                         };
                         if (claims) {
                             request.claims = claims;
                             let auth = new Auth();
                             auth.validate(request).then(onAuth).catch((err) => {
-                                console.log(`Failed to authenticate ${document.location.hash}. (${err})`);
                                 if (this.env.isServer) {
+                                    console.log(`Failed to authenticate ${request.url}. (${err})`);
                                     request.response.send.error(401, err);
                                 } else {
+                                    console.log(`Failed to authenticate ${document.location.hash}. (${err})`);
                                     let loginUrl = settings('sys.core:view.login');
                                     App.navigate(loginUrl, document.location.hash);
                                 }
