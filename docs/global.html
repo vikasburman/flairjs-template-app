@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-getting-started.html">Getting Started</a></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#forAsync">forAsync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#include">include</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#settings">settings</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#use">use</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-getting-started.html">Getting Started</a></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#forAsync">forAsync</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#include">include</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#replaceAll">replaceAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#settings">settings</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#use">use</a></span></li>
 </nav>
 
 <div id="main">
@@ -511,7 +511,223 @@
 <div class="section-examples">
 <h5>Example</h5>
 
-    <pre class="prettyprint"><code>include(use('sys.core.Base'), use('sys.core.IBootware')], (Base, IBootware) => { });</code></pre>
+    <pre class="prettyprint"><code>include([use('sys.core.Base'), use('sys.core.IBootware')], (Base, IBootware) => { });</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="replaceAll"><span class="type-signature"></span>replaceAll<span class="signature">(str, find, replace)</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Replace all instances of 'find' string with 'replace' string in 'str'.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>string to find and replace in.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>find</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>string to find.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>replace</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>string to replace found string with.</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>string</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <ul>
+<li>replaced string.</li>
+</ul>
+</div>
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>replaceAll('this is test for test', 'test', 'hello'); --> this is hello for hello</code></pre>
 
 </div>
 
@@ -529,7 +745,7 @@
 
 
 <div class="description">
-    <p>Reads setting value.</p>
+    <p>Reads setting value from stiched cand embedded onfiguration data.</p>
 </div>
 
 
@@ -596,6 +812,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -629,9 +847,13 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
-                <p>which setting to read to. (format: [{assemblyPath}:]{settingKey})</p>
+                <p>which setting to read to. (format: [{assemblyName}:]{settingKey})</p>
                 
             </td>
         </tr>
@@ -664,6 +886,12 @@
                 </td>
             
 
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
             
 
             <td class="description last">
@@ -721,9 +949,10 @@
 <div class="section-examples">
 <h5>Example</h5>
 
-    <pre class="prettyprint"><code>1. let value1 = settings('sys.core:level1');
-2. let value2 = settings('sys.core:level1.level2');
-3. let value3 = settings('level1.level2');</code></pre>
+    <pre class="prettyprint"><code>1. let value1 = settings('sys.core:level1'); --> will read sys.core.settings.level1
+2. let value2 = settings('sys.core:level1.level2'); --> will read sys.core.settings.level1.level2
+3. let value3 = settings(':level1.level2'); --> will read global settings.level1.level2
+4. let value4 = settings('level1.level2'); --> will read global settings.level1.level2</code></pre>
 
 </div>
 
@@ -936,25 +1165,26 @@
 
 2. Any file with relative path: 
    use('../../file1.js') --> '../../file1.js'
+   use('../../file1.min.js') --> '../../file1.js' (in debug) and '../../file1.min.js' (in prod)
 
 3. Any assembly member:
-   use('sys.core.Base') --> 'sys/core/members/Base.js'
+   use('sys.core.Base') --> 'sys/modules/core/members/Base.js'
 
 4. Any assembly file:
-   use('app/main/assets/folder1/file1.png') --> 'app/main/assets/folder1/file1.png'
+   use('app/main/assets/folder1/file1.png') --> 'app/modules/main/assets/folder1/file1.png'
 
 5. Any catalog injected member on this name:
    use('[Logger]') --> '...' (exact entry as specified in config file against 'Logger' catalog key)
 
 6. Mock implementation of the assembly member when running in test mode, else member itself 
    use('~app.transactions.Payment')
-     normally --> app/transactions/members/Payments.js
-     when testing --> app/transactions/members/Payments.mock.js (this must exists when using ~ in path)
+     normally --> app/modules/transactions/members/Payments.js
+     when testing --> app/modules/transactions/members/Payments.mock.js (this must exists when using ~ in path)
 
 7. Conditional implementation for isomorphic members (that runs both on server and client)
    use('app.main.Server | web.main.Client') 
-     when called on server: --> app/main/members/Server.js
-     when called on client: --> web/main/members/Client.js</code></pre>
+     when called on server: --> app/modules/main/members/Server.js
+     when called on client: --> web/modules/main/members/Client.js</code></pre>
 
 </div>
 
@@ -977,7 +1207,7 @@
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Jun 20 2017 09:37:08 GMT+0530 (IST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a> on Tue Aug 15 2017 08:56:47 GMT+0530 (IST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
