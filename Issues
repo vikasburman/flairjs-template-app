@@ -1,18 +1,14 @@
 1. multer needs to be used - especially to upload/use file(s)
 2. reCaptcha implementation must be very clean
-
-5. prod mode to setup with pm2 instead of nodemon
-6. prod mode not working --- also without that server not sending any response
-
-
-7. add check attribute 
-
+3. replace all if.isDev console.log with xLog everywhere
+4. use this.errorText whereever possible
+5. Solve prod issues:
+   - minification not working currently, hence turned off via minify = false in config
+   - pm2 setup for running node
+6. add check attribute 
 attr('check', 'type', 'number');
 attr('check', 'range', 0, 10);
-
 attr('check', 'null', false);
-
 attr('check', 'type', 'number');
 attr('check', 'gte', 10);
-
 many more...

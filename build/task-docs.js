@@ -2,6 +2,7 @@ const utils = require('./utils.js');
 const buildSettings = require('./.build.json');
 const gulp = require('gulp');
 const gulpJsdoc = require('gulp-jsdoc3');
+const cfg = require('../config.json');
 
 // generate docs
 const generateDocs = (isDev, isProd, isTest, done) => {
@@ -36,5 +37,9 @@ const generateDocs = (isDev, isProd, isTest, done) => {
         .on('error', utils.errorHandler('jsdocs'));   
 };
 exports.generator = function(isDev, isProd, isTest, cb) {
+    if (!cfg.settings.docs) {
+        cb();
+        return;
+    }
     generateDocs(isDev, isProd, isTest, cb);
 };

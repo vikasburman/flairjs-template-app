@@ -16,12 +16,13 @@ define([
             let fi = this.settings('static.favIcon', '');
             if (fi) {
                 app.use(favicon(use(fi)));
-                if (this.env.isDev) { console.log('favIcon: ' + fi); }
+                xLog(`favIcon: ${fi}`);
             }
 
             // configure static content serving
             let age = this.settings('static.caching.age', 0),
                 mainModule = this.settings(':main', 'sample'),
+                spath = '',
                 staticFolders = this.settings(':static', []);
                 staticFolders.unshift('web.' + mainModule); // add main module by default, on top both in server and client side
                 staticFolders.unshift(this.assembly); // add sys.core (this module) on top as first default item
@@ -29,25 +30,29 @@ define([
                 for(let staticFolder of staticFolders) {
                     staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
                     app.use('/', express.static(staticFolder, { maxAge: age }));
-                    if (this.env.isDev) { console.log('static: / = ' + staticFolder); }
+                    xLog(`static: / = ${staticFolder}`);
                 }
-                app.use('/web', express.static(use('./web/modules/'), { maxAge: age }));
-                if (this.env.isDev) { console.log('static: /web = ' + use('./web/modules/')); }
-                app.use('/sys', express.static(use('./sys/modules/'), { maxAge: age }));
-                if (this.env.isDev) { console.log('static: /sys = ' + use('./sys/modules/')); }
+                spath = use('./web/modules/');
+                app.use('/web', express.static(spath, { maxAge: age }));
+                xLog(`static: /web = ${spath}`);
+                spath = use('./sys/modules/');
+                app.use('/sys', express.static(spath, { maxAge: age }));
+                xLog(`static: /sys = ${spath}`);
             } else {
                 for(let staticFolder of staticFolders) {
                     staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
                     app.use('/', express.static(staticFolder));
-                    if (this.env.isDev) { console.log('static: / = ' + staticFolder); }
+                    xLog(`static: / = ${staticFolder}`);
                 }
-                app.use('/web', express.static(use('./web/modules/')));
-                if (this.env.isDev) { console.log('static: /web = ' + use('./web/modules/')); }
-                app.use('/sys', express.static(use('./sys/modules/')));
-                if (this.env.isDev) { console.log('static: /sys = ' + use('./sys/modules/')); }
+                spath = use('./web/modules/');
+                app.use('/web', express.static(spath));
+                xLog(`static: /web = ${spath}`);
+                spath = use('./sys/modules/');
+                app.use('/sys', express.static(spath));
+                xLog(`static: /sys = ${spath}`);
             }
 
-            // dome
+            // done
             resolve();
         });
 

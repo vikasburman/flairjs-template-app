@@ -7,6 +7,7 @@ const header = require('gulp-header');
 const rename = require('gulp-rename');
 const gulp = require('gulp');
 const pkg = require('../package.json');
+const cfg = require('../config.json');
 const JSBanner = `/** 
  * <%= pkg.name %> - <%= pkg.description %>
  * @copyright <%= pkg.copyright %>
@@ -30,7 +31,7 @@ const processTemplates = (isDev, isProd, isTest, root, whenDone) => {
             .on('error', utils.errorHandler('injectFile'))
             
             // handle loading .min version
-            .pipe(gulpIf(isProd, injectString.replace('{.min}', '.min'), injectString.replace('{.min}', '')))
+            .pipe(gulpIf((isProd && cfg.settings.minify), injectString.replace('{.min}', '.min'), injectString.replace('{.min}', '')))
             .on('error', utils.errorHandler('injectString'))
             
             // inject header (for .js files only)

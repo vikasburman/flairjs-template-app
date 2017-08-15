@@ -8,6 +8,7 @@ const concat = require('gulp-concat');
 const injectFile = require('gulp-inject-file');
 const path = require('path');
 const fs = require('fs');
+const cfg = require('../config.json');
 
 const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
     let folders = utils.getFolders(root);
@@ -62,7 +63,7 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
                     pattern2 = new RegExp(/define\((?:\n|\s*)\(/), // define((... <-- without dependencies
                     content = file.contents.toString(),
                     asmId = root + folder,
-                    asmUrl = root + folder + (isProd ? '/index.asm.min.js' : '/index.asm.js'); 
+                    asmUrl = root + folder + ((isProd && cfg.settings.minify) ? '/index.asm.min.js' : '/index.asm.js'); 
                 
                 // update content
                 file.contents = Buffer.concat([

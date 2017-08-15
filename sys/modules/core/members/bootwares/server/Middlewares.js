@@ -24,18 +24,18 @@ define([
                     if (item.args) {
                         if (item.func) {
                             app.use(mw[item.func](...item.args));
-                            if (this.env.isDev) { console.log('middleware: ' + item.name + '.' + item.func + '(' + item.args + ')'); }
+                            xLog(`middleware: ${item.name}.${item.func}(${item.args})`);
                         } else {
                             app.use(mw(...item.args));
-                            if (this.env.isDev) { console.log('middleware: ' + item.name + '(' + item.args + ')'); }
+                            xLog(`middleware: ${item.name}(${item.args})`);
                         }
                     } else {
                         if (item.func) {
                             app.use(mw[item.func]());
-                            if (this.env.isDev) { console.log('middleware: ' + item.name + '.' + item.func + '()'); }
+                            xLog(`middleware: ${item.name}.${item.func}()`);
                         } else {
                             app.use(mw());
-                            if (this.env.isDev) { console.log('middleware: ' + item.name + '()'); }
+                            xLog(`middleware: ${item.name}()`);
                         }
                     }
                 }

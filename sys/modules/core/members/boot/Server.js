@@ -61,11 +61,15 @@ define([
                 }
             }
 
-            // production setting
+            // env setting
             if (this.env.isProd) {
-                this.app.set('env', 'production');
+                this.env.set('type', 'prod');
             } else {
-                this.app.set('env', 'development');
+                if (this.env.isDev) {
+                    this.env.set('type', 'dev');
+                } else {
+                    this.env.set('type', 'dbg');
+                }
             }
 
             // boot configured bootwares
@@ -74,7 +78,10 @@ define([
                     if (Bootware && typeof Bootware === 'function') {
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
-                            bootware.boot(this.app).then(_resolve).catch(_reject);
+                            bootware.boot(this.app).then(() => {
+                                xLog(`Bootware (booted): ${bootware._.name}`);
+                                _resolve();
+                            }).catch(_reject);
                         } else {
                             _resolve();
                         }
@@ -125,10 +132,13 @@ define([
                 // ready configured bootwares
                 include(this.bootwares, true).then((items) => {
                     forAsync(items, (_resolve, _reject, Bootware) => {
-                        if (Bootware && typeof Bootwate === 'function') {
+                        if (Bootware && typeof Bootware === 'function') {
                             let bootware = as(new Bootware(), IBootware);
                             if (bootware) {
-                                bootware.ready(this.app).then(_resolve).catch(_reject);
+                                bootware.ready(this.app).then(() => {
+                                    xLog(`Bootware (ready): ${bootware._.name}`);
+                                    _resolve();
+                                }).catch(_reject);
                             } else {
                                 _resolve();
                             }
@@ -138,22 +148,20 @@ define([
                     }).then(() => {
                         // finally ready
                         this.env.isReady = true;
-                        console.log(this.env.isProd ? `ready: (server, production)` : `ready: (server, dev)`);
+                        console.log(`ready: (server, ${this.env.get('type', 'unknown')})`);
 
-                        // start (if not test mode)
-                        if (!this.env.isTest) {
-                            App.start().then(() => {
-                                console.log(App.info.title + ' - ' + App.info.version);
+                        // start
+                        App.start().then(() => {
+                            console.log(App.info.title + ' - ' + App.info.version);
 
+                            if (!this.env.isTest) {
                                 // perform default action: assume default is requested
                                 App.navigate('/');
+                            }
 
-                                // done
-                                resolve();
-                            }).catch(reject);
-                        } else {
+                            // done
                             resolve();
-                        }
+                        }).catch(reject);
                     }).catch(reject);
                 }).catch(reject);
             });

@@ -5,6 +5,7 @@ const gulp = require('gulp');
 const uglifyjs = require('uglify-js-harmony')
 const uglify = require('gulp-uglify');
 const minifier = require('gulp-uglify/minifier');
+const cfg = require('../config.json');
 
 //TODO: html templates compressor and css lint and minify is to be added
 
@@ -12,7 +13,7 @@ const compressFiles = (isDev, isProd, isTest, root, whenDone) => {
     let folders = utils.getFolders(root);
     const uglifyConfig = require('./.uglify.json');
     const processFile = (folder, _done) => {
-        gulp.src(utils.getSource(root, folder, '/**/*.asm.js', 'loader.js'))
+        gulp.src(utils.getSource(root, folder, '/**/*.asm.js', '/**/static/loader.js'))
             // minify
             .pipe(minifier(uglifyConfig.js, uglifyjs))
             .on('error', utils.errorHandler('minifier'))
@@ -45,6 +46,10 @@ const compressFiles = (isDev, isProd, isTest, root, whenDone) => {
     processFiles(folders, whenDone);
 };
 exports.compressor = function(isDev, isProd, isTest, cb) {
+    if (!cfg.settings.minify) { 
+        cb();
+        return;
+    }
     // note: server side assemblies (.app) are explicitely left as compressing is not required/not used
     let dirs = [
         'sys/modules/',

@@ -291,13 +291,27 @@ define('sys.core.boot.Client', [use('[Base]'), use('[IBootware]'), use('[App]'),
 
         attr('async');
         this.func('boot', function (resolve, reject) {
+            // env setting
+            if (_this.env.isProd) {
+                _this.env.set('type', 'prod');
+            } else {
+                if (_this.env.isDev) {
+                    _this.env.set('type', 'dev');
+                } else {
+                    _this.env.set('type', 'dbg');
+                }
+            }
+
             // boot configured bootwares
             include(_this.bootwares, true).then(function (items) {
                 forAsync(items, function (_resolve, _reject, Bootware) {
                     if (Bootware && typeof Bootware === 'function') {
                         var bootware = as(new Bootware(), IBootware);
                         if (bootware) {
-                            bootware.boot().then(_resolve).catch(_reject);
+                            bootware.boot().then(function () {
+                                xLog('Bootware (booted): ' + bootware._.name);
+                                _resolve();
+                            }).catch(_reject);
                         } else {
                             _resolve();
                         }
@@ -305,7 +319,7 @@ define('sys.core.boot.Client', [use('[Base]'), use('[IBootware]'), use('[App]'),
                         _resolve();
                     }
                 }).then(function () {
-                    // nothins as such
+                    // nothins as such to boot on client
 
                     // done
                     resolve();
@@ -327,7 +341,10 @@ define('sys.core.boot.Client', [use('[Base]'), use('[IBootware]'), use('[App]'),
                     if (Bootware && typeof Bootware === 'function') {
                         var bootware = as(new Bootware(), IBootware);
                         if (bootware) {
-                            bootware.ready().then(_resolve).catch(_reject);
+                            bootware.ready().then(function () {
+                                xLog('Bootware (ready): ' + bootware._.name);
+                                _resolve();
+                            }).catch(_reject);
                         } else {
                             _resolve();
                         }
@@ -337,23 +354,21 @@ define('sys.core.boot.Client', [use('[Base]'), use('[IBootware]'), use('[App]'),
                 }).then(function () {
                     // finally ready
                     _this.env.isReady = true;
-                    console.log(_this.env.isProd ? 'ready: (client, production)' : 'ready: (client, dev)');
+                    console.log('ready: (client, ' + _this.env.get('type', 'unknown') + ')');
 
-                    // start (if not test mode)
-                    if (!_this.env.isTest) {
-                        App.start().then(function () {
-                            console.log(App.info.title + ' - ' + App.info.version);
+                    // start
+                    App.start().then(function () {
+                        console.log(App.info.title + ' - ' + App.info.version);
 
+                        if (!_this.env.isTest) {
                             // perform default action: open home view or currently opened view
                             var url = document.location.hash.replace('#', '') || '/';
                             App.navigate(url);
+                        }
 
-                            // done
-                            resolve();
-                        }).catch(reject);
-                    } else {
+                        // done
                         resolve();
-                    }
+                    }).catch(reject);
                 }).catch(reject);
             }).catch(reject);
         });
@@ -479,11 +494,15 @@ define('sys.core.boot.Server', [use('[Base]'), use('[IBootware]'), use('[App]'),
                 }
             }
 
-            // production setting
+            // env setting
             if (_this.env.isProd) {
-                _this.app.set('env', 'production');
+                _this.env.set('type', 'prod');
             } else {
-                _this.app.set('env', 'development');
+                if (_this.env.isDev) {
+                    _this.env.set('type', 'dev');
+                } else {
+                    _this.env.set('type', 'dbg');
+                }
             }
 
             // boot configured bootwares
@@ -492,7 +511,10 @@ define('sys.core.boot.Server', [use('[Base]'), use('[IBootware]'), use('[App]'),
                     if (Bootware && typeof Bootware === 'function') {
                         var bootware = as(new Bootware(), IBootware);
                         if (bootware) {
-                            bootware.boot(_this.app).then(_resolve).catch(_reject);
+                            bootware.boot(_this.app).then(function () {
+                                xLog('Bootware (booted): ' + bootware._.name);
+                                _resolve();
+                            }).catch(_reject);
                         } else {
                             _resolve();
                         }
@@ -545,10 +567,13 @@ define('sys.core.boot.Server', [use('[Base]'), use('[IBootware]'), use('[App]'),
                 // ready configured bootwares
                 include(_this.bootwares, true).then(function (items) {
                     forAsync(items, function (_resolve, _reject, Bootware) {
-                        if (Bootware && typeof Bootwate === 'function') {
+                        if (Bootware && typeof Bootware === 'function') {
                             var bootware = as(new Bootware(), IBootware);
                             if (bootware) {
-                                bootware.ready(_this.app).then(_resolve).catch(_reject);
+                                bootware.ready(_this.app).then(function () {
+                                    xLog('Bootware (ready): ' + bootware._.name);
+                                    _resolve();
+                                }).catch(_reject);
                             } else {
                                 _resolve();
                             }
@@ -558,22 +583,20 @@ define('sys.core.boot.Server', [use('[Base]'), use('[IBootware]'), use('[App]'),
                     }).then(function () {
                         // finally ready
                         _this.env.isReady = true;
-                        console.log(_this.env.isProd ? 'ready: (server, production)' : 'ready: (server, dev)');
+                        console.log('ready: (server, ' + _this.env.get('type', 'unknown') + ')');
 
-                        // start (if not test mode)
-                        if (!_this.env.isTest) {
-                            App.start().then(function () {
-                                console.log(App.info.title + ' - ' + App.info.version);
+                        // start
+                        App.start().then(function () {
+                            console.log(App.info.title + ' - ' + App.info.version);
 
+                            if (!_this.env.isTest) {
                                 // perform default action: assume default is requested
                                 App.navigate('/');
+                            }
 
-                                // done
-                                resolve();
-                            }).catch(reject);
-                        } else {
+                            // done
                             resolve();
-                        }
+                        }).catch(reject);
                     }).catch(reject);
                 }).catch(reject);
             });
@@ -3611,26 +3634,18 @@ define('sys.core.bootwares.server.Middlewares', [use('[Base]'), use('[IBootware]
                                 var _mw;
 
                                 app.use((_mw = mw)[item.func].apply(_mw, _toConsumableArray(item.args)));
-                                if (_this.env.isDev) {
-                                    console.log('middleware: ' + item.name + '.' + item.func + '(' + item.args + ')');
-                                }
+                                xLog('middleware: ' + item.name + '.' + item.func + '(' + item.args + ')');
                             } else {
                                 app.use(mw.apply(undefined, _toConsumableArray(item.args)));
-                                if (_this.env.isDev) {
-                                    console.log('middleware: ' + item.name + '(' + item.args + ')');
-                                }
+                                xLog('middleware: ' + item.name + '(' + item.args + ')');
                             }
                         } else {
                             if (item.func) {
                                 app.use(mw[item.func]());
-                                if (_this.env.isDev) {
-                                    console.log('middleware: ' + item.name + '.' + item.func + '()');
-                                }
+                                xLog('middleware: ' + item.name + '.' + item.func + '()');
                             } else {
                                 app.use(mw());
-                                if (_this.env.isDev) {
-                                    console.log('middleware: ' + item.name + '()');
-                                }
+                                xLog('middleware: ' + item.name + '()');
                             }
                         }
                     }
@@ -3678,14 +3693,13 @@ define('sys.core.bootwares.server.StaticServer', [use('[Base]'), use('[IBootware
             var fi = _this.settings('static.favIcon', '');
             if (fi) {
                 app.use(favicon(use(fi)));
-                if (_this.env.isDev) {
-                    console.log('favIcon: ' + fi);
-                }
+                xLog('favIcon: ' + fi);
             }
 
             // configure static content serving
             var age = _this.settings('static.caching.age', 0),
                 mainModule = _this.settings(':main', 'sample'),
+                spath = '',
                 staticFolders = _this.settings(':static', []);
             staticFolders.unshift('web.' + mainModule); // add main module by default, on top both in server and client side
             staticFolders.unshift(_this.assembly); // add sys.core (this module) on top as first default item
@@ -3700,9 +3714,7 @@ define('sys.core.bootwares.server.StaticServer', [use('[Base]'), use('[IBootware
 
                         staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
                         app.use('/', express.static(staticFolder, { maxAge: age }));
-                        if (_this.env.isDev) {
-                            console.log('static: / = ' + staticFolder);
-                        }
+                        xLog('static: / = ' + staticFolder);
                     }
                 } catch (err) {
                     _didIteratorError = true;
@@ -3719,14 +3731,12 @@ define('sys.core.bootwares.server.StaticServer', [use('[Base]'), use('[IBootware
                     }
                 }
 
-                app.use('/web', express.static(use('./web/modules/'), { maxAge: age }));
-                if (_this.env.isDev) {
-                    console.log('static: /web = ' + use('./web/modules/'));
-                }
-                app.use('/sys', express.static(use('./sys/modules/'), { maxAge: age }));
-                if (_this.env.isDev) {
-                    console.log('static: /sys = ' + use('./sys/modules/'));
-                }
+                spath = use('./web/modules/');
+                app.use('/web', express.static(spath, { maxAge: age }));
+                xLog('static: /web = ' + spath);
+                spath = use('./sys/modules/');
+                app.use('/sys', express.static(spath, { maxAge: age }));
+                xLog('static: /sys = ' + spath);
             } else {
                 var _iteratorNormalCompletion2 = true;
                 var _didIteratorError2 = false;
@@ -3738,9 +3748,7 @@ define('sys.core.bootwares.server.StaticServer', [use('[Base]'), use('[IBootware
 
                         _staticFolder = use(_staticFolder).replace('members/', '').replace('.js', '') + 'static/';
                         app.use('/', express.static(_staticFolder));
-                        if (_this.env.isDev) {
-                            console.log('static: / = ' + _staticFolder);
-                        }
+                        xLog('static: / = ' + _staticFolder);
                     }
                 } catch (err) {
                     _didIteratorError2 = true;
@@ -3757,17 +3765,15 @@ define('sys.core.bootwares.server.StaticServer', [use('[Base]'), use('[IBootware
                     }
                 }
 
-                app.use('/web', express.static(use('./web/modules/')));
-                if (_this.env.isDev) {
-                    console.log('static: /web = ' + use('./web/modules/'));
-                }
-                app.use('/sys', express.static(use('./sys/modules/')));
-                if (_this.env.isDev) {
-                    console.log('static: /sys = ' + use('./sys/modules/'));
-                }
+                spath = use('./web/modules/');
+                app.use('/web', express.static(spath));
+                xLog('static: /web = ' + spath);
+                spath = use('./sys/modules/');
+                app.use('/sys', express.static(spath));
+                xLog('static: /sys = ' + spath);
             }
 
-            // dome
+            // done
             resolve();
         });
 

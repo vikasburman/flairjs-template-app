@@ -5,7 +5,8 @@ const del = require('del');
 exports.cleaner = function(isDev, isProd, isTest, cb) {
     let cleanGlob = [
         '/**/*.asm.js', 
-        '/**/*.asm.min.js'
+        '/**/*.asm.min.js',
+        '/**/static/loader.min.js'
     ],
     dirs = [
         'sys/modules/',

@@ -80,6 +80,9 @@
             }
         }
     };
+    const xLog = (text) => {
+        if (config.settings.xLog || config.env.isDev) { console.log(text); }
+    };
 
     /**
      * @global
@@ -236,7 +239,7 @@
                     _path = config.env.root + _path; break;
             }
             if (_path.indexOf('{' + '.min' + '}') !== -1) {
-                if (config.env.isProd) {
+                if (config.env.isProd && config.settings.minify) {
                     _path = _path.replace('{' + '.min' + '}', '.min');
                 } else {
                     _path = _path.replace('{' + '.min' + '}', '');
@@ -411,7 +414,7 @@
     g.config = config;
     g.use = use; g.include = include;
     g.settings = settings;
-    g.forAsync = forAsync; g.replaceAll = replaceAll; 
+    g.forAsync = forAsync; g.replaceAll = replaceAll; g.xLog = xLog;
     g.getNestedKeyValue = getNestedKeyValue; g.setNestedKeyValue = setNestedKeyValue;
     g.App = null;
 
@@ -519,7 +522,6 @@
         window.document.head.appendChild(script);
     };
     const onError = (err) => { 
-        console.log(err); //TODO: remove
         if (!config.env.isProd) { 
             console.log(`boot failed. (${err.toString()})`); 
             console.log(err);

@@ -24,33 +24,6 @@ define('web.sample.partials.SimpleList', [use('[Partial]')], function (Partial) 
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/partials/SimpleList.js)
 'use strict';
 
-// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/shells/Full.js)
-define('web.sample.shells.Full', [use('[Shell]')], function (Shell) {
-    /**
-     * @class web.sample.shells.Full
-     * @classdesc web.sample.shells.Full
-     * @desc Shell (fully loaded version).
-     */
-    return Class('web.sample.shells.Full', Shell, function (attr) {
-        var _this = this;
-
-        this.data('counter', 0);
-
-        attr('override');
-        attr('async');
-        this.func('beforeShow', function (base, resolve, reject) {
-            base().then(function () {
-                _this.sub('AddCounter', function () {
-                    _this.data.counter++;
-                });
-                resolve();
-            }).catch(reject);
-        });
-    });
-});
-// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/shells/Full.js)
-'use strict';
-
 // START: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/views/Home.js)
 define('web.sample.views.Home', [use('[View]'), use('web.sample.shells.Full')], function (View, Shell) {
     /**
@@ -116,3 +89,30 @@ define('web.sample.views.View2', [use('[View]'), use('web.sample.shells.Full')],
     });
 });
 // END: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/views/View2.js)
+'use strict';
+
+// START: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/shells/Full.js)
+define('web.sample.shells.Full', [use('[Shell]')], function (Shell) {
+    /**
+     * @class web.sample.shells.Full
+     * @classdesc web.sample.shells.Full
+     * @desc Shell (fully loaded version).
+     */
+    return Class('web.sample.shells.Full', Shell, function (attr) {
+        var _this = this;
+
+        this.data('counter', 0);
+
+        attr('override');
+        attr('async');
+        this.func('beforeShow', function (base, resolve, reject) {
+            base().then(function () {
+                _this.sub('AddCounter', function () {
+                    _this.data.counter++;
+                });
+                resolve();
+            }).catch(reject);
+        });
+    });
+});
+// END: (/Users/vikasburman/Personal/Projects/github/appgears/source/web/modules/sample/members/shells/Full.js)

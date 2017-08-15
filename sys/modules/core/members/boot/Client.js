@@ -30,13 +30,27 @@ define([
 
         attr('async');
         this.func('boot', (resolve, reject) => {
+            // env setting
+            if (this.env.isProd) {
+                this.env.set('type', 'prod');
+            } else {
+                if (this.env.isDev) {
+                    this.env.set('type', 'dev');
+                } else {
+                    this.env.set('type', 'dbg');
+                }
+            }
+
             // boot configured bootwares
             include(this.bootwares, true).then((items) => {
                 forAsync(items, (_resolve, _reject, Bootware) => {
                     if (Bootware && typeof Bootware === 'function') {
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
-                            bootware.boot().then(_resolve).catch(_reject);
+                            bootware.boot().then(() => {
+                                xLog(`Bootware (booted): ${bootware._.name}`);
+                                _resolve();
+                            }).catch(_reject);
                         } else {
                             _resolve();
                         }
@@ -44,7 +58,7 @@ define([
                         _resolve();
                     }
                 }).then(() => {
-                    // nothins as such
+                    // nothins as such to boot on client
 
                     // done
                     resolve();                        
@@ -64,7 +78,10 @@ define([
                     if (Bootware && typeof Bootware === 'function') {
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
-                            bootware.ready().then(_resolve).catch(_reject);
+                            bootware.ready().then(() => {
+                                xLog(`Bootware (ready): ${bootware._.name}`);
+                                _resolve();
+                            }).catch(_reject);
                         } else {
                             _resolve();
                         }
@@ -74,23 +91,21 @@ define([
                 }).then(() => {
                     // finally ready
                     this.env.isReady = true;
-                    console.log(this.env.isProd ? `ready: (client, production)` : `ready: (client, dev)`);
+                    console.log(`ready: (client, ${this.env.get('type', 'unknown')})`);
 
-                    // start (if not test mode)
-                    if (!this.env.isTest) {
-                        App.start().then(() => {
-                            console.log(App.info.title + ' - ' + App.info.version);
+                    // start
+                    App.start().then(() => {
+                        console.log(App.info.title + ' - ' + App.info.version);
 
+                        if (!this.env.isTest) {
                             // perform default action: open home view or currently opened view
                             let url = document.location.hash.replace('#', '') || '/';
                             App.navigate(url);
+                        }
 
-                            // done
-                            resolve();
-                        }).catch(reject);
-                    } else {
+                        // done
                         resolve();
-                    }
+                    }).catch(reject);
                 }).catch(reject);
             }).catch(reject);
         });
