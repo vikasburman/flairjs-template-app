@@ -55,9 +55,8 @@ define([
                                 }
                             }
                         }
-                    } else {
-                        prop = cfg; // whatever name is given
                     }
+                    prop = cfg; // prop as is OR path as is OR path with resolved variables
                 }
             }
             return prop;
@@ -88,7 +87,7 @@ define([
                         }
 
                         // mapping
-                        setNestedKeyValue(toEntity, e.object.prop, e.object.value);
+                        setNestedKeyValue(toEntity, e.entity.prop, e.object.value);
                     }
                 }
             }
