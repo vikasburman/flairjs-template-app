@@ -1,1 +1,0 @@
-define('dummy', function() { return null; });

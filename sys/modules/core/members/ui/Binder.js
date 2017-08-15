@@ -12,7 +12,7 @@ define([
         this.func('unbind', this.noop);
         this.func('routine', this.noop);
         this.func('getValue', this.noop);
-        this.func('isTwoWay', false);
+        this.prop('isTwoWay', false);
         this.prop('publishes', false);
         this.prop('block', false);
     });

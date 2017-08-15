@@ -13,7 +13,7 @@ const updateBP = (cb) => {
             'app/modules/sample',
             'web/modules/sample',
             'build',
-            'sys',
+            'sys'
         ],
         files = [
             'gulpfile.js'
@@ -36,9 +36,10 @@ const updateBP = (cb) => {
             console.log(e);
             onDone();
         } else {
-            // copy all folders as is from downloaded to here
+            // copy all folders as is from downloaded to here (after deleting)
             let tempName = '';
             for(let folder of folders) {
+                fs.removeSync(folder);
                 tempName = tempFolder + '/' + folder;
                 console.log('updating: ' + tempName + ' --> ' + folder);
                 fs.copySync(tempName, folder);

@@ -1,47 +1,20 @@
 const utils = require('./utils.js');
 const buildSettings = require('./.build.json');
 const fs = require('fs-extra');
-const https = require("https");
-const prompt = require('prompt');
+const downloader = require('download-github-repo');
 const packageJson = require('../package.json');
+const prompt = require('prompt');
 
-// update OOJS library
-const updateFile = (src, dest, tempFolder, fileName, onDone) => {
-    let tempFileName = tempFolder + '/' + fileName,
-        tempFile = fs.createWriteStream(tempFileName);
-
-    // download file in temp folder    
-    https.get(src + fileName, (res) => {
-        res.pipe(tempFile);
-
-        // update
-        try {
-            let targetFileName = dest + fileName;
-            console.log('updating: ' + tempFileName + ' --> ' + targetFileName);
-            fs.createReadStream(tempFileName).pipe(fs.createWriteStream(targetFileName));
-            onDone(true);
-        } catch (e) {
-            console.log(e);
-            onDone(false);
-        }
-    }).on('error', (e) => {
-        console.log(e);
-        onDone(false);
-    });
-    
-};
+// update oojs files
 const updateOOJS = (cb) => {
-    // delete this new config from sys/.config.json file to be used here
-    let srcRepo = 'https://raw.githubusercontent.com/vikasburman/oojs/master/src/',
+    let repo = 'vikasburman/oojs#master',
+        tempFolder = './temp.download',
+        srcFolder = 'src/',
         destFolder = 'sys/modules/core/static/libs/',
-        tempFolder = 'temp.download',
         files = [
             'oojs.js',
             'oojs.min.js'
         ];
-    
-    // create temp folder
-    fs.ensureDirSync(tempFolder);
 
     let onDone = () => {
         // delete temp folder
@@ -50,22 +23,27 @@ const updateOOJS = (cb) => {
         // done
         cb(); 
     };
+    
+    // create temp folder
+    fs.ensureDirSync(tempFolder);
 
-    let updFile = () => {
-        if (files.length > 0) {
-            let fileName = files.shift();
-            updateFile(srcRepo, destFolder, tempFolder, fileName, (success) => {
-                if (success) { 
-                    updFile();
-                } else {
-                    onDone();
-                }
-            });
+    // download repo
+    downloader(repo, tempFolder, (e) => {
+        if (e) {
+            console.log(e);
+            onDone();
         } else {
+            // copy all files as is from downloaded to here
+            for(let file of files) {
+                tempName = tempFolder + '/' + srcFolder + file;
+                console.log('updating: ' + tempName + ' --> ' + destFolder + file);
+                fs.createReadStream(tempName).pipe(fs.createWriteStream(destFolder + file));
+            };
+
+            // done
             onDone();
         }
-    };
-    updFile();
+    });
 };
 exports.updater = function(isDev, isProd, isTest, cb) {
     if (packageJson.name !== 'appgears') {

@@ -7,13 +7,14 @@
 (function() {
     // the definition
     const def = (opts = {}) => {
+        let isServer = (new Function("try {return this===global;}catch(e){return false;}"))(),
+            getGlobal = new Function("try {return (this===global ? global : window);}catch(e){return window;}");
         let oojs = {},
             noop = () => {},
             noopAsync = (resolve, reject) => { resolve(); },
-            isServer = ((typeof global === 'object' && typeof exports === 'object') ? true : false),
             options = {
                 env: opts.env || (isServer ? 'server' : 'client'),
-                global: (isServer ? global : window),
+                global: getGlobal(),
                 supressGlobals: (typeof opts.supressGlobals === 'undefined' ? false : opts.supressGlobals),
                 symbols: opts.symbols || []
             };

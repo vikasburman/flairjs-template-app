@@ -8,7 +8,8 @@
  * (powered by appgears - https://github.com/vikasburman/appgears)
  */
 (() => {
-    let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
+    let isServer = (new Function("try {return this===global;}catch(e){return false;}"))(),
+        getGlobal = new Function("try {return (this===global ? global : window);}catch(e){return window;}");
 
     // config
     const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"loader":{"tabletWidth":{"min":600,"max":992},"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"main":"sample","routes":{"server":[],"client":[]},"static":[],"source":{"sys":"sys/modules/","web":"web/modules/","app":"app/modules/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Auth":"sys.core.security.server.Auth | sys.core.security.client.Auth","ClaimsChecker":"sys.core.security.ClaimsChecker","User":"sys.core.security.dto.User","Credentials":"sys.core.security.dto.Credentials","CredentialsValidator":"sys.core.security.CredentialsValidator","CredentialsCreator":"sys.core.security.CredentialsCreator","Crypt":"sys.core.security.Crypt","Transition":"sys.core.ui.Transition","View":"sys.core.ui.View","Shell":"sys.core.ui.Shell","Partial":"sys.core.ui.Partial","Service":"sys.core.comm.Service","Controller":"sys.core.domain.Controller","Entity":"sys.core.domain.Entity","DbContext":"sys.core.db.DbContext","Repository":"sys.core.data.Repository","Automapper":"sys.core.data.Automapper"},"container":{},"routes":{"server":[{"root":"/auth","url":"/","verb":"post","class":"sys.core.security.server.Auth","func":"login"}],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"port":{"dev":8080,"prod":8080},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"dependencies":[],"static":{"favIcon":"web/sample/static/images/logo.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{},"formatters":["sys.core.ui.formatters.Percent"],"binders":["sys.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.sample":{"routes":{"server":[]}}}`);
@@ -21,29 +22,30 @@
             }
         }, 
         isServer: isServer,
+        global: getGlobal(),
         isDevice: false,
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Tue, 15 Aug 2017 04:11:37 GMT',         
-        isDev: true,
-        isProd: false,
+        lupdate: 'Tue, 15 Aug 2017 15:35:48 GMT',         
+        isDev: false,
+        isProd: true,
         isTest: false,
         isReady: false,
         root: (isServer ? (require('app-root-path') + '/') : '/'),
         require: {
             baseUrl: '/',
             paths: {
-                text: './libs/text',
-                json: './libs/json',
-                css: './libs/css'
+                text: './libs/text.min',
+                json: './libs/json.min',
+                css: './libs/css.min'
             },
             bundles: {}
         }
     };
     if (!config.env.isDev) { // dev mode get files as is from server, instead of bundles, as there are no bundles
-        Object.assign(config.env.require.paths, JSON.parse('{}'));
-        Object.assign(config.env.require.bundles, JSON.parse('{}'));
+        Object.assign(config.env.require.paths, JSON.parse('{"sys/core":"sys/core/index.asm.min","web/sample":"web/sample/index.asm.min"}'));
+        Object.assign(config.env.require.bundles, JSON.parse('{"sys/core":["sys.core.Base","sys.core.ErrorInfo","sys.core.app.App","sys.core.app.Client","sys.core.app.IApp","sys.core.app.Server","sys.core.boot.Client","sys.core.boot.IBootware","sys.core.boot.Server","sys.core.bootwares.Attributes","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Router","sys.core.comm.ClientRequest","sys.core.comm.ClientResponse","sys.core.comm.Handler","sys.core.comm.Request","sys.core.comm.Response","sys.core.comm.ServerRequest","sys.core.comm.ServerResponse","sys.core.comm.Service","sys.core.data.Automapper","sys.core.data.Repository","sys.core.data.UnitOfWork","sys.core.db.DbContext","sys.core.db.DiskDB","sys.core.domain.Controller","sys.core.domain.Entity","sys.core.security.ClaimsChecker","sys.core.security.CredentialsCreator","sys.core.security.CredentialsValidator","sys.core.security.Crypt","sys.core.ui.Adapter","sys.core.ui.Binder","sys.core.ui.Component","sys.core.ui.ComponentTypes","sys.core.ui.Formatter","sys.core.ui.Partial","sys.core.ui.Shell","sys.core.ui.Transition","sys.core.ui.View","sys.core.bootwares.client.DataBinder","sys.core.bootwares.client.Dependencies","sys.core.bootwares.server.Middlewares","sys.core.bootwares.server.StaticServer","sys.core.security.client.Auth","sys.core.security.dto.AuthInfo","sys.core.security.dto.Credentials","sys.core.security.dto.User","sys.core.security.server.Auth","sys.core.security.server.JwtToken","sys.core.ui.binders.xClass","sys.core.ui.formatters.Percent"],"web/sample":["web.sample.partials.SimpleList","web.sample.shells.Full","web.sample.views.Home","web.sample.views.View1","web.sample.views.View2"]}'));
     }
     if (!isServer) {
         if (window.document) {
@@ -61,7 +63,7 @@
         config.env.locales.supported = config.settings.loader.locales.supported;
     }
 
-    const dummyJS = 'sys.core.dummy';
+    const dummyJS = (isServer ? 'dummy.js' : 'sys/node_modules/dummy.js');
     const catalog = {};
     const getNestedKeyValue = (obj, keyPath, defaultValue = null) => {
         let result = defaultValue,
@@ -100,7 +102,7 @@
      *
      * 2. Any file with relative path: 
      *    use('../../file1.js') --> '../../file1.js'
-     *    use('../../file1.js') --> '../../file1.js' (in debug) and '../../file1.min.js' (in prod)
+     *    use('../../file1.min.js') --> '../../file1.js' (in debug) and '../../file1.min.js' (in prod)
      *
      * 3. Any assembly member:
      *    use('sys.core.Base') --> 'sys/modules/core/members/Base.js'
@@ -221,7 +223,7 @@
 
         // different paths can be defined for server and client as:
         // pathWhenOnServer | pathWhenOnClient
-        // any missing will be resolved with a null value
+        // any missing will be resolved with a dummy module
         _path = getContextualPath(_path);
 
         // mocking consideration
@@ -414,7 +416,7 @@
     };
 
     // expose this global API
-    let g = (isServer ? global : window);
+    let g = config.env.global;
     g.config = config;
     g.use = use; g.include = include;
     g.settings = settings;
@@ -526,6 +528,7 @@
         window.document.head.appendChild(script);
     };
     const onError = (err) => { 
+        console.log(err); //TODO: remove
         if (!config.env.isProd) { 
             console.log(`boot failed. (${err.toString()})`); 
             console.log(err);
@@ -541,7 +544,7 @@
             require.config(config.env.require); // setup require config
         }
 
-        include([use('./libs/oojs.js')]).then((oojs) => {
+        include([use('./libs/oojs.min.js')]).then((oojs) => {
             // initialize OOJS
             let symbols = [];
             if (!config.env.isProd) { symbols.push('DEBUG'); }
@@ -592,9 +595,9 @@
                         if (isServer) {
                             bootstrapper.ready().then(onDone).catch(onError);
                         } else {
-                            include(['./libs/domReady.js']).then((domReady) => {
+                            include(['./libs/domReady.min.js']).then((domReady) => {
                                 domReady(() => {
-                                    include(['./libs/deviceReady.js']).then((deviceReady) => {
+                                    include(['./libs/deviceReady.min.js']).then((deviceReady) => {
                                         deviceReady((isCordova) => {
                                             config.env.isCordova = isCordova;
                                             bootstrapper.ready().then(onDone).catch(onError);
@@ -611,6 +614,6 @@
     if (isServer) {
         onLoad();
     } else {
-        _loadScript('./libs/require.js', onLoad, onError);
+        _loadScript('./libs/require.min.js', onLoad, onError);
     }
 })();

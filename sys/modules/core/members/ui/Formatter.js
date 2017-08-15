@@ -10,6 +10,6 @@ define([
         this.prop('formatterName', '');
         this.func('read', this.noop);
         this.func('publish', this.noop);
-        this.func('isTwoWay', false);
+        this.prop('isTwoWay', false);
     });
 });

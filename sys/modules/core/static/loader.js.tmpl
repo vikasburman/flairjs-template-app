@@ -1,5 +1,6 @@
 (() => {
-    let isServer = (typeof global === 'object' && typeof exports === 'object') ? true : false;
+    let isServer = (new Function("try {return this===global;}catch(e){return false;}"))(),
+        getGlobal = new Function("try {return (this===global ? global : window);}catch(e){return window;}");
 
     // config
     const config = JSON.parse(`<!-- inject: ./.config.json -->`);
@@ -12,6 +13,7 @@
             }
         }, 
         isServer: isServer,
+        global: getGlobal(),
         isDevice: false,
         isCordova: false,
         isMobile: false,
@@ -52,7 +54,7 @@
         config.env.locales.supported = config.settings.loader.locales.supported;
     }
 
-    const dummyJS = 'sys.core.dummy';
+    const dummyJS = (isServer ? 'dummy.js' : 'sys/node_modules/dummy.js');
     const catalog = {};
     const getNestedKeyValue = (obj, keyPath, defaultValue = null) => {
         let result = defaultValue,
@@ -212,7 +214,7 @@
 
         // different paths can be defined for server and client as:
         // pathWhenOnServer | pathWhenOnClient
-        // any missing will be resolved with a null value
+        // any missing will be resolved with a dummy module
         _path = getContextualPath(_path);
 
         // mocking consideration
@@ -405,7 +407,7 @@
     };
 
     // expose this global API
-    let g = (isServer ? global : window);
+    let g = config.env.global;
     g.config = config;
     g.use = use; g.include = include;
     g.settings = settings;
@@ -517,6 +519,7 @@
         window.document.head.appendChild(script);
     };
     const onError = (err) => { 
+        console.log(err); //TODO: remove
         if (!config.env.isProd) { 
             console.log(`boot failed. (${err.toString()})`); 
             console.log(err);

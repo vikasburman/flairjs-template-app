@@ -25,8 +25,8 @@ define([
             let errorText = (!this.env.isServer ? `Error handling: ${request.url}#${request.verb}` : `Error handling: ${request.url} (%ERROR%)`);
             include([use(this.className)]).then((Handler) => {
                 let handler = new Handler();
-                    handlerInfo = Reflector.get(handler),
-                    funcInfo = handlerInfo.getMember(this.funcName);
+                let handlerInfo = Reflector.get(handler);
+                let funcInfo = handlerInfo.getMember(this.funcName);
                 this.env.set('currentRequest', request);
                 handler[this.funcName](request).then((result) => {
                     this.env.reset('currentRequest');
