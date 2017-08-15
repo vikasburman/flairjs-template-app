@@ -22,7 +22,7 @@ define([
         this.prop('funcName', null);
 
         this.func('handle', (request) => {
-            let errorText = (this.env.isServer ? `Error handling: ${request.url}#${request.verb}` : `Error handling: ${request.url} (%ERROR%)`);
+            let errorText = (!this.env.isServer ? `Error handling: ${request.url}#${request.verb}` : `Error handling: ${request.url} (%ERROR%)`);
             include([use(this.className)]).then((Handler) => {
                 let handler = new Handler();
                     handlerInfo = Reflector.get(handler),

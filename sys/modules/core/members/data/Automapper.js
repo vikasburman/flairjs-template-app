@@ -13,8 +13,8 @@ define([
             
             // set special variables
             let currentRequest = this.env.currentRequest();
-            this.vars.$loginId = (currentRequest ? currentRequest.user.loginId : '');
-            this.vars.$clientId = (currentRequest ? currentRequest.user.clientId : '');
+            this.vars.$loginId = ((currentRequest && currentRequest.user) ? currentRequest.user.loginId : '');
+            this.vars.$clientId = ((currentRequest && currentRequest.user) ? currentRequest.user.clientId : '');
             this.vars.$locale = this.env.getLocale().name;
             this.vars.$lcId = this.env.getLocale().lcId;
         });
