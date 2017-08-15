@@ -49,9 +49,9 @@ define([
                 } else {
                     if (cfg.indexOf('.') !== -1) { // path exist
                         if (cfg.indexOf('$') !== -1) { // special variables exists
-                            for(let _var in vars) {
-                                if (vars.hasOwnProperty(_var)) {
-                                    cfg = cfg.replace(_var, vars[_var]);
+                            for(let _var in this.vars) {
+                                if (this.vars.hasOwnProperty(_var)) {
+                                    cfg = cfg.replace(_var, this.vars[_var]);
                                 }
                             }
                         }
@@ -59,6 +59,7 @@ define([
                     prop = cfg; // prop as is OR path as is OR path with resolved variables
                 }
             }
+
             return prop;
         });
 
