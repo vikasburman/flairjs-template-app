@@ -49,7 +49,11 @@ define([
                 } else {
                     if (cfg.indexOf('.') !== -1) { // path exist
                         if (cfg.indexOf('$') !== -1) { // special variables exists
-                            // TODO:
+                            for(let _var in vars) {
+                                if (vars.hasOwnProperty(_var)) {
+                                    cfg = cfg.replace(_var, vars[_var]);
+                                }
+                            }
                         }
                     } else {
                         prop = cfg; // whatever name is given
