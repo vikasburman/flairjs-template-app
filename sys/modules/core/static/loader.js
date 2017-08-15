@@ -25,7 +25,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Tue, 15 Aug 2017 03:28:43 GMT',         
+        lupdate: 'Tue, 15 Aug 2017 04:11:37 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
@@ -63,7 +63,7 @@
 
     const dummyJS = 'sys.core.dummy';
     const catalog = {};
-    const getNestedKeyValue = (obj, keyPath = '', defaultValue = null) => {
+    const getNestedKeyValue = (obj, keyPath, defaultValue = null) => {
         let result = defaultValue,
             index = -1,
             pathArray = keyPath.split('.'),
@@ -73,6 +73,19 @@
         };
         if (typeof result === 'undefined') { result = defaultValue; }
         return result;
+    };
+    const setNestedKeyValue = (obj, keyPath, value) => {
+        let _obj = obj,
+            pathArray = keyPath.split('.'),
+            index = 0;
+        for(let key of pathArray) {
+            index++;
+            if (index === pathArray.length) {
+                _obj[key] = value;
+            } else {
+                _obj = _obj[key];
+            }
+        }
     };
 
     /**
@@ -406,6 +419,7 @@
     g.use = use; g.include = include;
     g.settings = settings;
     g.forAsync = forAsync; g.replaceAll = replaceAll; 
+    g.getNestedKeyValue = getNestedKeyValue; g.setNestedKeyValue = setNestedKeyValue;
     g.App = null;
 
     // extend environment (server and client)

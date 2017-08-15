@@ -39,14 +39,87 @@ define([
         attr('private');
         this.prop('vars', {});
 
+        attr('private');
+        this.func('resolveObjectProp', (key) => {
+            let prop = '',
+                cfg = this.config[key];
+            if (cfg) {
+                if (cfg === '-') {
+                    prop = key; // same
+                } else {
+                    if (cfg.indexOf('.') !== -1) { // path exist
+                        if (cfg.indexOf('$') !== -1) { // special variables exists
+
+                        }
+
+                    } else {
+                        prop = cfg; // whatever name is given
+                    }
+                }
+            }
+            return prop;
+        });
+
         this.func('to', (toEntity, fromObject) => {
-            // TODO:
-            // onMap is called with: type, name, source, destination for each map activity
+            // iterate config to work on mapping
+            for(let key in this.config) {
+                if (this.config.hasOwnProperty(key)) {
+                    // mapping info
+                    let e = {
+                        direction: 'o2e',
+                        entity: {
+                            prop: key,
+                            value: toEntity[e.entity.prop]
+                        },
+                        object: {
+                            prop: this.resolveObjectProp(key),
+                            value: getNestedKeyValue(fromObject, e.object.prop, null)
+                        }
+                    };
+
+                    if (e.object.prop) { // mapping configuration exists
+                        // mapping interception
+                        // values can be updated by map function (unrestricted)
+                        if (typeof this.onMap === 'function') {
+                            this.onMap(e);
+                        }
+
+                        // mapping
+                        setNestedKeyValue(toEntity, e.object.prop, e.object.value);
+                    }
+                }
+            }
             return toEntity;
         });
         this.func('from', (fromEntity, toObject) => {
-            // TODO:
-            // onMap is called with: type, name, source, destination for each map activity
+            // iterate config to work on mapping
+            for(let key in this.config) {
+                if (this.config.hasOwnProperty(key)) {
+                    // mapping info
+                    let e = {
+                        direction: 'e2o',
+                        entity: {
+                            prop: key,
+                            value: fromEntity[e.entity.prop]
+                        },
+                        object: {
+                            prop: this.resolveObjectProp(key),
+                            value: getNestedKeyValue(toObject, e.object.prop, null)
+                        }
+                    };
+
+                    if (e.object.prop) { // mapping configuration exists
+                        // mapping interception
+                        // values can be updated by map function (unrestricted)
+                        if (typeof this.onMap === 'function') {
+                            this.onMap(e);
+                        }
+
+                        // mapping
+                        setNestedKeyValue(toObject, e.object.prop, e.entity.value);
+                    }
+                }
+            }
             return toObject;
         });
 
