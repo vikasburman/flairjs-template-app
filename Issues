@@ -2,7 +2,7 @@
 2. reCaptcha implementation must be very clean
 3. oojs update is not working correctly - half file is getting downloaded -- check...
 
-6. Move Entity and Controller to some other folder --- domain folder
+
 7. add check attribute 
 
 attr('check', 'type', 'number');
