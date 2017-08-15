@@ -49,9 +49,8 @@ define([
                 } else {
                     if (cfg.indexOf('.') !== -1) { // path exist
                         if (cfg.indexOf('$') !== -1) { // special variables exists
-
+                            // TODO:
                         }
-
                     } else {
                         prop = cfg; // whatever name is given
                     }
