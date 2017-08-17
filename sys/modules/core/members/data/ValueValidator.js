@@ -9,8 +9,30 @@ define(() => {
         this.func('constructor', () => {
         });
 
-        this.func('validate', (dataValue, ...validationCfg) => {
-            // TODO: one validation type can be 'custom' which takes a fn and pass call to that fn with other parameteres
+        this.func('validate', (dataValue, validator, ...validationCfg) => {
+            let fn = null,
+                result = null;
+            if (typeof validator === 'function') {
+                fn = validator;
+            } else {
+                fn = this[validator + 'Check']; // a private function with check type name suffixed with 'Check'
+            }
+
+            // validate
+            try {
+                fn(dataValue, ...validationCfg);
+            } catch (err) {
+                xLog(`${this.errorText(err)}`);
+                result = err;
+            }
+            return result;
         });
+
+        attr('private');
+        this.func('nullCheck', (dataValue) => {
+            if (dataValue === null) {
+                throw 'Null values are not allowed.';
+            }
+        })
     });
 });
