@@ -11,3 +11,6 @@ attr('check', 'null', false);
 attr('check', 'type', 'number');
 attr('check', 'gte', 10);
 many more...
+
+
+can we inherit from a singleton class -- ideally should be allowed -- but check

@@ -19,7 +19,8 @@
         "Entity": "sys.core.domain.Entity",
         "DbContext": "sys.core.db.DbContext",
         "Repository": "sys.core.data.Repository",
-        "Automapper": "sys.core.data.Automapper"
+        "Automapper": "sys.core.data.Automapper",
+        "ValueValidator": "sys.core.data.ValueValidator"
     },
     "container": {
     },
