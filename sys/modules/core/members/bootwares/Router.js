@@ -17,6 +17,7 @@ define([
                 routes = [],
                 router = (this.env.isServer ? app : new RouteManager({})),
                 fullUrl = '',
+                thisRoute = '',
                 mainModule = this.settings(':main', 'sample'),
                 routesKey = (this.env.isServer ? ':routes.server' : ':routes.client');
 
@@ -37,11 +38,13 @@ define([
             routesOrder.unshift(mainModule); // add main module by default, on top both in server and client side
             routesOrder.unshift(this.assembly); // add sys.core (current module) by default, on top of main module, both in server and client side
             for(let routesOf of routesOrder) {
-                if (!routesOf.startsWith('sys.')) {
-                    routesOf = (this.env.isServer ? 'app.' + routesOf : 'web.' + routesOf);
+                if (!routesOf.startsWith('sys.') && !routesOf.startsWith('app.') && !routesOf.startsWith('web.')) {
+                    thisRoute = (this.env.isServer ? 'app.' + routesOf : 'web.' + routesOf);
+                } else {
+                    thisRoute = routesOf;
                 }
-                xLog(`routes of: ${routesOf}`);
-                routes = this.settings(routesOf + routesKey, []);
+                xLog(`routes of: ${thisRoute}`);
+                routes = this.settings(thisRoute + routesKey, []);
                 for(let route of routes) {
                     if (route.url && route.class) {
                         fullUrl = (route.root || '') + route.url;
