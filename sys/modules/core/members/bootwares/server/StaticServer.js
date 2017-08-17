@@ -24,11 +24,14 @@ define([
                 mainModule = this.settings(':main', 'sample'),
                 spath = '',
                 staticFolders = this.settings(':static', []);
-                staticFolders.unshift('web.' + mainModule); // add main module by default, on top both in server and client side
+                staticFolders.unshift(mainModule); // add main module by default, on top both in server and client side
                 staticFolders.unshift(this.assembly); // add sys.core (this module) on top as first default item
             if (this.settings('static.caching.enabled') && age !== 0) { 
                 for(let staticFolder of staticFolders) {
-                    staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
+                    if (!staticFolder.startsWith('sys.')) {
+                        staticFolder = 'web.' + staticFolder;
+                    }
+                    staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + '/static/';
                     app.use('/', express.static(staticFolder, { maxAge: age }));
                     xLog(`static: / = ${staticFolder}`);
                 }
@@ -40,7 +43,10 @@ define([
                 xLog(`static: /sys = ${spath}`);
             } else {
                 for(let staticFolder of staticFolders) {
-                    staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
+                    if (!staticFolder.startsWith('sys.')) {
+                        staticFolder = 'web.' + staticFolder;
+                    }
+                    staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + '/static/';
                     app.use('/', express.static(staticFolder));
                     xLog(`static: / = ${staticFolder}`);
                 }
