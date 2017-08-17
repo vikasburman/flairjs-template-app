@@ -40,7 +40,7 @@ define([
                 if (!routesOf.startsWith('sys.')) {
                     routesOf = (this.env.isServer ? 'app.' + routesOf : 'web.' + routesOf);
                 }
-                xLog(`routes of: ${routes}`);
+                xLog(`routes of: ${routesOf}`);
                 routes = this.settings(routesOf + routesKey, []);
                 for(let route of routes) {
                     if (route.url && route.class) {
