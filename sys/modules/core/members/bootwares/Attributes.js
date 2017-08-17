@@ -2,7 +2,7 @@ define([
     use('[Base]'),
     use('[IBootware]'),
     use('[Auth]'),
-    use('[ValueValidator]')
+    use('[ValueValidator]'),
     use('sys.core.comm.ClientResponse')
 ], (Base, IBootware, Auth, ValueValidator, FetchResponse) => {
     /**
