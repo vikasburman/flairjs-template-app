@@ -36,10 +36,9 @@ define(() => {
 
         attr('protected');
         this.func('onError', (err) => {
-            console.log(`Error in ${this._.name} (${err.toString()})`); 
-            if (!config.env.isProd) { 
-                console.log(`${err}`);
-            }
+            let errorText = this.errorText(err);
+            console.log(`Error in ${this._.name} (${errorText})`); 
+            xLog(`${errorText}`);
         });
 
         attr('protected');

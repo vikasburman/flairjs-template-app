@@ -1,7 +1,6 @@
 1. multer needs to be used - especially to upload/use file(s)
 2. reCaptcha implementation must be very clean
-3. replace all if.isDev console.log with xLog everywhere
-4. use this.errorText whereever possible
+3. add more xLog statements whereever possible...
 5. Solve prod issues:
    - minification not working currently, hence turned off via minify = false in config
    - pm2 setup for running node

@@ -34,7 +34,7 @@ define([
                 this.current = this._.pu; // store public reference
                 resolve(this.current);
             }).catch((err) => {
-                console.log(`Failed to navigate to ${request.url}. (${err || ''});`);
+                console.log(`Failed to navigate to ${request.url}. (${this.errorText(err)});`);
                 reject(err);
             });
         });

@@ -9,8 +9,6 @@
         "ClaimsChecker": "sys.core.security.ClaimsChecker",
         "User": "sys.core.security.dto.User",
         "Credentials": "sys.core.security.dto.Credentials",
-        "CredentialsValidator": "sys.core.security.CredentialsValidator",
-        "CredentialsCreator": "sys.core.security.CredentialsCreator",
         "Crypt": "sys.core.security.Crypt",
         "Transition": "sys.core.ui.Transition",
         "View": "sys.core.ui.View",

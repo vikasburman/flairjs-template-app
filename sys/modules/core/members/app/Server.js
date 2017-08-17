@@ -10,7 +10,13 @@ define([
         attr('override');
         this.func('navigate', (base, url) => {
             base();
-            // TODO: via that npm package
-        });        
+            // TODO: via that npm package where nodejs urls can be faked as if they are called form client
+        });  
+
+        attr('async');
+        this.func('auth', (resolve, reject, credentials) => {
+            let validatedUser = new User(credentials.loginId, '(Dummy)', [], [], credentials.clientId);
+            resolve(validatedUser);
+        });
     });
 });

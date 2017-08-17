@@ -37,7 +37,7 @@ define([
             routesOrder.unshift(this.env.isServer ? 'app.' + mainModule : 'web.' + mainModule); // add main module by default, on top both in server and client side
             routesOrder.unshift(this.assembly); // add sys.core (current module) by default, on top of main module, both in server and client side
             for(let routesOf of routesOrder) {
-                if (this.env.isDev) { console.log('routes of: ' + routesOf); }
+                xLog(`routes of: ${routes}`);
                 routes = this.settings(routesOf + routesKey, []);
                 for(let route of routes) {
                     if (route.url && route.class) {
@@ -52,11 +52,11 @@ define([
                                             request = new Request(handler, route.verb, req, res);
                                         handler.handle(request);
                                     } catch (err) {
-                                        console.log(`Error handling ${fullUrl}. \n ${err}`);
+                                        console.log(`Error handling ${fullUrl}. \n ${this.errorText(err)}`);
                                         res.status(500).end();
                                     }
                                 });
-                                if (this.env.isDev) { console.log('  ' + route.verb + ': ' + fullUrl); }
+                                xLog(`  ${route.verb}: ${fullUrl}`);
                             } else {
                                  throw `Invalid route definiton: ${fullUrl}#${route.verb}`;
                             }
@@ -68,11 +68,11 @@ define([
                                 try {
                                     handler.handle(request);
                                 } catch (err) {
-                                    console.log(`Error handling ${fullUrl}. \n ${err}`);
+                                    console.log(`Error handling ${fullUrl}. \n ${this.errorText(err)}`);
                                     throw err;
                                 }
                             });
-                            if (this.env.isDev) { console.log('  navigate: ' + fullUrl); }
+                            xLog(`  navigate: ${fullUrl}`);
                         }
                     } else {
                         throw `Invalid route definiton: ${fullUrl}`;

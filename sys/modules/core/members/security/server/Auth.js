@@ -3,10 +3,9 @@ define([
     use('[User]'),
     use('[ClaimsChecker]'),
     use('[Credentials]'),
-    use('[CredentialsValidator]'),
     use('sys.core.security.server.JwtToken'),
     use('sys.core.security.dto.AuthInfo')
-], (Base, User, ClaimsChecker, Credentials, CredentialsValidator, Jwt, AuthInfo) => {
+], (Base, User, ClaimsChecker, Credentials, Jwt, AuthInfo) => {
     /**
      * @class sys.core.security.server.Auth
      * @classdesc sys.core.security.server.Auth
@@ -44,9 +43,8 @@ define([
 
         attr('async');
         this.func('login', (resolve, reject, request) => {
-            let credentials = request.data.credentials || {},
-                credentialsValidator = new CredentialsValidator();
-            credentialsValidator.validate(credentials).then((user) => {
+            let credentials = request.data.credentials || {};
+            App.auth(credentials).then((user) => {
                 if (user) {
                     jwt = new Jwt();
                     jwt.create(user).then((token) => {
