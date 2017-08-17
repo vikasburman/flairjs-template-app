@@ -9,7 +9,7 @@ define(() => {
         this.func('constructor', () => {
         });
 
-        this.func('validate', (dataValue, validationType, ...args) => {
+        this.func('validate', (dataValue, ...validationCfg) => {
             // TODO: one validation type can be 'custom' which takes a fn and pass call to that fn with other parameteres
         });
     });

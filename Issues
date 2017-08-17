@@ -5,12 +5,21 @@
    - minification not working currently, hence turned off via minify = false in config
    - pm2 setup for running node
 6. add check attribute 
-attr('check', 'type', 'number');
-attr('check', 'range', 0, 10);
 attr('check', 'null', false);
 attr('check', 'type', 'number');
-attr('check', 'gte', 10);
+attr('check', 'range', 0, 10);
+attr('check', myFn1, 'gte', 7);
+attr('check', myFn2, false);
+OR
+attr('check, 
+    ['null', false],
+    ['type', 'number'],
+    ['range', 0, 10]
+    [myFn1, 'gte', 7]
+    [myFn2, false]
+)
 many more...
 
 
 can we inherit from a singleton class -- ideally should be allowed -- but check
+check how to let attribute define if multiple instances of that attribute are allowed and now to throw error when more than once instance is applied

@@ -2,8 +2,9 @@ define([
     use('[Base]'),
     use('[IBootware]'),
     use('[Auth]'),
+    use('[ValueValidator]')
     use('sys.core.comm.ClientResponse')
-], (Base, IBootware, Auth, FetchResponse) => {
+], (Base, IBootware, Auth, ValueValidator, FetchResponse) => {
     /**
      * @class sys.core.bootwares.Attributes
      * @classdesc sys.core.bootwares.Attributes
@@ -275,7 +276,46 @@ define([
                         }
                     }.bind(obj);
                 });
-            }));             
+            }));       
+
+            // check
+            // check(comma delimited array of all data validation checks to apply on property value being set)
+            //  each array can container any number of values, where
+            //   0th index: name of data validation to perform OR a function that will be called to do data validation
+            //   1st to nth index: values that will be passed to data validation function identified at 0th index
+            //  whether inbuilt or custom function, on execution it will return true or an ErrorInfo object if faled
+            // attr('check, 
+            //     ['null', false],
+            //     ['type', 'number'],
+            //     ['range', 0, 10]
+            //     [myFn1, 'gte', 7]
+            //     [myFn2, false]
+            // )
+            Container.register(Class('check', Attribute, function() {
+                this.decorator((obj, type, name, descriptor) => {
+                    // validate
+                    if (['prop'].indexOf(type) === -1) { throw `check attribute cannot be applied on ${type} members. (${name})`; }
+
+                    // decorate
+                    let validations = this.args || null,
+                        validator = new ValueValidator(),
+                        err = null;
+                    if (descriptor.set) {
+                        let _set = descriptor.set;
+                        descriptor.set = function(value) {
+                            for(let validationCfg of validations) {
+                                err = validator.validate(value, ...validationCfg);
+                                if (err) {
+                                    console.log(`Failed to validate value of ${obj._.name}.${name}. (${this.errorText(err)})`);
+                                    throw err;
+                                    break;
+                                } 
+                            }
+                            return _set(value);
+                        }.bind(obj);
+                    }
+                });
+            }));                    
             
             // dome
             resolve();
