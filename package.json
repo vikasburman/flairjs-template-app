@@ -1,7 +1,7 @@
 {
   "name": "appgears",
   "description": "Unified application framework for JavaScript",
-  "copyright": "(C) 2017",
+  "copyright": "(c) 2017 Vikas Burman",
   "version": "0.1.0",
   "author": "Vikas Burman",
   "license": "MIT",
