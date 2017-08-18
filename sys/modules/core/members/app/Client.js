@@ -1,6 +1,8 @@
 define([
-    use('sys.core.app.App')
-], (App) => {
+    use('sys.core.app.App'),
+    use('[Credentials]'),
+    use('sys.core.security.Crypt')
+], (App, Credentials, Crypt) => {
     /**
      * @class sys.core.app.Client
      * @classdesc sys.core.app.Client
@@ -26,5 +28,9 @@ define([
                 window.dispatchEvent(new HashChangeEvent("hashchange"));
             }
         });
+
+        this.func('auth', (loginId = '', pwd = '', clientId = '') => {
+            return new Credentials(loginId, new Crypt().hash(pwd), clientId);
+        });        
     });
 });

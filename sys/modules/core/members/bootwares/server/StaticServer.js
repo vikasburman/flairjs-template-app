@@ -21,22 +21,15 @@ define([
 
             // configure static content serving
             let age = this.settings('static.caching.age', 0),
-                mainModule = this.settings(':main', 'sample'),
                 spath = '',
-                thisStaticFolder = '',
                 staticFolders = this.settings(':static', []);
-                staticFolders.unshift(mainModule); // add main module by default, on top both in server and client side
+                staticFolders.unshift(this.env.getMainModule()); // add main module by default, on top both in server and client side
                 staticFolders.unshift(this.assembly); // add sys.core (this module) on top as first default item
             if (this.settings('static.caching.enabled') && age !== 0) { 
                 for(let staticFolder of staticFolders) {
-                    if (!staticFolder.startsWith('sys.')) {
-                        thisStaticFolder = 'web.' + staticFolder;
-                    } else {
-                        thisStaticFolder = staticFolder;
-                    }
-                    thisStaticFolder = use(thisStaticFolder).replace('members/', '').replace('.js', '') + 'static/';
-                    app.use('/', express.static(thisStaticFolder, { maxAge: age }));
-                    xLog(`static: / = ${thisStaticFolder}`);
+                    staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
+                    app.use('/', express.static(staticFolder, { maxAge: age }));
+                    xLog(`static: / = ${staticFolder}`);
                 }
                 spath = use('./web/modules/');
                 app.use('/web', express.static(spath, { maxAge: age }));
@@ -46,14 +39,9 @@ define([
                 xLog(`static: /sys = ${spath}`);
             } else {
                 for(let staticFolder of staticFolders) {
-                    if (!staticFolder.startsWith('sys.')) {
-                        thisStaticFolder = 'web.' + staticFolder;
-                    } else {
-                        thisStaticFolder = staticFolder;
-                    }
-                    thisStaticFolder = use(thisStaticFolder).replace('members/', '').replace('.js', '') + 'static/';
-                    app.use('/', express.static(thisStaticFolder));
-                    xLog(`static: / = ${thisStaticFolder}`);
+                    staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
+                    app.use('/', express.static(staticFolder));
+                    xLog(`static: / = ${staticFolder}`);
                 }
                 spath = use('./web/modules/');
                 app.use('/web', express.static(spath));

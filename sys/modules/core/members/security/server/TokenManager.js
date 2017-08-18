@@ -3,11 +3,11 @@ define([
     use('jsonwebtoken')
 ], (Base, jwt) => {
     /**
-     * @class sys.core.security.server.JwtToken
-     * @classdesc sys.core.security.server.JwtToken
-     * @desc JWT Token manager.
+     * @class sys.core.security.server.TokenManager
+     * @classdesc sys.core.security.server.TokenManager
+     * @desc Token manager (JWT).
      */    
-    return Class('sys.core.security.server.JwtToken', Base, function(attr) {
+    return Class('sys.core.security.server.TokenManager', Base, function(attr) {
         attr('async');
         this.func('create', (resolve, reject, payload) => {
             let secret = this.settings('security.jwt.secretKey', 'adfdef1d-ce1a-470d-a652-f466292acf85'),

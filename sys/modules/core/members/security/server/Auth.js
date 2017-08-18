@@ -3,9 +3,9 @@ define([
     use('[User]'),
     use('[ClaimsChecker]'),
     use('[Credentials]'),
-    use('sys.core.security.server.JwtToken'),
+    use('[TokenManager]'),
     use('sys.core.security.dto.AuthInfo')
-], (Base, User, ClaimsChecker, Credentials, Jwt, AuthInfo) => {
+], (Base, User, ClaimsChecker, Credentials, TokenManager, AuthInfo) => {
     /**
      * @class sys.core.security.server.Auth
      * @classdesc sys.core.security.server.Auth
@@ -22,8 +22,8 @@ define([
         this.func('validate', (resolve, reject, request) => {
             let token = request.getToken();
             if (token) {
-                let jwt = new Jwt();
-                jwt.verify(token).then((user) => {
+                let tokenManager = new TokenManager();
+                tokenManager.verify(token).then((user) => {
                     if (user) {
                         let claimsChecker = new ClaimsChecker();
                         if (claimsChecker.check(request.claims, user.access)) {
@@ -46,8 +46,8 @@ define([
             let credentials = request.data.credentials || {};
             App.auth(credentials).then((user) => {
                 if (user) {
-                    jwt = new Jwt();
-                    jwt.create(user).then((token) => {
+                    tokenManager = new TokenManager();
+                    tokenManager.create(user).then((token) => {
                         if (token) {
                             let authInfo = new AuthInfo(token, user);
                             request.response.send.json(authInfo);

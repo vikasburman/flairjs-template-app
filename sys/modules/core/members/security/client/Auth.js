@@ -42,7 +42,8 @@ define([
             responseDataType: 'json',
             pre: (args) => { args.body = { credentials: args.body }; }
         });
-        this.func('login', (service, resolve, reject, credentials) => {
+        this.func('login', (service, resolve, reject, loginId = '', pwd = '', clientId = '') => {
+            let credentials = App.auth(loginId, pwd, clientId);
             service({credentials : credentials}).then((response) => {
                 if (response.isError) {
                     reject(response.error);

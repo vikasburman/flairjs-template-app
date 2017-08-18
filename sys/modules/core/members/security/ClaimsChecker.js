@@ -5,10 +5,6 @@ define(() => {
      * @desc Check claims.
      */
     return Class('sys.core.security.ClaimsChecker', function(attr) {
-        attr('singleton');
-        this.func('constructor', () => {
-        });
-
         this.func('check', (requestedClaims, availableAccess) => {
             let success = false;
             if (requestedClaims) {

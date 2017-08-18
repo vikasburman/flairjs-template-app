@@ -463,6 +463,18 @@
         return items;
     };
     config.env.currentRequest = () => { return config.env.get('currentRequest'); };
+    config.env.getMainModule = () => {
+        let mainModule = settings(':main', 'app.sample | web.sample'),
+            parts = mainModule.split('|');
+        if (parts.length === 2) {
+            if (config.env.isServer) {
+                mainModule = parts[0];
+            } else {
+                mainModule = parts[1];
+            }
+        }
+        return mainModule.trim();      
+    };
 
     // extend env (client only)
     if (!isServer) {

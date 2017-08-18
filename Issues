@@ -1,6 +1,8 @@
 1. multer needs to be used - especially to upload/use file(s)
 2. reCaptcha implementation must be very clean
 3. add more xLog statements whereever possible...
+check if reflector getMembers consider conditional members? it should.
+4. Merge Auth implementtion of server and client into respective App base classes of server and client
 5. Solve prod issues:
    - minification not working currently, hence turned off via minify = false in config
    - pm2 setup for running node

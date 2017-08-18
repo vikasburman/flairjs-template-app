@@ -22,7 +22,7 @@
                 }
             }
         },
-        "main": "sample",
+        "main": "app.sample | web.sample",
         "routes": {
             "server": [
             ],
