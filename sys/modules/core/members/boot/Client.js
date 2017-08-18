@@ -100,6 +100,7 @@ define([
                         if (!this.env.isTest) {
                             // perform default action: open home view or currently opened view
                             let url = document.location.hash.replace('#', '') || '/';
+                            xLog(`navigation: ${url}`);
                             App.navigate(url);
                         }
 

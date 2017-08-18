@@ -27,7 +27,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Fri, 18 Aug 2017 03:02:52 GMT',         
+        lupdate: 'Fri, 18 Aug 2017 03:36:42 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
@@ -472,14 +472,23 @@
         return items;
     };
     config.env.currentRequest = () => { return config.env.get('currentRequest'); };
-    config.env.getMainModule = () => {
+    config.env.getMainModule = (part = '') => {
         let mainModule = settings(':main', 'app.sample | web.sample'),
             parts = mainModule.split('|');
         if (parts.length === 2) {
-            if (config.env.isServer) {
-                mainModule = parts[0];
+            if (part) {
+                switch(part) {
+                    case 'server':
+                        mainModule = parts[0]; break;
+                    case 'client':
+                        mainModule = parts[1]; break;
+                }
             } else {
-                mainModule = parts[1];
+                if (config.env.isServer) {
+                    mainModule = parts[0];
+                } else {
+                    mainModule = parts[1];
+                }
             }
         }
         return mainModule.trim();      

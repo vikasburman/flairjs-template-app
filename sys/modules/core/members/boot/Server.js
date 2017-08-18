@@ -156,7 +156,9 @@ define([
 
                             if (!this.env.isTest) {
                                 // perform default action: assume default is requested
-                                App.navigate('/');
+                                let url = '/';
+                                xLog(`navigation: ${url}`);
+                                App.navigate(url);
                             }
 
                             // done

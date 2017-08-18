@@ -23,7 +23,7 @@ define([
             let age = this.settings('static.caching.age', 0),
                 spath = '',
                 staticFolders = this.settings(':static', []);
-                staticFolders.unshift(this.env.getMainModule()); // add main module by default, on top both in server and client side
+                staticFolders.unshift(this.env.getMainModule('client')); // add main module's client part by default, on top
                 staticFolders.unshift(this.assembly); // add sys.core (this module) on top as first default item
             if (this.settings('static.caching.enabled') && age !== 0) { 
                 for(let staticFolder of staticFolders) {
