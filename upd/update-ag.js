@@ -1,12 +1,12 @@
-const utils = require('./utils.js');
-const buildSettings = require('./.build.json');
+const utils = require('../build/utils.js');
+const buildSettings = require('../build/.build.json');
 const fs = require('fs-extra');
 const downloader = require('download-github-repo');
 const packageJson = require('../package.json');
 const prompt = require('prompt');
 
 // update appgears files
-const updateBP = (cb) => {
+const updateBP = () => {
     let repo = 'vikasburman/appgears#master',
         tempFolder = './temp.download',
         folders = [
@@ -16,15 +16,14 @@ const updateBP = (cb) => {
             'sys'
         ],
         files = [
-            'gulpfile.js'
+            'gulpfile.js',
+            'upd/update-oojs.js',
+            'upd/update-ag.js'
         ];
 
     let onDone = () => {
         // delete temp folder
         fs.removeSync(tempFolder);
-
-        // done
-        cb(); 
     };
     
     // create temp folder
@@ -86,10 +85,9 @@ const updateBP = (cb) => {
         }
     });
 };
-exports.updater = function(isDev, isProd, isTest, cb) {
+const updater = function() {
     if (packageJson.name === 'appgears') {
         console.log('IMPORTANT: This update cannot be executed in appgears development environment. Aborted!');
-        cb();
     } else {
         console.log('This will update only following from appgears repository. Are you sure you want to do it? Type "yes" to continue.');
         console.log('app/sample/**');
@@ -97,15 +95,17 @@ exports.updater = function(isDev, isProd, isTest, cb) {
         console.log('sys/**');
         console.log('build/**');
         console.log('gulpfile.js');
+        console.log('upd/update-ag.js');
+        console.log('upd/update-oojs.js');
         console.log('package.json - to add any missing packages (it does not remove any package)');
         prompt.start();
         prompt.get(['response'], function (err, result) {
             if (result.response === 'yes') {
-                updateBP(cb);
+                updateBP();
             } else {
                 console.log('Aborted!');
-                cb();
             }
         });
     }
 };
+updater();

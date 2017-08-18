@@ -32,6 +32,7 @@ define([
             this.args = request.args;
             this.stage().then(() => {
                 this.current = this._.pu; // store public reference
+                document.title = this.data.title + ' - ' + App.info.title
                 resolve(this.current);
             }).catch((err) => {
                 console.log(`Failed to navigate to ${request.url}. (${this.errorText(err)});`);

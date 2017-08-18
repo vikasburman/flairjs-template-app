@@ -12,7 +12,9 @@
     "dbg": "gulp dbg && nodemon sys/modules/core/static/loader.js",
     "prod": "gulp prod && nodemon sys/modules/core/static/loader.js",
     "test": "gulp test",
-    "build": "gulp"
+    "build": "gulp",
+    "upd-oojs": "node upd/update-oojs.js",
+    "upd-ag": "node upd/update-ag.js"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

@@ -1,12 +1,12 @@
-const utils = require('./utils.js');
-const buildSettings = require('./.build.json');
+const utils = require('../build/utils.js');
+const buildSettings = require('../build/.build.json');
 const fs = require('fs-extra');
 const downloader = require('download-github-repo');
 const packageJson = require('../package.json');
 const prompt = require('prompt');
 
 // update oojs files
-const updateOOJS = (cb) => {
+const updateOOJS = () => {
     let repo = 'vikasburman/oojs#master',
         tempFolder = './temp.download',
         srcFolder = 'src/',
@@ -19,9 +19,6 @@ const updateOOJS = (cb) => {
     let onDone = () => {
         // delete temp folder
         fs.removeSync(tempFolder);
-
-        // done
-        cb(); 
     };
     
     // create temp folder
@@ -45,10 +42,9 @@ const updateOOJS = (cb) => {
         }
     });
 };
-exports.updater = function(isDev, isProd, isTest, cb) {
+const updater = function() {
     if (packageJson.name !== 'appgears') {
         console.log('IMPORTANT: This update can be executed only in appgears development environment. Aborted!');
-        cb();
     } else {
         console.log('This will update two key files of OOJS library from OOJS repository. Are you sure you want to do it? Type "yes" to continue.');
         prompt.start();
@@ -57,8 +53,8 @@ exports.updater = function(isDev, isProd, isTest, cb) {
                 updateOOJS(cb);
             } else {
                 console.log('Aborted!');
-                cb();
             }
         });
     }
 };
+updater();
