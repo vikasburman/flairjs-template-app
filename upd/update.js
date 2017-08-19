@@ -1,0 +1,149 @@
+const utils = require('../build/utils.js');
+const buildSettings = require('../build/.build.json');
+const fs = require('fs-extra');
+const GitHubDownloader = require('download-github-repo');
+const GitlabDownloader = require('gitlab-download');
+const packageJson = require('../package.json');
+const prompt = require('prompt');
+
+const copyFolders = (tempFolder, cfgJson) => {
+    // copy all folders as is from downloaded to here (after deleting)
+    let src = '',
+        dest = '';
+    for(let folder of cfgJson.update.folders) {
+        src = tempFolder + '/' + folder.src;
+        dest = folder.dest;
+        console.log('updating folder: ' + src + ' --> ' + dest);
+        fs.removeSync(dest);
+        fs.copySync(src, dest);
+    };
+};
+const copyFiles = (tempFolder, cfgJson) => {
+    // copy all files as is from downloaded to here (overwrite)
+    for(let file of cfgJson.update.files) {
+        src = tempFolder + '/' + file.src + file.name;
+        dest = file.dest + file.name;
+        console.log('updating file: ' + src + ' --> ' + dest);
+        fs.createReadStream(src).pipe(fs.createWriteStream(dest));
+    };
+};
+const updatePackage = (tempFolder, cfgJson) => {
+    let repoPackageJson = require(tempFolder + '/package.json'), 
+        added = 0;
+    if (cfgJson.package.devDependencies) {
+        for(let dep in repoPackageJson.devDependencies) {
+            if (repoPackageJson.devDependencies.hasOwnProperty(dep)) {
+                if (typeof packageJson.devDependencies[dep] === 'undefined') {
+                    packageJson.devDependencies[dep] = repoPackageJson.devDependencies[dep];
+                    added++;
+                }
+            }
+        }
+    }
+    if (cfgJson.package.dependencies) {
+        for(let dep in repoPackageJson.dependencies) {
+            if (repoPackageJson.dependencies.hasOwnProperty(dep)) {
+                if (typeof packageJson.dependencies[dep] === 'undefined') {
+                    packageJson.dependencies[dep] = repoPackageJson.dependencies[dep];
+                    added++;
+                }
+            }
+        }
+    }
+    packageJson[cfgJson.package.versionKey] = repoPackageJson.version; // update version
+    fs.writeJSONSync('./package.json', packageJson, {
+        spaces: '\t'
+    });
+    if (added > 0) {
+        console.log(added + ' packages added in package.json. Run yarn install to add these new dependencies.');
+    } else {
+        console.log('No new dependency is found.');
+    }
+};
+const doUpdate = (cfgJson) => {
+    let tempFolder = './.download',
+        downloader = null;
+
+    switch(cfgJson.downloader) {
+        case 'github':
+            downloader = GitHubDownloader;
+            downloader(cfgJson.repo + '#' + cfgJson.branch, tempFolder, (e) => {
+                if (e) {
+                    console.log('Update failed.');
+                    console.log(e);
+                } else {
+                    copyFolders(tempFolder, cfgJson);
+                    copyFiles(tempFolder, cfgJson);
+                    updatePackage(tempFolder, cfgJson);
+                }
+            });
+            break;
+        case 'gitlab':
+            downloader = new GitlabDownloader(cfgJson.url, cfgJson.token);
+            downloader({
+                remote: cfgJson.repo + '#' + cfgJson.branch,
+                dest: tempFolder
+            }).then((success) => {
+                if (success) {
+                    copyFolders(tempFolder, cfgJson);
+                    copyFiles(tempFolder, cfgJson);
+                    updatePackage(tempFolder, cfgJson);
+                } else {
+                    console.log('Update failed.');
+                    console.log(e);
+                }
+            }).catch((e) => {
+                console.log('Update failed.');
+                console.log(e);
+            })
+            break;
+    }
+};
+const updater = function(cfg) {
+    let cfgJson = require(cfg),
+        goForUpdate = false;
+    if (cfgJson.condition.allowedIn) {
+        if (packageJson.name === cfgJson.condition.allowedIn) {
+            goForUpdate = true;
+        } else {
+            console.log(`This update can be executed only in ${cfgJson.condition.allowedIn} development environment. Aborted!`);
+        }
+    } else if (cfgJson.condition.notAllowedIn) {
+        if (packageJson.name === cfgJson.condition.notAllowedIn) {
+            console.log(`This update cannot be executed in ${cfgJson.condition.allowedIn} development environment. Aborted!`);
+        } else {
+            goForUpdate = true;
+        }
+    }
+    if (goForUpdate) {
+        console.log(`This will update ${cfgJson.title} files from ${cfgJson.url}${cfgJson.repo}#${cfgJson.branch}.`);
+        console.log('Are you sure you want to run this update? Type "yes" to continue.');
+        prompt.start();
+        prompt.get(['response'], function (err, result) {
+            if (result.response === 'yes') {
+                console.log('Updating...');
+                dpUpdate(cfgJson);
+            } else {
+                console.log('Aborted!');
+            }
+        });
+    }
+};
+
+try {
+    // create temp folder
+    fs.ensureDirSync(tempFolder);
+    
+    // run what is asked
+    let args = process.argv.slice(2);
+    updater(args[0]);    
+
+    // done
+    console.log('Update success.');
+} catch(e) {
+    console.log('Update failed.');
+    console.log(e);
+} finally {
+    // delete temp folder
+    fs.removeSync(tempFolder); 
+}

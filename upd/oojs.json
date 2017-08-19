@@ -1,0 +1,32 @@
+{
+    "title": "OOJS Library", 
+    "downloader": "github",
+    "condition": {
+        "allowedIn": "appgears",
+        "notAllowedIn": ""
+    },
+    "url": "https://github.com/",
+    "token": "",
+    "repo": "vikasburman/oojs",
+    "branch": "master",
+    "package": {
+        "versionKey": "oojsversion",
+        "devDependencies": false,
+        "dependencies": false
+    },
+    "update": {
+        "folders": [],
+        "files": [
+            { 
+                "name": "oojs.js",
+                "src": "src/",
+                "dest": "sys/modules/core/static/libs/"
+            },
+            { 
+                "name": "oojs.min.js",
+                "src": "src/",
+                "dest": "sys/modules/core/static/libs/"
+            }
+        ]
+    }
+}

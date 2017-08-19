@@ -13,8 +13,7 @@
     "prod": "gulp prod && nodemon sys/modules/core/static/loader.js",
     "test": "gulp test",
     "build": "gulp",
-    "upd-oojs": "node upd/update-oojs.js",
-    "upd-ag": "node upd/update-ag.js"
+    "update": "node upd/update.js upd/oojs.json"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
@@ -24,6 +23,7 @@
     "esdoc": "^0.5.2",
     "eslint": "^3.19.0",
     "express": "^4.15.2",
+    "gitlab-download": "^1.0.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.1",
