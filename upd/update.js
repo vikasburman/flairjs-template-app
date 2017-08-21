@@ -60,9 +60,22 @@ const updatePackage = (tempFolder, cfgJson) => {
         console.log('No new dependency is found.');
     }
 };
-const doUpdate = (cfgJson) => {
-    let tempFolder = './.download',
+const doUpdate = (cfgJson, onDone) => {
+    let tempFolder = 'upd/.download',
+        tempFolderForRequire = './.download',
         downloader = null;
+
+    // create temp folder
+    fs.ensureDirSync(tempFolder);
+
+    // when done
+    const whenDone = () => {
+        // delete temp folder
+        fs.removeSync(tempFolder); 
+
+        // done
+        onDone();
+    };
 
     switch(cfgJson.downloader) {
         case 'github':
@@ -74,8 +87,9 @@ const doUpdate = (cfgJson) => {
                 } else {
                     copyFolders(tempFolder, cfgJson);
                     copyFiles(tempFolder, cfgJson);
-                    updatePackage(tempFolder, cfgJson);
+                    updatePackage(tempFolderForRequire, cfgJson);
                 }
+                whenDone();
             });
             break;
         case 'gitlab':
@@ -87,19 +101,21 @@ const doUpdate = (cfgJson) => {
                 if (success) {
                     copyFolders(tempFolder, cfgJson);
                     copyFiles(tempFolder, cfgJson);
-                    updatePackage(tempFolder, cfgJson);
+                    updatePackage(tempFolderForRequire, cfgJson);
                 } else {
                     console.log('Update failed.');
                     console.log(e);
                 }
+                whenDone();
             }).catch((e) => {
                 console.log('Update failed.');
                 console.log(e);
+                whenDone();
             })
             break;
     }
 };
-const updater = function(cfg) {
+const updater = function(cfg, onDone) {
     let cfgJson = require(cfg),
         goForUpdate = false;
     if (cfgJson.condition.allowedIn) {
@@ -122,7 +138,7 @@ const updater = function(cfg) {
         prompt.get(['response'], function (err, result) {
             if (result.response === 'yes') {
                 console.log('Updating...');
-                dpUpdate(cfgJson);
+                doUpdate(cfgJson, onDone);
             } else {
                 console.log('Aborted!');
             }
@@ -130,20 +146,9 @@ const updater = function(cfg) {
     }
 };
 
-try {
-    // create temp folder
-    fs.ensureDirSync(tempFolder);
-    
-    // run what is asked
-    let args = process.argv.slice(2);
-    updater(args[0]);    
-
+// run what is asked
+let args = process.argv.slice(2);
+updater(args[0], () => {
     // done
     console.log('Update success.');
-} catch(e) {
-    console.log('Update failed.');
-    console.log(e);
-} finally {
-    // delete temp folder
-    fs.removeSync(tempFolder); 
-}
+});    
