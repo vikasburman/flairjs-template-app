@@ -95,8 +95,9 @@ const doUpdate = (cfgJson, onDone) => {
         case 'gitlab':
             downloader = new GitLabDownloader(cfgJson.url, cfgJson.token);
             downloader.download({
-                remote: cfgJson.repo + '#' + cfgJson.branch,
-                dest: tempFolder
+                remote: cfgJson.repo,
+                dest: tempFolder,
+                ref: cfgJson.branch
             }).then((success) => {
                 if (success) {
                     copyFolders(tempFolder, cfgJson);
