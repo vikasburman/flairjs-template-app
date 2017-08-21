@@ -25,12 +25,12 @@
                 "dest": "web/modules/sample"
             },
             { 
-                "src": "sys/core",
-                "dest": "sys/core"
+                "src": "sys/modules/core",
+                "dest": "sys/modules/core"
             },
             { 
-                "src": "sys/core/node_modules",
-                "dest": "sys/core/node_modules"
+                "src": "sys/modules/node_modules",
+                "dest": "sys/modules/node_modules"
             },
             { 
                 "src": "build",
