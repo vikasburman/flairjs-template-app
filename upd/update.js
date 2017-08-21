@@ -2,7 +2,7 @@ const utils = require('../build/utils.js');
 const buildSettings = require('../build/.build.json');
 const fs = require('fs-extra');
 const GitHubDownloader = require('download-github-repo');
-const GitlabDownloader = require('gitlab-download');
+const GitLabDownloader = require('gitlab-download');
 const packageJson = require('../package.json');
 const prompt = require('prompt');
 
@@ -93,8 +93,8 @@ const doUpdate = (cfgJson, onDone) => {
             });
             break;
         case 'gitlab':
-            downloader = new GitlabDownloader(cfgJson.url, cfgJson.token);
-            downloader({
+            downloader = new GitLabDownloader(cfgJson.url, cfgJson.token);
+            downloader.download({
                 remote: cfgJson.repo + '#' + cfgJson.branch,
                 dest: tempFolder
             }).then((success) => {
