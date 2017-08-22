@@ -2,11 +2,11 @@ define([
     use('[Base]')
 ], (Base) => {
     /**
-     * @class sys.core.db.DbContext
-     * @classdesc sys.core.db.DbContext
+     * @class sys.core.data.DbContext
+     * @classdesc sys.core.data.DbContext
      * @desc DbContext for a database.
      */    
-    return Class('sys.core.db.DbContext', Base, function(attr) {
+    return Class('sys.core.data.DbContext', Base, function(attr) {
         attr('override');
         this.func('constructor', (base, db) => {
             base();

@@ -20,7 +20,7 @@
         "Controller": "sys.core.domain.Controller",
         "Entity": "sys.core.domain.Entity",
         "Dto": "sys.core.domain.Dto",
-        "DbContext": "sys.core.db.DbContext",
+        "DbContext": "sys.core.data.DbContext",
         "Repository": "sys.core.data.Repository",
         "Automapper": "sys.core.data.Automapper",
         "ValueValidator": "sys.core.data.ValueValidator"
