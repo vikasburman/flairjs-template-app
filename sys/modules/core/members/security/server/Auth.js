@@ -4,7 +4,7 @@ define([
     use('[ClaimsChecker]'),
     use('[Credentials]'),
     use('[TokenManager]'),
-    use('sys.core.security.dto.AuthInfo')
+    use('sys.core.security.AuthInfo')
 ], (Base, User, ClaimsChecker, Credentials, TokenManager, AuthInfo) => {
     /**
      * @class sys.core.security.server.Auth
