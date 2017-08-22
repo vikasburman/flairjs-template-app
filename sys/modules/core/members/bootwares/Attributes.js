@@ -283,7 +283,7 @@ define([
             //  each array can container any number of values, where
             //   0th index: name of data validation to perform OR a function that will be called to do data validation
             //   1st to nth index: values that will be passed to data validation function identified at 0th index
-            //  whether inbuilt or custom function, on execution it will return true or an ErrorInfo object if faled
+            //  whether inbuilt or custom function, on execution it will return true or an ErrorInfo object if failed
             // attr('check, 
             //     ['null', false],
             //     ['type', 'number'],
@@ -308,7 +308,6 @@ define([
                                 if (err) {
                                     console.log(`Failed to validate value of ${obj._.name}.${name}. (${this.errorText(err)})`);
                                     throw err;
-                                    break;
                                 } 
                             }
                             return _set(value);

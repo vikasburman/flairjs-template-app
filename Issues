@@ -23,3 +23,20 @@ many more...
 
 
 check how to let attribute define if multiple instances of that attribute are allowed and now to throw error when more than once instance is applied
+
+
+At Client: 
+- a handler called a local function with Data 
+- which has service attribute to call a service
+- interceptor in this service attribute converted data to Dto
+- wherein input validations executed automatically
+- and do a fetch on server which hit the service class method
+At Server: 
+- service class extracted Dto from request
+- that got validated for input validation
+- and called controller action function with Dto
+- action function loaded dto into entity
+- during which business rules of entity got validated
+- then controller called repository to persist data 
+- or to take some other action 
+- Controllers may also call ServiceAdapters which call an external service

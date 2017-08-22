@@ -15,8 +15,20 @@ define([
             this.automapper = new Automapper();
         });
 
+        attr('private');
+        this.prop('rules', []);
+
         attr('protected');
         this.prop('automapper');
+
+        attr('protected');
+        this.func('rule', (name, fn) => {
+            let rule = {
+                name: name, 
+                validate: fn
+            }
+            this.rules.push(rule);
+        });
 
         this.func('toDTO', (entity, dto) => { 
             this.automapper.from(entity, dto); 
@@ -24,7 +36,17 @@ define([
         });
         this.func('fromDTO', (entity, dto) => { 
             this.automapper.to(entity, dto);
+            entity.validate(); // this will throw, if error
             return entity;
+        });
+        this.func('validate', () => {
+            let error = '';
+            for(let rule of this.rules) {
+                error = rule.validate();
+                if (error) { 
+                    throw `Rule ${rule.name} failed. (${error}).`;
+                }
+            }
         });
     });
 });

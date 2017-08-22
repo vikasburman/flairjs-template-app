@@ -7,20 +7,30 @@ define([
      * @desc Controller base.
      */    
     return Class('sys.core.domain.Controller', Base, function(attr) {
+        attr('protected');
         this.func('toDTO', (entity, Dto) => { 
-            return entity.toDTO(entity, new Dto()); 
+            let dtoObject = entity.toDTO(entity, new Dto());
+            return Serializer.serialize(dtoObject); // plain json object
         });
+
+        attr('protected');
         this.func('toDTOList', (entities, Dto) => {
-            let dtos = [];
+            let dtos = [],
+                dtoObject = null;
             for(let entity of entities) {
-                dtos.push(entity.toDTO(entity, new Dto()));
+                dtoObject = entity.toDTO(entity, new Dto());
+                dtos.push(Serializer.serialize(dtoObject));
             }
             return dtos;
         });
+
+        attr('protected');
         this.func('fromDTO', (Entity, dto) => { 
             let entity = new Entity();
             return entity.fromDTO(entity, dto);
         });
+
+        attr('protected');
         this.func('fromDTOList', (Entity, dtos) => {
             let entities = [],
                 entity = null;
