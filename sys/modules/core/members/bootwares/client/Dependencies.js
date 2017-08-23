@@ -10,7 +10,9 @@ define([
     return Class('sys.core.bootwares.client.Dependencies', Base, [IBootware], function(attr) {
         attr('async');
         this.func('boot', (resolve, reject, app) => {
-            let dependencies = this.settings('dependencies', []);
+            let dependencies = this.settings('dependencies', []),
+                more = this.settings('more.dependencies', []);
+            dependencies = dependencies.concat(more); 
 
             // load all dependencies
             // each definition is:

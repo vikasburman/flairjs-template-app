@@ -10,7 +10,9 @@ define([
     return Class('sys.core.bootwares.server.Middlewares', Base, [IBootware], function(attr) {
         attr('async');
         this.func('boot', (resolve, reject, app) => {
-            let middlewares = this.settings('middlewares', []);
+            let middlewares = this.settings('middlewares', []),
+                more = this.settings('more.middlewares', []);
+            middlewares = middlewares.concat(more); 
 
             // load all middlewares
             // each definition is:

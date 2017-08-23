@@ -71,6 +71,14 @@
     ],
     "dependencies": [
     ],
+    "more": {
+        "response": {
+            "headers": []
+        },
+        "bootwares": [],
+        "middlewares": [],
+        "dependencies": []
+    },
     "static": {
         "favIcon": "",
         "caching": {  

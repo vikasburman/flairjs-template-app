@@ -21,7 +21,9 @@ define([
             this.app = express();
 
             // resolve path of bootwares
-            this.bootwares = this.settings('bootwares', []).slice();
+            let bootwares = this.settings('bootwares', []).slice(),
+                more = this.settings('more.bootwares', []).slice();
+            this.bootwares = bootwares.concat(more);
             if (this.bootwares.length > 0) {
                 let i = 0;
                 for(let item of this.bootwares) {
@@ -44,7 +46,9 @@ define([
             // modify req and res
             this.app.use((req, res, next) => {
                 // set access control headers in response
-                let responseHeaders = this.settings('response.headers', []);
+                let responseHeaders = this.settings('response.headers', []),
+                    more = this.settings('more.response.headers', []);
+                responseHeaders = responseHeaders.concat(more); 
                 for(let header of responseHeaders) {
                     res.header(header.name, header.value);
                 }

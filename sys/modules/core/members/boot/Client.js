@@ -16,7 +16,9 @@ define([
             base();
 
             // resolve path of bootwares
-            this.bootwares = this.settings('bootwares', []).slice();
+            let bootwares = this.settings('bootwares', []).slice(),
+                more = this.settings('more.bootwares', []).slice();
+            this.bootwares = bootwares.concat(more);
             if (this.bootwares.length > 0) {
                 let i = 0;
                 for(let item of this.bootwares) {
