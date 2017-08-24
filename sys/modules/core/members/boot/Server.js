@@ -36,7 +36,10 @@ define([
         this.prop('app', null);
 
         attr('private'); 
-        this.prop('server', null);
+        this.prop('server', {
+            http: null,
+            https: null
+        });
 
         attr('private');
         this.prop('bootwares', []);
@@ -94,12 +97,12 @@ define([
                     }
                 }).then(() => {
                     // boot server itself
-                    if (!this.env.isProd) {
+                    if (this.settings('server.http', false)) {
                         let http = require('http');
-                        let port = this.settings('port.dev', 80);
-                        this.app.set('port', port);
-                        this.server = http.createServer(this.app);
-                    } else { 
+                        this.server.http = http.createServer(this.app);
+                        this.server.http.on('error', this.onError);
+                    }
+                    if (this.settings('server.https', false)) {
                         // SSL Certificate
                         // NOTE: For creating test certificate:
                         //  > Goto http://www.cert-depot.com/
@@ -113,9 +116,8 @@ define([
                         let credentials = { key: privateKey, cert: certificate };
 
                         let https = require('https');
-                        let port = this.settings('port.prod', 443);
-                        this.app.set('port', port);
-                        this.server = https.createServer(credentials, this.app);
+                        this.server.https = https.createServer(credentials, this.app);
+                        this.server.https.on('error', this.onError);
                     }
 
                     // done
@@ -126,50 +128,65 @@ define([
 
         attr('async');
         this.func('ready', (resolve, reject) => {
-            // setup event handlers
-            this.server.on('error', this.onError);
-            this.server.on('listening', () => {
-                // instantiate app in global variable
-                App = as(new ServerApp(this.app), IApp);
-                if (!App) { reject('Invalid app definition.'); return; }
+            // instantiate app in global variable
+            App = as(new ServerApp(this.app), IApp);
+            if (!App) { reject('Invalid app definition.'); return; }
 
-                // ready configured bootwares
-                include(this.bootwares, true).then((items) => {
-                    forAsync(items, (_resolve, _reject, Bootware) => {
-                        if (Bootware && typeof Bootware === 'function') {
-                            let bootware = as(new Bootware(), IBootware);
-                            if (bootware) {
-                                bootware.ready(this.app).then(() => {
-                                    xLog(`Bootware (ready): ${bootware._.name}`);
-                                    _resolve();
-                                }).catch(_reject);
-                            } else {
+            // ready configured bootwares
+            include(this.bootwares, true).then((items) => {
+                forAsync(items, (_resolve, _reject, Bootware) => {
+                    if (Bootware && typeof Bootware === 'function') {
+                        let bootware = as(new Bootware(), IBootware);
+                        if (bootware) {
+                            bootware.ready(this.app).then(() => {
+                                xLog(`Bootware (ready): ${bootware._.name}`);
                                 _resolve();
-                            }
+                            }).catch(_reject);
                         } else {
                             _resolve();
                         }
-                    }).then(() => {
-                        // finally ready
-                        this.env.isReady = true;
-                        console.log(`ready: (server, ${this.env.get('type', 'unknown')})`);
+                    } else {
+                        _resolve();
+                    }
+                }).then(() => {
+                    // finally ready
+                    this.env.isReady = true;
+                    console.log(`ready: (server, ${this.env.get('type', 'unknown')})`);
 
-                        // start
-                        App.start().then(() => {
-                            console.log(App.info.title + ' - ' + App.info.version);
+                    // start
+                    App.start().then(() => {
+                        console.log(App.info.title + ' - ' + App.info.version);
 
-                            if (!this.env.isTest) {
-                                // perform default action: assume default is requested
-                                let url = '/';
-                                xLog(`navigation: ${url}`);
-                                App.navigate(url);
-                            }
+                        // start listining
+                        let port = -1;
+                        if (this.server.http) {
+                            port = this.settings('port.http', 80);
+                            this.server.http.listen(port);
+                            xLog(`http: listining on ${port}`);
+                        }
+                        if (this.server.https) {
+                            port = this.settings('port.https', 443);
+                            this.server.https.listen(port);
+                            xLog(`https: listining on ${port}`);
+                        }
 
-                            // done
-                            resolve();
-                        }).catch(reject);
+                        if (!this.env.isTest) {
+                            // perform default action: assume default is requested
+                            let url = '/';
+                            xLog(`navigation: ${url}`);
+                            App.navigate(url);
+                        }
+
+                        // done
+                        resolve();
                     }).catch(reject);
                 }).catch(reject);
+            }).catch(reject);
+
+            // setup event handlers
+            this.server.on('error', this.onError);
+            this.server.on('listening', () => {
+
             });
 
             // start listining

@@ -37,9 +37,13 @@
         "case sensitive routing": false,
         "strict routing": false
     },
+    "server": {
+        "http": true,
+        "https": true
+    },
     "port": {
-        "dev": 80,
-        "prod": 443
+        "http": 80,
+        "https": 443
     },
     "ssl": {
         "public": "",

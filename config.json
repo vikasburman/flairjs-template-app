@@ -37,6 +37,10 @@
     },
 
     "sys.core": {
+        "server": {
+            "http": true,
+            "https": true
+        },
         "static": {
             "favIcon": "web/sample/static/images/logo.png",
             "caching": {  
@@ -44,8 +48,8 @@
             }  
         },            
         "port": {
-            "dev": 8080,
-            "prod": 8080
+            "http": 8080,
+            "https": 8082
         },
         "ssl": {
             "public": "./cert.pem",
