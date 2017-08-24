@@ -155,29 +155,22 @@ define([
 
                     // start
                     App.start().then(() => {
-                        console.log(App.info.title + ' - ' + App.info.version);
-
                         // start listining
-                        let port = -1;
                         if (this.server.http) {
-                            port = this.settings('port.http', 80);
-                            this.server.http.listen(port);
-                            xLog(`http: listining on ${port}`);
+                            let httpPort = this.settings('port.http', 80);
+                            this.server.http.listen(httpPort, () => {
+                                xLog(`http: listining on ${httpPort}`);
+                            });
                         }
                         if (this.server.https) {
-                            port = this.settings('port.https', 443);
-                            this.server.https.listen(port);
-                            xLog(`https: listining on ${port}`);
-                        }
-
-                        if (!this.env.isTest) {
-                            // perform default action: assume default is requested
-                            let url = '/';
-                            xLog(`navigation: ${url}`);
-                            App.navigate(url);
+                            let httpsPort = this.settings('port.https', 443);
+                            this.server.https.listen(httpsPort, () => {
+                                xLog(`https: listining on ${httpsPort}`);
+                            });
                         }
 
                         // done
+                        console.log(App.info.title + ' - ' + App.info.version);
                         resolve();
                     }).catch(reject);
                 }).catch(reject);
