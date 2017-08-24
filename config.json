@@ -48,8 +48,8 @@
             }  
         },            
         "port": {
-            "http": 80,
-            "https": 443
+            "http": 8080,
+            "https": 8443
         },
         "ssl": {
             "public": "./cert.pem",
