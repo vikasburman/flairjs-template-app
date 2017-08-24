@@ -157,13 +157,15 @@ define([
                     App.start().then(() => {
                         // start listining
                         if (this.server.http) {
-                            let httpPort = this.settings('port.http', 80);
+                            let httpPort = process.env.PORT || this.settings('port.http', 80);
+                            console.log(httpPort);
                             this.server.http.listen(httpPort, () => {
                                 xLog(`http: listining on ${httpPort}`);
                             });
                         }
                         if (this.server.https) {
-                            let httpsPort = this.settings('port.https', 443);
+                            let httpsPort = process.env.PORT || this.settings('port.https', 443);
+                            console.log(httpsPort);
                             this.server.https.listen(httpsPort, () => {
                                 xLog(`https: listining on ${httpsPort}`);
                             });
@@ -175,15 +177,6 @@ define([
                     }).catch(reject);
                 }).catch(reject);
             }).catch(reject);
-
-            // setup event handlers
-            this.server.on('error', this.onError);
-            this.server.on('listening', () => {
-
-            });
-
-            // start listining
-            this.server.listen(this.app.get('port'));
         });
     });
 });

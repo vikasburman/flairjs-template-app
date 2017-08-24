@@ -38,7 +38,7 @@
 
     "sys.core": {
         "server": {
-            "http": true,
+            "http": false,
             "https": true
         },
         "static": {
