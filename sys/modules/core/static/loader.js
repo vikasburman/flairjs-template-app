@@ -27,7 +27,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Thu, 24 Aug 2017 15:06:06 GMT',         
+        lupdate: 'Thu, 24 Aug 2017 15:09:29 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,

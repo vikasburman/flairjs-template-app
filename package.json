@@ -14,7 +14,7 @@
 		"test": "gulp test",
 		"build": "gulp",
 		"update": "node upd/update.js ./oojs.json",
-    "start": "gulp dev && nodemon sys/modules/core/static/loader.js"
+    "start": "node sys/modules/core/static/loader.js"
 	},
 	"devDependencies": {
 		"babel-eslint": "^7.2.3",
