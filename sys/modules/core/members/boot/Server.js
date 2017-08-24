@@ -158,14 +158,12 @@ define([
                         // start listining
                         if (this.server.http) {
                             let httpPort = process.env.PORT || this.settings('port.http', 80);
-                            console.log(httpPort);
                             this.server.http.listen(httpPort, () => {
                                 xLog(`http: listining on ${httpPort}`);
                             });
                         }
                         if (this.server.https) {
                             let httpsPort = process.env.PORT || this.settings('port.https', 443);
-                            console.log(httpsPort);
                             this.server.https.listen(httpsPort, () => {
                                 xLog(`https: listining on ${httpsPort}`);
                             });
