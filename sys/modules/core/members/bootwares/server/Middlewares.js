@@ -26,18 +26,18 @@ define([
                     if (item.args) {
                         if (item.func) {
                             app.use(mw[item.func](...item.args));
-                            xLog(`middleware: ${item.name}.${item.func}(${item.args})`);
+                            xLog('debug', `middleware: ${item.name}.${item.func}(${item.args})`);
                         } else {
                             app.use(mw(...item.args));
-                            xLog(`middleware: ${item.name}(${item.args})`);
+                            xLog('debug', `middleware: ${item.name}(${item.args})`);
                         }
                     } else {
                         if (item.func) {
                             app.use(mw[item.func]());
-                            xLog(`middleware: ${item.name}.${item.func}()`);
+                            xLog('debug', `middleware: ${item.name}.${item.func}()`);
                         } else {
                             app.use(mw());
-                            xLog(`middleware: ${item.name}()`);
+                            xLog('debug', `middleware: ${item.name}()`);
                         }
                     }
                 }

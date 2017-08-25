@@ -16,11 +16,11 @@ define([
         attr('readonly');
         this.prop('send', {
             json: (json, status = 200) => {
-                xLog(`${json}`);
+                xLog('debug', `${json}`);
                 this.res.status(status).json(json);
             },
             data: (data, status = 200) => { // data could be text, buffer, array, object
-                xLog(`${json}`);
+                xLog('debug', `${json}`);
                 this.res.status(status).send(data);
             },
             file: (fileName, options = {}) => {
@@ -58,7 +58,7 @@ define([
                 }
             },
             error: (status, message) => {
-                console.log(status + ': ' + message);
+                xLog('debug', status + ': ' + message);
                 this.res.status(status).send(message);
             },
             none: (status) => {

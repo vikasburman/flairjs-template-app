@@ -22,7 +22,7 @@ define(() => {
             try {
                 fn(dataValue, ...validationCfg);
             } catch (err) {
-                xLog(`${this.errorText(err)}`);
+                xLog('error', `${this.errorText(err)}`);
                 result = err;
             }
             return result;

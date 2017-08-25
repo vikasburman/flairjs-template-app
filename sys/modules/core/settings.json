@@ -66,7 +66,6 @@
         " | sys.core.bootwares.client.DataBinder"
     ],
     "middlewares": [
-        { "name": "morgan", "args": ["dev"] },
         { "name": "compression" },
         { "name": "cookie-parser" },
         { "name": "express-bearer-token" },

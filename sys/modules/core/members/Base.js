@@ -36,9 +36,7 @@ define(() => {
 
         attr('protected');
         this.func('onError', (err) => {
-            let errorText = this.errorText(err);
-            console.log(`Error in ${this._.name} (${errorText})`); 
-            xLog(`${errorText}`);
+            xLog('error', `Error in ${this._.name} (${this.errorText(err)})`);
         });
 
         attr('protected');

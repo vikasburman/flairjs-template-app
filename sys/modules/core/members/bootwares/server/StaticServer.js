@@ -16,7 +16,7 @@ define([
             let fi = this.settings('static.favIcon', '');
             if (fi) {
                 app.use(favicon(use(fi)));
-                xLog(`favIcon: ${fi}`);
+                xLog('debug', `favIcon: ${fi}`);
             }
 
             // configure static content serving
@@ -29,26 +29,26 @@ define([
                 for(let staticFolder of staticFolders) {
                     staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
                     app.use('/', express.static(staticFolder, { maxAge: age }));
-                    xLog(`static: / = ${staticFolder}`);
+                    xLog('debug', `static: / = ${staticFolder}`);
                 }
                 spath = use('./web/modules/');
                 app.use('/web', express.static(spath, { maxAge: age }));
-                xLog(`static: /web = ${spath}`);
+                xLog('debug', `static: /web = ${spath}`);
                 spath = use('./sys/modules/');
                 app.use('/sys', express.static(spath, { maxAge: age }));
-                xLog(`static: /sys = ${spath}`);
+                xLog('debug', `static: /sys = ${spath}`);
             } else {
                 for(let staticFolder of staticFolders) {
                     staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
                     app.use('/', express.static(staticFolder));
-                    xLog(`static: / = ${staticFolder}`);
+                    xLog('debug', `static: / = ${staticFolder}`);
                 }
                 spath = use('./web/modules/');
                 app.use('/web', express.static(spath));
-                xLog(`static: /web = ${spath}`);
+                xLog('debug', `static: /web = ${spath}`);
                 spath = use('./sys/modules/');
                 app.use('/sys', express.static(spath));
-                xLog(`static: /sys = ${spath}`);
+                xLog('debug', `static: /sys = ${spath}`);
             }
 
             // done

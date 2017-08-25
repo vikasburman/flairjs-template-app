@@ -11,7 +11,7 @@ define([
     return Class('sys.core.app.Client', App, function(attr) {
         attr('override');
         this.func('navigate', (base, url, returnUrlORisReplace) => {
-            base();
+            base(url);
             let currentHash = document.location.hash.replace('#', '');
             if (typeof returnUrlORisReplace === 'string') {
                 url += '?returnUrl=' + returnUrlORisReplace;

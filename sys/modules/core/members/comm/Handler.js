@@ -32,10 +32,10 @@ define([
                     this.env.reset('currentRequest');
                 }).catch((err) => {
                     this.env.reset('currentRequest');
-                    console.log(errorText.replace('%ERROR%', this.errorText(err)));
+                    xLog('error', errorText.replace('%ERROR%', this.errorText(err)));
                 });   
             }).catch((err) => {
-                console.log(errorText.replace('%ERROR%', this.errorText(err)));
+                xLog('error', errorText.replace('%ERROR%', this.errorText(err)));
             });
         });
     });

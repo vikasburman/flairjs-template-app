@@ -11,9 +11,12 @@
     let isServer = (new Function("try {return this===global;}catch(e){return false;}"))(),
         getGlobal = new Function("try {return (this===global ? global : window);}catch(e){return window;}");
 
-    // config
-    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"loader":{"tabletWidth":{"min":600,"max":992},"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"main":"app.sample | web.sample","routes":{"server":[],"client":[]},"static":[],"xLog":true,"minify":false,"docs":false,"source":{"sys":"sys/modules/","web":"web/modules/","app":"app/modules/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Auth":"sys.core.security.server.Auth | sys.core.security.client.Auth","User":"sys.core.security.User","Credentials":"sys.core.security.Credentials","ClaimsChecker":"sys.core.security.ClaimsChecker","TokenManager":"sys.core.security.server.TokenManager","Crypt":"sys.core.security.Crypt","Transition":"sys.core.ui.Transition","View":"sys.core.ui.View","Shell":"sys.core.ui.Shell","Partial":"sys.core.ui.Partial","Service":"sys.core.comm.Service","ServiceAdapter":"sys.core.comm.ServiceAdapter","Controller":"sys.core.domain.Controller","Entity":"sys.core.domain.Entity","Dto":"sys.core.domain.Dto","DbContext":"sys.core.data.DbContext","Repository":"sys.core.data.Repository","Automapper":"sys.core.data.Automapper","ValueValidator":"sys.core.data.ValueValidator"},"container":{},"routes":{"server":[{"root":"/auth","url":"/","verb":"post","class":"sys.core.security.server.Auth","func":"login"}],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"server":{"http":true,"https":false},"port":{"http":8080,"https":8443},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"morgan","args":["dev"]},{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"dependencies":[],"more":{"response":{"headers":[]},"bootwares":[],"middlewares":[],"dependencies":[]},"static":{"favIcon":"web/sample/static/images/logo.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{},"formatters":["sys.core.ui.formatters.Percent"],"binders":["sys.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.sample":{"routes":{"server":[]}}}`);
+    // base config
+    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"loader":{"tabletWidth":{"min":600,"max":992},"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"main":"app.sample | web.sample","routes":{"server":[],"client":[]},"static":[],"xLog":"silly","minify":false,"docs":false,"source":{"sys":"sys/modules/","web":"web/modules/","app":"app/modules/"}},"sys.core":{"catalog":{"Base":"sys.core.Base","IBootware":"sys.core.boot.IBootware","ErrorInfo":"sys.core.ErrorInfo","Bootstrapper":"sys.core.boot.Server | sys.core.boot.Client","App":"sys.core.app.Server | sys.core.app.Client","Auth":"sys.core.security.server.Auth | sys.core.security.client.Auth","User":"sys.core.security.User","Credentials":"sys.core.security.Credentials","ClaimsChecker":"sys.core.security.ClaimsChecker","TokenManager":"sys.core.security.server.TokenManager","Crypt":"sys.core.security.Crypt","Transition":"sys.core.ui.Transition","View":"sys.core.ui.View","Shell":"sys.core.ui.Shell","Partial":"sys.core.ui.Partial","Service":"sys.core.comm.Service","ServiceAdapter":"sys.core.comm.ServiceAdapter","Controller":"sys.core.domain.Controller","Entity":"sys.core.domain.Entity","Dto":"sys.core.domain.Dto","DbContext":"sys.core.data.DbContext","Repository":"sys.core.data.Repository","Automapper":"sys.core.data.Automapper","ValueValidator":"sys.core.data.ValueValidator"},"container":{},"routes":{"server":[{"root":"/auth","url":"/","verb":"post","class":"sys.core.security.server.Auth","func":"login"}],"client":[]},"express":{"case sensitive routing":false,"strict routing":false},"server":{"http":true,"https":false},"port":{"http":8080,"https":8443},"ssl":{"public":"./cert.pem","private":"./key.pem"},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.server.StaticServer | ","sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Attributes"," | sys.core.bootwares.client.DataBinder"],"middlewares":[{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"dependencies":[],"more":{"response":{"headers":[]},"bootwares":[],"middlewares":[],"dependencies":[]},"static":{"favIcon":"web/sample/static/images/logo.png","caching":{"enabled":true,"age":86400000}},"rivets":{"config":{},"formatters":["sys.core.ui.formatters.Percent"],"binders":["sys.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.sample":{"routes":{"server":[]}}}`);
+    
+    // basic env
     config.env = {
+        args: [],
         vars: {},
         locales: {
             default: 'en-us',
@@ -27,12 +30,14 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Fri, 25 Aug 2017 05:29:26 GMT',         
+        lupdate: 'Fri, 25 Aug 2017 09:41:11 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
         isReady: false,
         root: (isServer ? (require('app-root-path') + '/') : '/'),
+        logger: null,
+        logLevel: 'silly',
         require: {
             baseUrl: '/',
             paths: {
@@ -43,10 +48,14 @@
             bundles: {}
         }
     };
+
+    // env path considerations
     if (!config.env.isDev) { // dev mode get files as is from server, instead of bundles, as there are no bundles
         Object.assign(config.env.require.paths, JSON.parse('{}'));
         Object.assign(config.env.require.bundles, JSON.parse('{}'));
     }
+
+    // env flags (client side)
     if (!isServer) {
         if (window.document) {
             config.env.isDevice = (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1);
@@ -57,12 +66,92 @@
             config.env.isTablet = true;
         }
     }
+    
+    // env args (server side)
+    if (isServer) {
+        config.env.args = process.argv;
+    }
 
+    // logger env
+    if (isServer) {
+        let winston = require('winston');
+        config.env.logLevel = (config.env.args[2] || config.settings.xLog || 'error');
+        config.env.logger = new (winston.Logger)({
+            exitOnError: false,
+            transports: [
+                new (winston.transports.Console)({
+                    level: config.env.logLevel,
+                    colorize: true,
+                    timestamp: true,
+                    json: false
+                }),
+                new (winston.transports.File)({
+                    name: 'error-file',
+                    filename: './logs/errors.log',
+                    maxsize: 5242880, // 5MB
+                    maxFiles: 10,                    
+                    level: 'error',
+                    json: true,
+                    timestamp: true,
+                    handleExceptions: true,
+                    humanReadableUnhandledException: true,
+                    colorize: false
+                }),
+                new (winston.transports.File)({
+                    name: 'log-file',
+                    filename: './logs/logs.log',
+                    maxsize: 5242880, // 5MB
+                    maxFiles: 5,                    
+                    level: 'info',
+                    timestamp: true,
+                    colorize: false
+                })
+            ]
+        });
+    } else {
+        config.env.logLevel = (config.settings.xLog || 'error');
+        config.env.logger = {};
+        config.env.logger.log = (level, text) => {
+            let colors = {
+                reset: 'default',
+                error: 'red',
+                warn: 'orange',
+                info: 'green',
+                verbose: 'darkcyan',
+                debug: 'blue',
+                silly: 'magenta'
+            },
+            msg = `[${new Date().toJSON()}] - %c${level}%c: ${text}`,
+            isLog = false;
+            
+            switch(config.env.logLevel) {
+                case 'error': isLog = ['error'].indexOf(level) !== -1; break;
+                case 'warn': isLog = ['error', 'warn'].indexOf(level) !== -1; break;
+                case 'info': isLog = ['error', 'warn', 'info'].indexOf(level) !== -1; break;
+                case 'verbose': isLog = ['error', 'warn', 'info', 'verbose'].indexOf(level) !== -1; break;
+                case 'debug': isLog = ['error', 'warn', 'info', 'verbose', 'debug'].indexOf(level) !== -1; break;
+                case 'silly': isLog = true; break;
+            }
+            if (isLog) {
+                console.log(msg, 'color:' + colors[level], 'color:' + colors.reset); 
+            }
+        };
+    };
+    const xLog = (level, text) => {
+        try {
+            config.env.logger.log(level, text);
+        } catch(err) {
+            console.log(err);
+        }
+    };
+
+    // locales env
     if (config.settings.loader.locales) {
         config.env.locales.default = config.settings.loader.locales.default;
         config.env.locales.supported = config.settings.loader.locales.supported;
     }
 
+    // local vars and functions
     const dummyJS = (isServer ? 'dummy.js' : 'sys/node_modules/dummy.js');
     const catalog = {};
     const getNestedKeyValue = (obj, keyPath, defaultValue = null) => {
@@ -88,9 +177,6 @@
                 _obj = _obj[key];
             }
         }
-    };
-    const xLog = (text) => {
-        if (config.settings.xLog || config.env.isDev) { console.log(text); }
     };
 
     /**
@@ -158,7 +244,7 @@
             if (value && value.startsWith('[') && value.endsWith(']')) {
                 return getCatalogedPath(value);
             } else {
-                if (!value) { console.log(`Failed to resolve ${asked}`); }
+                if (!value) { xLog('warn', `Failed to resolve ${asked}`); }
                 return value || dummyJS;
             }
         };
@@ -427,7 +513,7 @@
     g.getNestedKeyValue = getNestedKeyValue; g.setNestedKeyValue = setNestedKeyValue;
     g.App = null;
 
-    // extend environment (server and client)
+    // extend env (server and client)
     config.env.set = (varName, value) => { config.env.vars[varName] = value; };
     config.env.reset = (varName) => { delete config.env.vars[varName]; };
     config.env.get = (varName, defaultValue = null) => { return config.env.vars[varName] || defaultValue; };
@@ -545,7 +631,7 @@
         config.env.currentView = () => { return config.env.get('currentView'); };
     }
 
-    // setup
+    // load and run
     const _loadScript = (src, success, error) => {
         let script = window.document.createElement('script');
         script.onload = success; script.onerror = error; script.src = src; 
@@ -553,12 +639,11 @@
     };
     const onError = (err) => { 
         if (!config.env.isProd) { 
-            console.log(`boot failed. (${err.toString()})`); 
-            console.log(err);
+            xLog('error', `boot failed. (${err})`); 
         }
     };
     const onDone = () => { 
-        console.log('boot success.'); 
+        xLog('verbose', 'boot success.'); 
     };
     const onLoad = () => {
         if (isServer) {

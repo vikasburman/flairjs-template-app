@@ -8,13 +8,13 @@
 	"link": "http://",
 	"repository": "https://github.com/vikasburman/appgears.git",
 	"scripts": {
-		"dev": "gulp dev && nodemon sys/modules/core/static/loader.js",
-		"dbg": "gulp dbg && nodemon sys/modules/core/static/loader.js",
-		"prod": "gulp prod && nodemon sys/modules/core/static/loader.js",
-		"test": "gulp test",
-		"build": "gulp",
 		"update": "node upd/update.js ./oojs.json",
-    "start": "node sys/modules/core/static/loader.js"
+		"build": "gulp",
+		"test": "gulp test",
+		"dev": "gulp dev && nodemon sys/modules/core/static/loader.js silly",
+		"dbg": "gulp dbg && nodemon sys/modules/core/static/loader.js debug",
+		"prod": "gulp prod && nodemon sys/modules/core/static/loader.js",
+		"start": "nodemod sys/modules/core/static/loader.js"
 	},
 	"devDependencies": {
 		"babel-eslint": "^7.2.3",
@@ -57,10 +57,10 @@
 		"express-bearer-token": "^2.1.0",
 		"fs-extra": "^4.0.0",
 		"jsonwebtoken": "^7.4.1",
-		"morgan": "^1.8.2",
 		"node-fetch": "^1.7.1",
 		"nodemon": "^1.11.0",
-		"serve-favicon": "^2.4.3"
+		"serve-favicon": "^2.4.3",
+		"winston": "^2.3.1"
 	},
 	"oojsversion": "1.0.0"
 }

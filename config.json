@@ -31,7 +31,7 @@
         },
         "static": [
         ],
-        "xLog": true,
+        "xLog": "silly",
         "minify": false,
         "docs": false
     },

@@ -36,7 +36,7 @@ define([
             routesOrder.unshift(this.env.getMainModule()); // add main module by default, on top both in server and client side
             routesOrder.unshift(this.assembly); // add sys.core (current module) by default, on top of main module, both in server and client side
             for(let routesOf of routesOrder) {
-                xLog(`routes of: ${routesOf}`);
+                xLog('debug', `routes of: ${routesOf}`);
                 routes = this.settings(routesOf + routesKey, []);
                 for(let route of routes) {
                     if (route.url && route.class) {
@@ -51,13 +51,15 @@ define([
                                             request = new Request(handler, route.verb, req, res);
                                         handler.handle(request);
                                     } catch (err) {
-                                        console.log(`Error handling ${fullUrl}. \n ${this.errorText(err)}`);
+                                        xLog('error', `Error handling ${fullUrl}. \n ${this.errorText(err)}`);
                                         res.status(500).end();
                                     }
                                 });
-                                xLog(`  ${route.verb}: ${fullUrl}`);
+                                xLog('debug', `  ${route.verb}: ${fullUrl}`);
                             } else {
-                                 throw `Invalid route definiton: ${fullUrl}#${route.verb}`;
+                                let err = `Invalid route definiton: ${fullUrl}#${route.verb}`;
+                                xLog('error',  err);
+                                throw err;
                             }
                         } else {
                             router.add(fullUrl, function() {
@@ -67,14 +69,16 @@ define([
                                 try {
                                     handler.handle(request);
                                 } catch (err) {
-                                    console.log(`Error handling ${fullUrl}. \n ${this.errorText(err)}`);
+                                    xLog('error', `Error handling ${fullUrl}. \n ${this.errorText(err)}`);
                                     throw err;
                                 }
                             });
-                            xLog(`  navigate: ${fullUrl}`);
+                            xLog('debug', `  navigate: ${fullUrl}`);
                         }
                     } else {
-                        throw `Invalid route definiton: ${fullUrl}`;
+                        let err = `Invalid route definiton: ${fullUrl}`;
+                        xLog('error',  err);
+                        throw err;
                     }
                 }
             }

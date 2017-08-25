@@ -86,7 +86,7 @@ define([
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.boot(this.app).then(() => {
-                                xLog(`Bootware (booted): ${bootware._.name}`);
+                                xLog('debug', `Bootware (booted): ${bootware._.name}`);
                                 _resolve();
                             }).catch(_reject);
                         } else {
@@ -139,7 +139,7 @@ define([
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.ready(this.app).then(() => {
-                                xLog(`Bootware (ready): ${bootware._.name}`);
+                                (`Bootware (ready): ${bootware._.name}`);
                                 _resolve();
                             }).catch(_reject);
                         } else {
@@ -151,11 +151,11 @@ define([
                 }).then(() => {
                     // finally ready
                     this.env.isReady = true;
-                    console.log(`ready: (server, ${this.env.get('type', 'unknown')})`);
+                    xLog('verbose', `ready: (server, ${this.env.get('type', 'unknown')})`);
 
                     // start
                     App.start().then(() => {
-                        console.log(App.info.title + ' - ' + App.info.version);
+                        xLog('info', App.info.title + ' - ' + App.info.version);
 
                         // start listining
                         let httpPort = -1,
@@ -173,12 +173,12 @@ define([
                         }
                         if (this.server.http) {
                             this.server.http.listen(httpPort, () => {
-                                xLog(`http: listining on ${httpPort}`);
+                                xLog('verbose', `http: listining on ${httpPort}`);
                             });
                         }
                         if (this.server.https) {
                             this.server.https.listen(httpsPort, () => {
-                                xLog(`https: listining on ${httpsPort}`);
+                                xLog('verbose', `https: listining on ${httpsPort}`);
                             });
                         }
 

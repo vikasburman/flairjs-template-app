@@ -50,7 +50,7 @@ define([
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.boot().then(() => {
-                                xLog(`Bootware (booted): ${bootware._.name}`);
+                                xLog('debug', `Bootware (booted): ${bootware._.name}`);
                                 _resolve();
                             }).catch(_reject);
                         } else {
@@ -81,7 +81,7 @@ define([
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.ready().then(() => {
-                                xLog(`Bootware (ready): ${bootware._.name}`);
+                                xLog('debug', `Bootware (ready): ${bootware._.name}`);
                                 _resolve();
                             }).catch(_reject);
                         } else {
@@ -93,16 +93,15 @@ define([
                 }).then(() => {
                     // finally ready
                     this.env.isReady = true;
-                    console.log(`ready: (client, ${this.env.get('type', 'unknown')})`);
+                    xLog('verbose', `ready: (client, ${this.env.get('type', 'unknown')})`);
 
                     // start
                     App.start().then(() => {
-                        console.log(App.info.title + ' - ' + App.info.version);
+                        xLog('info', App.info.title + ' - ' + App.info.version);
 
                         if (!this.env.isTest) {
                             // perform default action: open home view or currently opened view
                             let url = document.location.hash.replace('#', '') || '/';
-                            xLog(`navigation: ${url}`);
                             App.navigate(url);
                         }
 
