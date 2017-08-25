@@ -155,6 +155,8 @@ define([
 
                     // start
                     App.start().then(() => {
+                        console.log(App.info.title + ' - ' + App.info.version);
+
                         // start listining
                         if (this.server.http) {
                             let httpPort = process.env.PORT || this.settings('port.http', 80);
@@ -170,7 +172,6 @@ define([
                         }
 
                         // done
-                        console.log(App.info.title + ' - ' + App.info.version);
                         resolve();
                     }).catch(reject);
                 }).catch(reject);
