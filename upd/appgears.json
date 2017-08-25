@@ -16,8 +16,6 @@
     },
     "update": {
         "folders": [
-            { "src": "app/modules/sample" },
-            { "src": "web/modules/sample" },
             { "src": "sys/modules/core" },
             { "src": "sys/modules/node_modules" },
             { "src": "build" }
