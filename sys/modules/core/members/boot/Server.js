@@ -158,14 +158,25 @@ define([
                         console.log(App.info.title + ' - ' + App.info.version);
 
                         // start listining
+                        let httpPort = -1,
+                            httpsPort = -1;
+                        if (this.server.http && this.server.https) {
+                            httpsPort = process.env.PORT || this.settings('port.https', 443);
+                            httpPort = this.settings('port.http', 80);
+                        } else {
+                            if (this.server.http) {
+                                httpPort = process.env.PORT || this.settings('port.http', 80);
+                            }
+                            if (this.server.https) {
+                                httpsPort = process.env.PORT || this.settings('port.https', 443);
+                            }
+                        }
                         if (this.server.http) {
-                            let httpPort = process.env.PORT || this.settings('port.http', 80);
                             this.server.http.listen(httpPort, () => {
                                 xLog(`http: listining on ${httpPort}`);
                             });
                         }
                         if (this.server.https) {
-                            let httpsPort = process.env.PORT || this.settings('port.https', 443);
                             this.server.https.listen(httpsPort, () => {
                                 xLog(`https: listining on ${httpsPort}`);
                             });

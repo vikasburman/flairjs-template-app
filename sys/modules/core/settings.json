@@ -39,11 +39,11 @@
     },
     "server": {
         "http": true,
-        "https": true
+        "https": false
     },
     "port": {
-        "http": 80,
-        "https": 443
+        "http": 8080,
+        "https": 8443
     },
     "ssl": {
         "public": "",

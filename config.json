@@ -38,8 +38,8 @@
 
     "sys.core": {
         "server": {
-            "http": false,
-            "https": true
+            "http": true,
+            "https": false
         },
         "static": {
             "favIcon": "web/sample/static/images/logo.png",
