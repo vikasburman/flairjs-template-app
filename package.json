@@ -13,8 +13,8 @@
 		"test": "gulp test",
 		"dev": "gulp dev && nodemon sys/modules/core/static/loader.js silly",
 		"dbg": "gulp dbg && nodemon sys/modules/core/static/loader.js debug",
-		"prod": "gulp prod && nodemon sys/modules/core/static/loader.js",
-		"start": "nodemod sys/modules/core/static/loader.js"
+		"prod": "gulp prod && forever sys/modules/core/static/loader.js",
+		"start": "forever sys/modules/core/static/loader.js"
 	},
 	"devDependencies": {
 		"babel-eslint": "^7.2.3",
@@ -55,6 +55,7 @@
 		"cookie-parser": "^1.4.3",
 		"diskdb": "^0.1.17",
 		"express-bearer-token": "^2.1.0",
+		"forever": "^0.15.3",
 		"fs-extra": "^4.0.0",
 		"jsonwebtoken": "^7.4.1",
 		"node-fetch": "^1.7.1",
