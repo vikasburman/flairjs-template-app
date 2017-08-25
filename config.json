@@ -46,7 +46,7 @@
             "caching": {  
                 "enabled": true
             }  
-        },            
+        },
         "port": {
             "http": 8080,
             "https": 8443
