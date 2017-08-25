@@ -9,3 +9,6 @@ Global environmnet setup for development:
 
 Package.json dependencies install:
 1) yarn install
+
+To update:
+1) brew upgrade yarn (will update HomeBrew, Yarn and Node all at once)
