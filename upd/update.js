@@ -12,7 +12,7 @@ const copyFolders = (tempFolder, cfgJson) => {
         dest = '';
     for(let folder of cfgJson.update.folders) {
         src = tempFolder + '/' + folder.src;
-        dest = folder.dest;
+        dest = folder.dest || folder.src; // when src and dest are actually same at different root path
         console.log('updating folder: ' + src + ' --> ' + dest);
         fs.removeSync(dest);
         fs.copySync(src, dest);
@@ -22,7 +22,7 @@ const copyFiles = (tempFolder, cfgJson) => {
     // copy all files as is from downloaded to here (overwrite)
     for(let file of cfgJson.update.files) {
         src = tempFolder + '/' + file.src + file.name;
-        dest = file.dest + file.name;
+        dest = (file.dest || file.src) + file.name; // when src and dest are actually same at different root path
         console.log('updating file: ' + src + ' --> ' + dest);
         fs.createReadStream(src).pipe(fs.createWriteStream(dest));
     };

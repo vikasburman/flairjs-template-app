@@ -16,17 +16,17 @@
     },
     "update": {
         "folders": [
-            { "src": "app/modules/sample", "dest": "app/modules/sample" },
-            { "src": "web/modules/sample", "dest": "web/modules/sample" },
-            { "src": "sys/modules/core", "dest": "sys/modules/core" },
-            { "src": "sys/modules/node_modules", "dest": "sys/modules/node_modules" },
-            { "src": "build", "dest": "build" }
+            { "src": "app/modules/sample" },
+            { "src": "web/modules/sample" },
+            { "src": "sys/modules/core" },
+            { "src": "sys/modules/node_modules" },
+            { "src": "build" }
         ],
         "files": [
-            { "name": "gulpfile.js", "src": "", "dest": "" },
-            { "name": "update.js", "src": "upd/", "dest": "upd/" },
-            { "name": "oojs.json", "src": "upd/", "dest": "upd/" }, 
-            { "name": "appgears.json", "src": "upd/", "dest": "upd/" }
+            { "name": "gulpfile.js", "src": "" },
+            { "name": "update.js", "src": "upd/" },
+            { "name": "oojs.json", "src": "upd/" }, 
+            { "name": "appgears.json", "src": "upd/" }
         ]
     }
 }
