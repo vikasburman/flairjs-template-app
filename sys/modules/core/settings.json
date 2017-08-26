@@ -29,13 +29,17 @@
     },
     "routes": {
         "server": [
-            { "root": "/auth", "url": "/", "verb": "post", "class": "sys.core.security.server.Auth", "func": "login" }
+            { "ver": "1", "root": "/auth", "url": "/", "verb": "post", "class": "sys.core.security.server.Auth", "func": "login" }
         ],
         "client": []
     },
     "express": {
         "case sensitive routing": false,
         "strict routing": false
+    },
+    "api": {
+        "root": "api",
+        "version": "v"
     },
     "server": {
         "http": true,

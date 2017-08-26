@@ -17,10 +17,15 @@ define([
                 routes = [],
                 router = (this.env.isServer ? app : new RouteManager({})),
                 fullUrl = '',
-                routesKey = (this.env.isServer ? ':routes.server' : ':routes.client');
+                routesKey = (this.env.isServer ? ':routes.server' : ':routes.client'),
+                apiPrefix = (this.env.isServer ? this.settings('api.root', '') : ''),
+                versionPrefix = (this.env.isServer ? this.settings('api.version', '') : '');
 
             // each route definition (both on server and client) is as:
-            // { "root":"", url": "", "verb": "", "class": "", "func": ""}
+            // { "ver":"1", "root":"", url": "", "verb": "", "class": "", "func": ""}
+            // ver: 
+            //  on server, this represents version of the api
+            //  on client, this is not required
             // root: root path under which given url to hook to
             // url: url pattern to match
             // verb: 
@@ -43,6 +48,7 @@ define([
                         fullUrl = (route.root || '') + route.url;
                         fullUrl = fullUrl.replace('//', '/');
                         if (this.env.isServer) {
+                            if (apiPrefix) { fullUrl = apiPrefix + '/' + versionPrefix + (route.ver || "1") + fullUrl; }
                             if (route.func && route.verb) {
                                 if (['get', 'post', 'put', 'delete'].indexOf(route.verb) === -1) { throw `Unknown verb for: ${route.url}`; }
                                 router[route.verb](fullUrl, function(req, res) { // router here is express app.
