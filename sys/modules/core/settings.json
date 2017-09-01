@@ -64,9 +64,9 @@
     "bootwares": [
         "sys.core.bootwares.server.StaticServer | ",
         "sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies",
-        "sys.core.bootwares.Router",
         "sys.core.bootwares.ErrorHandler",
         "sys.core.bootwares.Attributes",
+        "sys.core.bootwares.Router",
         " | sys.core.bootwares.client.DataBinder"
     ],
     "middlewares": [

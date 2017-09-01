@@ -21,6 +21,10 @@ attr('check,
 )
 many more...
 
+Allow routes to be added on server and client by a function call with same interface as otherwise
+Get rid of more.bootwares... etc. instead add them at cli time
+Make main module as Bootware as well --- which is booted and readied like others but at the end
+this will get change in loader as well
 
 check how to let attribute define if multiple instances of that attribute are allowed and now to throw error when more than once instance is applied
 

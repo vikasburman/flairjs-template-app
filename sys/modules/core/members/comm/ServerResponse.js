@@ -61,6 +61,10 @@ define([
                 xLog('debug', status + ': ' + message);
                 this.res.status(status).send(message);
             },
+            na: (status = 501, message = 'Not Available') => {
+                xLog('debug', status + ': ' + message);
+                this.res.status(status).send(message);
+            },            
             none: (status) => {
                 if (status) {
                     this.res.status(status).end();

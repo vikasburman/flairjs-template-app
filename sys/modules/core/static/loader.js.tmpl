@@ -221,7 +221,7 @@
         const getContextualPath = (_path) => {
             let parts = null,
                 asked = _path;
-            if (_path.includes('|')) {
+            if (_path.indexOf('|') !== -1) {
                 parts = _path.split('|');
                 _path = (isAsServer ? parts[0] : parts[1]).trim();
                 _path = _path || dummyJS;
