@@ -42,7 +42,7 @@
             "https": true
         },
         "static": {
-            "favIcon": "/favicon.ico",
+            "favIcon": "favicon.ico",
             "caching": {  
                 "enabled": true
             }
