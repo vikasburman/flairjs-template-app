@@ -45,7 +45,7 @@
             "favIcon": "/favicon.ico",
             "caching": {  
                 "enabled": true
-            }  
+            }
         },
         "port": {
             "http": 8080,
