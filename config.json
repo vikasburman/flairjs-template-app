@@ -38,22 +38,26 @@
 
     "sys.core": {
         "server": {
-            "http": false,
-            "https": true
+            "http": {
+                "enable": false,
+                "port": 8080,
+                "timeout": -1
+            },
+            "https": {
+                "enable": true,
+                "port": 8443,
+                "timeout": -1,
+                "ssl": {
+                    "public": "./cert.pem",
+                    "private": "./key.pem"
+                }
+            }
         },
         "static": {
             "favIcon": "web/sample/static/favicon.ico",
             "caching": {  
                 "enabled": true
             }  
-        },
-        "port": {
-            "http": 8080,
-            "https": 8443
-        },
-        "ssl": {
-            "public": "./cert.pem",
-            "private": "./key.pem"
         },
         "view": {
             "login": "#/login"        

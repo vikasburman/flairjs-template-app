@@ -97,12 +97,18 @@ define([
                     }
                 }).then(() => {
                     // boot server itself
-                    if (this.settings('server.http', false)) {
+                    if (this.settings('server.http.enable', false)) {
                         let http = require('http');
                         this.server.http = http.createServer(this.app);
                         this.server.http.on('error', this.onError);
+
+                         // configure
+                        let timeout = this.settings('server.http.timeout', -1);
+                        if (timeout !== -1) { 
+                            this.server.http.timeout = timeout; // timeout must be in milliseconds
+                        }
                     }
-                    if (this.settings('server.https', false)) {
+                    if (this.settings('server.https.enable', false)) {
                         // SSL Certificate
                         // NOTE: For creating test certificate:
                         //  > Goto http://www.cert-depot.com/
@@ -111,13 +117,19 @@ define([
                         //  > Rename *.private.pem as key.pem
                         //  > Rename *.public.pem as cert.pem
                         //  > Update these files at root
-                        let privateKey  = fs.readFileSync(this.settings('ssl.private'), 'utf8');
-                        let certificate = fs.readFileSync(this.settings('ssl.public'), 'utf8');
+                        let privateKey  = fs.readFileSync(this.settings('server.https.ssl.private'), 'utf8');
+                        let certificate = fs.readFileSync(this.settings('server.https.ssl.public'), 'utf8');
                         let credentials = { key: privateKey, cert: certificate };
 
                         let https = require('https');
                         this.server.https = https.createServer(credentials, this.app);
                         this.server.https.on('error', this.onError);
+
+                        // configure
+                        let timeout = this.settings('server.https.timeout', -1);
+                        if (timeout !== -1) { 
+                            this.server.https.timeout = timeout; // timeout must be in milliseconds
+                        }
                     }
 
                     // done
@@ -163,9 +175,8 @@ define([
 
                         const listining = (type, port) => { xLog('verbose', `${type}: listining on ${port}`); };
                         if (this.server.http && this.server.https) {
-                            console.log('here');
-                            httpsPort = process.env.PORT || this.settings('port.https', 443);
-                            httpPort = this.settings('port.http', 80);
+                            httpsPort = process.env.PORT || this.settings('server.https.port', 443);
+                            httpPort = this.settings('server.http.port', 80);
                             this.server.http.listen(httpPort, () => {
                                 listining('http', httpPort);
                                 this.server.https.listen(httpsPort, () => {
@@ -173,12 +184,12 @@ define([
                                 });
                             });
                         } else if (this.server.http) {
-                            httpPort = process.env.PORT || this.settings('port.http', 80);
+                            httpPort = process.env.PORT || this.settings('server.http.port', 80);
                             this.server.http.listen(httpPort, () => {
                                 listining('http', httpPort);
                             });
                         } else if (this.server.https) {
-                            httpsPort = process.env.PORT || this.settings('port.https', 443);
+                            httpsPort = process.env.PORT || this.settings('server.https.port', 443);
                             this.server.https.listen(httpsPort, () => {
                                 listining('https', httpsPort);
                             });
