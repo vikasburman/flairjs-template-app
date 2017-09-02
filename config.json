@@ -42,10 +42,10 @@
             "https": true
         },
         "static": {
-            "favIcon": "favicon.ico",
+            "favIcon": "web/sample/static/favicon.ico",
             "caching": {  
                 "enabled": true
-            }
+            }  
         },
         "port": {
             "http": 8080,
