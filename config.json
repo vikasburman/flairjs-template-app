@@ -10,12 +10,6 @@
             "url": "...",
             "org": "..."
         },
-        "loader": {
-            "tabletWidth": {
-                "min": 600,
-                "max": 992
-            }
-        },
         "main": "app.sample | web.sample",
         "routes": {
             "server": [
@@ -23,8 +17,6 @@
             "client": [
             ]
         },
-        "static": [
-        ],
         "xLog": "silly",
         "minify": false,
         "docs": false
