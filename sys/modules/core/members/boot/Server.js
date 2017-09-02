@@ -101,6 +101,9 @@ define([
                         let http = require('http');
                         this.server.http = http.createServer(this.app);
                         this.server.http.on('error', this.onError);
+                        this.server.http.on('listening', () => { 
+                            xLog('verbose', `http: listining on ${this.server.http.address().port}`);
+                        });
                     }
                     if (this.settings('server.https', false)) {
                         // SSL Certificate
@@ -118,6 +121,9 @@ define([
                         let https = require('https');
                         this.server.https = https.createServer(credentials, this.app);
                         this.server.https.on('error', this.onError);
+                        this.server.https.on('listening', () => { 
+                            xLog('verbose', `https: listining on ${this.server.http.address().port}`);
+                        });
                     }
 
                     // done
@@ -171,16 +177,8 @@ define([
                                 httpsPort = process.env.PORT || this.settings('port.https', 443);
                             }
                         }
-                        if (this.server.http) {
-                            this.server.http.listen(httpPort, () => {
-                                xLog('verbose', `http: listining on ${httpPort}`);
-                            });
-                        }
-                        if (this.server.https) {
-                            this.server.https.listen(httpsPort, () => {
-                                xLog('verbose', `https: listining on ${httpsPort}`);
-                            });
-                        }
+                        if (this.server.http) { this.server.http.listen(httpPort); }
+                        if (this.server.https) { this.server.https.listen(httpsPort); }
 
                         // done
                         resolve();

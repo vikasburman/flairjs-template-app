@@ -18,6 +18,7 @@ define([
                     err.status = 404;
                     next(err);
                 });
+                xLog('verbose', 'routes fallback to 404');
 
                 // error handlers
                 if (this.env.isProd) {

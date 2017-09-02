@@ -1,6 +1,7 @@
 define([
-    use('sys.core.app.App')
-], (App) => {
+    use('sys.core.app.App'),
+    use('[User]')
+], (App, User) => {
     /**
      * @class sys.core.app.Server
      * @classdesc sys.core.app.Server

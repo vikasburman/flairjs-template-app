@@ -52,6 +52,7 @@ define([
                             if (route.func && route.verb) {
                                 if (['get', 'post', 'put', 'delete'].indexOf(route.verb) === -1) { throw `Unknown verb for: ${route.url}`; }
                                 router[route.verb](fullUrl, function(req, res) { // router here is express app.
+                                    xLog('debug', `route hit: ${fullUrl}`);
                                     try {
                                         let handler = new Handler(route.class, route.func),
                                             request = new Request(handler, route.verb, req, res);
