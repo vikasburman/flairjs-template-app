@@ -14,8 +14,10 @@ define([
         this.func('boot', (resolve, reject, app) => {
             // configure favicon
             let fi = this.settings('static.favIcon', '');
+            if (!fi) { fi = replaceAll(this.env.getMainModule('client'), '.', '/') + '/static/favicon.ico'; }
             if (fi) {
-                app.use(favicon(use(fi)));
+                fi = use(fi);
+                app.use(favicon(fi));
                 xLog('debug', `favIcon: ${fi}`);
             }
 

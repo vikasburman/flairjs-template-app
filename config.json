@@ -10,6 +10,7 @@
             "url": "...",
             "org": "..."
         },
+        
         "main": "app.sample | web.sample",
         "routes": {
             "server": [
@@ -17,17 +18,11 @@
             "client": [
             ]
         },
-        "xLog": "silly",
+        "static": [
+        ],
+
+        "xLog": "info",
         "minify": false,
         "docs": false
-    },
-
-    "sys.core": {
-        "static": {
-            "favIcon": "web/sample/static/favicon.ico"
-        },
-        "view": {
-            "login": "#/login"
-        }
     }
 }
