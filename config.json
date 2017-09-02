@@ -31,45 +31,11 @@
     },
 
     "sys.core": {
-        "server": {
-            "http": {
-                "enable": true,
-                "port": 8080,
-                "timeout": -1
-            },
-            "https": {
-                "enable": false,
-                "port": 8443,
-                "tunnel": false,
-                "timeout": -1,
-                "ssl": {
-                    "public": "./cert.pem",
-                    "private": "./key.pem"
-                }
-            }
-        },
-        "locales": {
-            "default": "en-us",
-            "supported": {
-                "en-us": { "lcid": "1033", "display": "English (United States)", "rtl": false }
-            }
-        },
-        "localtunnel": {
-            "enable": false,
-            "subdomain": "appgears",
-            "localhost": "localhost",
-            "port": 8080
-        },
         "static": {
-            "favIcon": "web/sample/static/favicon.ico",
-            "caching": {  
-                "enabled": true
-            }  
+            "favIcon": "web/sample/static/favicon.ico"
         },
         "view": {
-            "login": "#/login"        
-        },
-        "catalog": {
+            "login": "#/login"
         }
     }
 }

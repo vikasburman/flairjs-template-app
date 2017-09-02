@@ -48,12 +48,12 @@
             "timeout": -1
         },
         "https": {
-            "enable": true,
+            "enable": false,
             "port": 8443,
             "timeout": -1,
             "ssl": {
-                "public": "",
-                "private": ""
+                "public": "./cert.pem",
+                "private": "./key.pem"
             }
         }
     },
@@ -92,6 +92,12 @@
         "middlewares": [],
         "dependencies": []
     },
+    "locales": {
+        "default": "en-us",
+        "supported": {
+            "en-us": { "lcid": "1033", "display": "English (United States)", "rtl": false }
+        }
+    },
     "localtunnel": {
         "enable": false,
         "subdomain": "appgears",
@@ -101,7 +107,7 @@
     "static": {
         "favIcon": "",
         "caching": {  
-            "enabled": true,
+            "enable": true,
             "age": 86400000
         }  
     },

@@ -25,7 +25,7 @@ define([
                 staticFolders = this.settings(':static', []);
                 staticFolders.unshift(this.env.getMainModule('client')); // add main module's client part by default, on top
                 staticFolders.unshift(this.assembly); // add sys.core (this module) on top as first default item
-            if (this.settings('static.caching.enabled') && age !== 0) { 
+            if (this.settings('static.caching.enable', false) && age !== 0) { 
                 for(let staticFolder of staticFolders) {
                     staticFolder = use(staticFolder).replace('members/', '').replace('.js', '') + 'static/';
                     app.use('/', express.static(staticFolder, { maxAge: age }));
