@@ -53,7 +53,7 @@ define([
             //  on client, this is fixed as 'navigate'
             routesOrder = this.settings(routesKey);
             routesOrder.unshift(this.env.getMainModule()); // add main module by default, on top both in server and client side
-            routesOrder.unshift(this.assembly); // add sys.core (current module) by default, on top of main module, both in server and client side
+            routesOrder.unshift('app.core'); // add app.core by default, on top of main module, both in server and client side
             for(let routesOf of routesOrder) {
                 xLog('debug', `routes of: ${routesOf}`);
                 routes = this.settings(routesOf + routesKey, []);
