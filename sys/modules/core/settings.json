@@ -29,7 +29,7 @@
     },
     "routes": {
         "server": [
-            { "ver": "1", "root": "/auth", "url": "/", "verb": "post", "class": "sys.core.security.server.Auth", "func": "login" }
+            { "ver": "1", "root": "/", "url": "/auth", "verb": "post", "class": "sys.core.security.server.Auth", "func": "login" }
         ],
         "client": []
     },
@@ -43,7 +43,7 @@
     },
     "server": {
         "http": true,
-        "https": false
+        "https": true
     },
     "port": {
         "http": 8080,

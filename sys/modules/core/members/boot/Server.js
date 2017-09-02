@@ -101,9 +101,6 @@ define([
                         let http = require('http');
                         this.server.http = http.createServer(this.app);
                         this.server.http.on('error', this.onError);
-                        this.server.http.on('listening', () => { 
-                            xLog('verbose', `http: listining on ${this.server.http.address().port}`);
-                        });
                     }
                     if (this.settings('server.https', false)) {
                         // SSL Certificate
@@ -121,9 +118,6 @@ define([
                         let https = require('https');
                         this.server.https = https.createServer(credentials, this.app);
                         this.server.https.on('error', this.onError);
-                        this.server.https.on('listening', () => { 
-                            xLog('verbose', `https: listining on ${this.server.http.address().port}`);
-                        });
                     }
 
                     // done
@@ -166,19 +160,31 @@ define([
                         // start listining
                         let httpPort = -1,
                             httpsPort = -1;
+
+                        const listining = (type, port) => { xLog('verbose', `${type}: listining on ${port}`); };
                         if (this.server.http && this.server.https) {
+                            console.log('here');
                             httpsPort = process.env.PORT || this.settings('port.https', 443);
                             httpPort = this.settings('port.http', 80);
+                            this.server.http.listen(httpPort, () => {
+                                listining('http', httpPort);
+                                this.server.https.listen(httpsPort, () => {
+                                    listining('https', httpsPort);
+                                });
+                            });
+                        } else if (this.server.http) {
+                            httpPort = process.env.PORT || this.settings('port.http', 80);
+                            this.server.http.listen(httpPort, () => {
+                                listining('http', httpPort);
+                            });
+                        } else if (this.server.https) {
+                            httpsPort = process.env.PORT || this.settings('port.https', 443);
+                            this.server.https.listen(httpsPort, () => {
+                                listining('https', httpsPort);
+                            });
                         } else {
-                            if (this.server.http) {
-                                httpPort = process.env.PORT || this.settings('port.http', 80);
-                            }
-                            if (this.server.https) {
-                                httpsPort = process.env.PORT || this.settings('port.https', 443);
-                            }
+                            xLog('verbose', 'server not started');
                         }
-                        if (this.server.http) { this.server.http.listen(httpPort); }
-                        if (this.server.https) { this.server.https.listen(httpsPort); }
 
                         // done
                         resolve();
