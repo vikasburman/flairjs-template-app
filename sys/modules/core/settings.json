@@ -1,138 +1,31 @@
 {
     "catalog": {
-        "Base": "sys.core.Base",
         "IBootware": "sys.core.boot.IBootware",
+        "IApp": "sys.core.app.IApp",
+        "Base": "sys.core.Base",
         "ErrorInfo": "sys.core.ErrorInfo",
-        "Bootstrapper": "sys.core.boot.Server | sys.core.boot.Client",
-        "App": "sys.core.app.Server | sys.core.app.Client",
-        "Auth": "sys.core.security.server.Auth | sys.core.security.client.Auth",
-        "User": "sys.core.security.User",
-        "Credentials": "sys.core.security.Credentials",
-        "ClaimsChecker": "sys.core.security.ClaimsChecker",
-        "TokenManager": "sys.core.security.server.TokenManager",
-        "Crypt": "sys.core.security.Crypt",
-        "Transition": "sys.core.ui.Transition",
-        "View": "sys.core.ui.View",
-        "Shell": "sys.core.ui.Shell",
-        "Partial": "sys.core.ui.Partial",
-        "Service": "sys.core.comm.Service",
-        "ServiceAdapter": "sys.core.comm.ServiceAdapter",
-        "Controller": "sys.core.domain.Controller",
-        "Entity": "sys.core.domain.Entity",
         "Dto": "sys.core.domain.Dto",
-        "DbContext": "sys.core.data.DbContext",
-        "Repository": "sys.core.data.Repository",
-        "Automapper": "sys.core.data.Automapper",
-        "ValueValidator": "sys.core.data.ValueValidator"
+        "AuthInfo": "sys.core.security.AuthInfo",
+        "Credentials": "sys.core.security.Credentials",
+        "User": "sys.core.security.User",
+        "ClaimsChecker": "sys.core.security.ClaimsChecker",
+        "ValueValidator": "sys.core.data.ValueValidator",
+        "Hash": "sys.core.security.Hash",
+        "ServiceAdapter": "sys.core.comm.ServiceAdapter",
+        "Bootstrapper": "app.core.boot.Server | web.core.boot.Client",
+        "App": "app.core.app.ServerApp | web.core.app.ClientApp",
+        "Auth": "app.core.security.Auth | web.core.security.Auth"
     },
     "container": {
-    },
-    "routes": {
-        "server": [
-            { "ver": "1", "root": "/", "url": "/auth", "verb": "post", "class": "sys.core.security.server.Auth", "func": "login" }
-        ],
-        "client": []
-    },
-    "express": {
-        "case sensitive routing": false,
-        "strict routing": false
     },
     "api": {
         "root": "/api",
         "version": "v"
     },
-    "server": {
-        "http": {
-            "enable": true,
-            "port": 8080,
-            "timeout": -1
-        },
-        "https": {
-            "enable": false,
-            "port": 8443,
-            "timeout": -1,
-            "ssl": {
-                "public": "./cert.pem",
-                "private": "./key.pem"
-            }
-        }
-    },
-    "response": {
-        "headers": [
-            { "name": "Access-Control-Allow-Credentials", "value": true },
-            { "name": "Access-Control-Allow-Origin", "value": "*" },
-            { "name": "Access-Control-Allow-Methods", "value": "GET, PUT, POST, DELETE" },
-            { "name": "Access-Control-Allow-Headers", "value": "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request" }
-        ]
-    },
-    "bootwares": [
-        "sys.core.bootwares.Attributes",
-        "sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies",
-        "sys.core.bootwares.Router",
-        "sys.core.bootwares.server.StaticServer | ",
-        "sys.core.bootwares.server.LocalTunnel | ",
-        "sys.core.bootwares.ErrorHandler",
-        "sys.core.bootwares.Locales",
-        " | sys.core.bootwares.client.DataBinder"
-    ],
-    "middlewares": [
-        { "name": "compression" },
-        { "name": "cookie-parser" },
-        { "name": "express-bearer-token" },
-        { "name": "body-parser", "func": "urlencoded", "args": [{"extended": true}] },
-        { "name": "body-parser", "func": "json" }
-    ],
-    "dependencies": [
-    ],
-    "more": {
-        "response": {
-            "headers": []
-        },
-        "bootwares": [],
-        "middlewares": [],
-        "dependencies": []
-    },
     "locales": {
         "default": "en-us",
         "supported": {
             "en-us": { "lcid": "1033", "display": "English (United States)", "rtl": false }
-        }
-    },
-    "localtunnel": {
-        "enable": false,
-        "subdomain": "appgears",
-        "localhost": "localhost",
-        "port": 8080
-    },
-    "static": {
-        "favIcon": "",
-        "caching": {  
-            "enable": true,
-            "age": 86400000
-        }  
-    },
-    "rivets": {
-        "config": {},
-        "formatters": [
-            "sys.core.ui.formatters.Percent"
-        ],
-        "binders": [
-            "sys.core.ui.binders.xClass"            
-        ],
-        "adapters": []
-    },
-    "view": {
-        "$stage": "#stage",
-        "$container": "#container",
-        "login": "#/login"
-    },
-    "security": {
-        "crypt": {
-            "secretKey": "adfdef1d-ce1a-470d-a652-f466292acf85"
-        },
-        "jwt": {
-            "secretKey": "adfdef1d-ce1a-470d-a652-f466292acf85",
-            "expiresInMinutes": 30
         }
     }
 }

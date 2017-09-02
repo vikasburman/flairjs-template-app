@@ -1,6 +1,6 @@
 define([
     use('[Base]'),
-    use('sys.core.app.IApp')
+    use('[IApp]')
 ], (Base, IApp) => {
     /**
      * @class sys.core.app.App

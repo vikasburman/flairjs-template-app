@@ -1,0 +1,46 @@
+{
+    "catalog": {
+        "Binder": "web.core.ui.Binder",
+        "Formatter": "web.core.ui.Formatter",
+        "Adapter": "web.core.ui.Adapter",
+        "Transition": "web.core.ui.Transition",
+        "DataBinder": "web.core.bootwares.DataBinder",
+        "ComponentTypes": "web.core.ui.ComponentTypes",
+        "Component": "web.core.ui.Component",
+        "View": "web.core.ui.View",
+        "Shell": "web.core.ui.Shell",
+        "Partial": "web.core.ui.Partial"
+    },
+    "routes": {
+        "client": []
+    },
+    "dependencies": [
+    ],
+    "bootwares": [
+        "sys.core.bootwares.Attributes",
+        "web.core.bootwares.Dependencies",
+        "sys.core.bootwares.Router",
+        "sys.core.bootwares.ErrorHandler",
+        "sys.core.bootwares.Locales",
+        "[DataBinder]"
+    ],
+    "more": {
+        "bootwares": [],
+        "dependencies": []
+    },
+    "rivets": {
+        "config": {},
+        "formatters": [
+            "web.core.ui.formatters.Percent"
+        ],
+        "binders": [
+            "web.core.ui.binders.xClass"            
+        ],
+        "adapters": []
+    },
+    "view": {
+        "$stage": "#stage",
+        "$container": "#container",
+        "login": "#/login"
+    }
+}

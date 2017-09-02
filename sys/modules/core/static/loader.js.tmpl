@@ -51,15 +51,15 @@
         if (window.document) {
             config.env.isDevice = (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1);
         }
-        if (!config.settings.loader.tabletWidth) {
-            config.settings.loader.tabletWidth = {
+        if (!config.settings.tabletWidth) {
+            config.settings.tabletWidth = {
                 min: 600,
                 max: 992
             };
         }
-        if (window.innerWidth <= config.settings.loader.tabletWidth.min) {
+        if (window.innerWidth <= config.settings.tabletWidth.min) {
             config.env.isMobile = true;
-        } else if (window.innerWidth > config.settings.loader.tabletWidth.min && window.innerWidth <= config.settings.loader.tabletWidth.max) {
+        } else if (window.innerWidth > config.settings.tabletWidth.min && window.innerWidth <= config.settings.tabletWidth.max) {
             config.env.isTablet = true;
         }
     }

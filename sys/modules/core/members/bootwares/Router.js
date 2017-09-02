@@ -2,7 +2,7 @@ define([
     use('[Base]'),
     use('[IBootware]'),
     use(' | sys/core/libs/pathparser{.min}.js'),
-    use('sys.core.comm.ServerRequest | sys.core.comm.ClientRequest'),
+    use('app.core.comm.ServerRequest | sys.core.comm.ClientRequest'),
     use('sys.core.comm.Handler')
 ], (Base, IBootware, RouteManager, Request, Handler) => {
     /**

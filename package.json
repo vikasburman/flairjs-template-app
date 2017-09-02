@@ -8,6 +8,8 @@
 	"link": "http://",
 	"repository": "https://github.com/vikasburman/appgears.git",
 	"scripts": {
+		"dbstart": "mysql.server start",
+		"dbstop": "mysql.server stop",
 		"update": "node upd/update.js ./oojs.json",
 		"build": "gulp",
 		"test": "gulp test",
