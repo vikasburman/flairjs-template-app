@@ -55,7 +55,7 @@
             }
         },
         "localtunnel": {
-            "enable": true,
+            "enable": false,
             "subdomain": "appgears",
             "localhost": "localhost",
             "port": 8080
