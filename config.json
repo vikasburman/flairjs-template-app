@@ -39,7 +39,7 @@
     "sys.core": {
         "server": {
             "http": true,
-            "https": true
+            "https": false
         },
         "static": {
             "favIcon": "web/sample/static/images/logo.png",
