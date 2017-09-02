@@ -19,6 +19,9 @@ define([
             this.data = req.body;
             this.isSecure = req.secure;
             this.isFresh = req.fresh;
+            this.hostname = req.hostname;
+            this.subdomains = req.subdomains;
+            this.protocol = req.protocol;
             this.query = this.env.queryStringToObject(req.query); // query strings, if any
         });
 
@@ -42,6 +45,15 @@ define([
 
         attr('readonly');
         this.prop('isFresh', false);
+
+        attr('readonly');
+        this.prop('hostname', '');
+
+        attr('readonly');
+        this.prop('subdomains', []);
+
+        attr('readonly');
+        this.prop('protocol', '');
 
         this.func('getLocale', () => { return this.getHeader('userLocale'); })
         this.func('getToken', () => { return this.req.token || null; });
