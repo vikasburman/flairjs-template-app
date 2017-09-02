@@ -21,6 +21,20 @@ define([
                 apiPrefix = (this.env.isServer ? this.settings('api.root', '') : ''),
                 versionPrefix = (this.env.isServer ? this.settings('api.version', '') : '');
 
+            const getHandler = (fullUrl, route) => {
+                return function(req, res) { // router here is express app.
+                    xLog('debug', `route hit: ${fullUrl}`);
+                    try {
+                        let handler = new Handler(route.class, route.func),
+                            request = new Request(handler, route.verb, req, res);
+                        handler.handle(request);
+                    } catch (err) {
+                        xLog('error', `Error handling ${fullUrl}. \n ${this.errorText(err)}`);
+                        res.status(500).end();
+                    }
+                }
+            };
+
             // each route definition (both on server and client) is as:
             // { "ver":"1", "root":"", url": "", "verb": "", "class": "", "func": ""}
             // ver: 
@@ -51,17 +65,7 @@ define([
                             if (apiPrefix) { fullUrl = apiPrefix + '/' + versionPrefix + (route.ver || "1") + fullUrl; }
                             if (route.func && route.verb) {
                                 if (['get', 'post', 'put', 'delete'].indexOf(route.verb) === -1) { throw `Unknown verb for: ${route.url}`; }
-                                router[route.verb](fullUrl, function(req, res) { // router here is express app.
-                                    xLog('debug', `route hit: ${fullUrl}`);
-                                    try {
-                                        let handler = new Handler(route.class, route.func),
-                                            request = new Request(handler, route.verb, req, res);
-                                        handler.handle(request);
-                                    } catch (err) {
-                                        xLog('error', `Error handling ${fullUrl}. \n ${this.errorText(err)}`);
-                                        res.status(500).end();
-                                    }
-                                });
+                                router[route.verb](fullUrl, getHandler(fullUrl, route));
                                 xLog('debug', `  ${route.verb}: ${fullUrl}`);
                             } else {
                                 let err = `Invalid route definiton: ${fullUrl}#${route.verb}`;
