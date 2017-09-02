@@ -70,7 +70,9 @@
         "sys.core.bootwares.server.Middlewares | sys.core.bootwares.client.Dependencies",
         "sys.core.bootwares.Router",
         "sys.core.bootwares.server.StaticServer | ",
+        "sys.core.bootwares.server.LocalTunnel | ",
         "sys.core.bootwares.ErrorHandler",
+        "sys.core.bootwares.Locales",
         " | sys.core.bootwares.client.DataBinder"
     ],
     "middlewares": [
@@ -89,6 +91,12 @@
         "bootwares": [],
         "middlewares": [],
         "dependencies": []
+    },
+    "localtunnel": {
+        "enable": false,
+        "subdomain": "appgears",
+        "localhost": "localhost",
+        "port": 8080
     },
     "static": {
         "favIcon": "",

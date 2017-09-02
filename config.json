@@ -14,12 +14,6 @@
             "tabletWidth": {
                 "min": 600,
                 "max": 992
-            },
-            "locales": {
-                "default": "en-us",
-                "supported": {
-                    "en-us": { "lcid": "1033", "display": "English (United States)", "rtl": false }
-                }
             }
         },
         "main": "app.sample | web.sample",
@@ -46,12 +40,25 @@
             "https": {
                 "enable": false,
                 "port": 8443,
+                "tunnel": false,
                 "timeout": -1,
                 "ssl": {
                     "public": "./cert.pem",
                     "private": "./key.pem"
                 }
             }
+        },
+        "locales": {
+            "default": "en-us",
+            "supported": {
+                "en-us": { "lcid": "1033", "display": "English (United States)", "rtl": false }
+            }
+        },
+        "localtunnel": {
+            "enable": true,
+            "subdomain": "appgears",
+            "localhost": "localhost",
+            "port": 8080
         },
         "static": {
             "favIcon": "web/sample/static/favicon.ico",

@@ -93,7 +93,7 @@ define([
                 }).then(() => {
                     // finally ready
                     this.env.isReady = true;
-                    xLog('verbose', `ready: (client, ${this.env.get('type', 'unknown')})`);
+                    xLog('verbose', `ready: (client, ${this.env.get('type', 'unknown')}, ${this.env.getLocale().name})`);
 
                     // start
                     App.start().then(() => {

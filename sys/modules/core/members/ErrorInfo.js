@@ -23,7 +23,7 @@ define(() => {
         });
 
         this.prop('isServerError', config.env.isServer);
-        this.prop('code', config.env.isServer ? 'server_error' : 'client_error');
+        this.prop('code', config.env.isServer ? '500' : '5000');
         this.prop('desc', '');
         this.prop('details', '');
         this.prop('raw', null);

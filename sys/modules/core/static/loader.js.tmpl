@@ -51,6 +51,12 @@
         if (window.document) {
             config.env.isDevice = (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1);
         }
+        if (!config.settings.loader.tabletWidth) {
+            config.settings.loader.tabletWidth = {
+                min: 600,
+                max: 992
+            };
+        }
         if (window.innerWidth <= config.settings.loader.tabletWidth.min) {
             config.env.isMobile = true;
         } else if (window.innerWidth > config.settings.loader.tabletWidth.min && window.innerWidth <= config.settings.loader.tabletWidth.max) {
@@ -135,12 +141,6 @@
             console.log(err);
         }
     };
-
-    // locales env
-    if (config.settings.loader.locales) {
-        config.env.locales.default = config.settings.loader.locales.default;
-        config.env.locales.supported = config.settings.loader.locales.supported;
-    }
 
     // local vars and functions
     const dummyJS = (isServer ? 'dummy.js' : 'sys/node_modules/dummy.js');
@@ -520,34 +520,6 @@
         }
         return args;
     };  
-    config.env.getLocale = () => { 
-        let locale = '';
-        if (!isServer) {
-            locale = sessionStorage.getItem('locale') || config.env.locales.default || 'en-US';
-        } else {
-            let currentRequest = config.env.currentRequest();
-            locale = (currentRequest ? currentRequest.getLocale() : '') || config.env.locales.default || 'en-US';
-        }
-        let localeObj = config.env.locales.supported[locale];
-        if (!localeObj) {
-            localeObj =  { name:'en-us', lcid: '1033', display: 'English (United States)', rtl: false }
-        } else {
-            localeObj.name = locale;
-        }
-        return localeObj;
-    };
-    config.env.getLocales = () => {
-        let items = [],
-            item = null;
-        for(let locale in config.env.locales.supported) {
-            if (config.env.locales.supported.hasOwnProperty(locale)) {
-                item = config.env.locales.supported[locale];
-                item.name = locale;
-                items.push(item);
-            }
-        }
-        return items;
-    };
     config.env.currentRequest = () => { return config.env.get('currentRequest'); };
     config.env.getMainModule = (part = '') => {
         let mainModule = settings(':main', 'app.sample | web.sample'),
@@ -610,14 +582,6 @@
             requireConfig.shim = requireShim;
             requireConfig.paths = requirePaths;
             require.config(requireConfig); // update config
-        };
-        config.env.setLocale = (locale, isSupressRefresh) => { 
-            if (config.env.locales.supported[locale]) {
-                sessionStorage.setItem('locale', locale);
-                if (!isSupressRefresh) {
-                    location.reload();
-                }
-            }
         };
         config.env.currentView = () => { return config.env.get('currentView'); };
     }

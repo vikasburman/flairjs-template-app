@@ -90,6 +90,7 @@ define([
                                 _resolve();
                             }).catch(_reject);
                         } else {
+                            xLog('debug', `Bootware (skipped): ${Bootware._.name} (not a bootware)`);
                             _resolve();
                         }
                     } else {
@@ -151,7 +152,7 @@ define([
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.ready(this.app).then(() => {
-                                (`Bootware (ready): ${bootware._.name}`);
+                                xLog('debug', `Bootware (ready): ${bootware._.name}`);
                                 _resolve();
                             }).catch(_reject);
                         } else {
@@ -163,7 +164,7 @@ define([
                 }).then(() => {
                     // finally ready
                     this.env.isReady = true;
-                    xLog('verbose', `ready: (server, ${this.env.get('type', 'unknown')})`);
+                    xLog('verbose', `ready: (server, ${this.env.get('type', 'unknown')}, ${this.env.getLocale().name})`);
 
                     // start
                     App.start().then(() => {
