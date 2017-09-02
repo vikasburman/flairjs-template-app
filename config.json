@@ -39,12 +39,12 @@
     "sys.core": {
         "server": {
             "http": {
-                "enable": false,
+                "enable": true,
                 "port": 8080,
                 "timeout": -1
             },
             "https": {
-                "enable": true,
+                "enable": false,
                 "port": 8443,
                 "timeout": -1,
                 "ssl": {
