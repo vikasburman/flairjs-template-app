@@ -42,7 +42,7 @@
             "https": true
         },
         "static": {
-            "favIcon": "web/sample/static/images/logo.png",
+            "favIcon": "/favicon.ico",
             "caching": {  
                 "enabled": true
             }  
