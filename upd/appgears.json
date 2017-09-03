@@ -25,7 +25,6 @@
         "files": [
             { "name": "gulpfile.js", "src": "" },
             { "name": "update.js", "src": "upd/" },
-            { "name": "oojs.json", "src": "upd/" }, 
             { "name": "appgears.json", "src": "upd/" }
         ]
     }
