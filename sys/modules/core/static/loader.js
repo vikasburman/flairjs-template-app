@@ -30,7 +30,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Sun, 03 Sep 2017 03:12:39 GMT',         
+        lupdate: 'Sun, 03 Sep 2017 18:01:00 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
@@ -92,24 +92,15 @@
                     json: false
                 }),
                 new (winston.transports.File)({
-                    name: 'error-file',
-                    filename: './logs/errors.log',
+                    name: 'log-file',
+                    filename: './logs/xlogs.log',
                     maxsize: 5242880, // 5MB
-                    maxFiles: 10,                    
-                    level: 'error',
+                    maxFiles: 5,                    
+                    level: 'silly',
                     json: true,
                     timestamp: true,
                     handleExceptions: true,
                     humanReadableUnhandledException: true,
-                    colorize: false
-                }),
-                new (winston.transports.File)({
-                    name: 'log-file',
-                    filename: './logs/logs.log',
-                    maxsize: 5242880, // 5MB
-                    maxFiles: 5,                    
-                    level: 'info',
-                    timestamp: true,
                     colorize: false
                 })
             ]

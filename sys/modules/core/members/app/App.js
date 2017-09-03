@@ -18,6 +18,8 @@ define([
         attr('async');
         this.func('start', this.noopAsync);
 
+        this.func('error', (err) => { this.onError(err); });
+
         attr('readonly');
         this.prop('info', {});    
     });

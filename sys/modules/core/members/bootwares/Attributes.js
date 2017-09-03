@@ -226,8 +226,52 @@ define([
                         });
                     }.bind(obj);
                 });
-            }));              
+            }));
+            
+            // poll
+            // poll(intervalInSeconds)
+            //  - intervalInSeconds can be a decimal value for milliseconds or a whole number for seconds
+            Container.register(Class('poll', Attribute, function() {
+                this.decorator((obj, type, name, descriptor) => {
+                    // validate
+                    if (['func'].indexOf(type) === -1) { throw `poll attribute cannot be applied on ${type} members. (${name})`; }
+                    if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `poll attribute cannot be applied on special function. (${name})`; }
 
+                    // decorate
+                    let interval = this.args[0] || 0,
+                        ms = interval * 1000,
+                        fn = descriptor.value,
+                        intervalHandle = null;
+                    descriptor.value = function(...args) {
+                        if (!intervalHandle) { // set interval on first call
+                            if (ms < 0) { ms = 1; } // min is set as 1 millisecond
+                            let isRunning = false;
+                            const wrappedFn = (...passedArgs) => {
+                                if (!isRunning) {
+                                    const onDone = () => {
+                                        isRunning = false;    
+                                        xLog('debug', `Poll ${obj._.name}.${name} finished.`);
+                                    };
+                                    isRunning = true;
+                                    xLog('debug', `Poll ${obj._.name}.${name} started.`);
+                                    let result = fn(...passedArgs);
+                                    if (result && (typeof result.then === 'function' && typeof result.catch === 'function')) {
+                                        result.then(onDone).catch(onDone);
+                                    } else {
+                                        onDone();
+                                    }
+                                }
+                            };
+                            intervalHandle = setInterval(wrappedFn, ms, ...args);
+                            xLog('debug', `Poll ${obj._.name}.${name} activated to run every ${ms} ms.`);
+                        } else { // clear interval on second call
+                            xLog('debug', `Poll ${obj._.name}.${name} deactivated.`);
+                            clearInterval(intervalHandle);
+                        }
+                    }.bind(obj);
+                });
+            }));       
+            
             // claims
             // claims(comma delimited list of claimName)
             //  claimName can be anything as per app's need
@@ -314,7 +358,65 @@ define([
                         }.bind(obj);
                     }
                 });
-            }));                    
+            }));
+            
+            // server specfic attributes
+            if (this.env.isServer) {
+                // job
+                // job(schedule, timezone)
+                //  - schedule is standard cron pattern string (https://www.npmjs.com/package/cron)
+                //  - timezone is optional
+                Container.register(Class('job', Attribute, function() {
+                    this.decorator((obj, type, name, descriptor) => {
+                        // validate
+                        if (['func'].indexOf(type) === -1) { throw `job attribute cannot be applied on ${type} members. (${name})`; }
+                        if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `job attribute cannot be applied on special function. (${name})`; }
+
+                        // decorate
+                        let schedule = this.args[0] || '* * * * * *',
+                            timeZone = this.args[1] || '',
+                            fn = descriptor.value,
+                            job = null,
+                            CronJob = require('cron').CronJob;
+                            if (!schedule) { schedule = '* * * * * *'; } // defaults to run every second
+                            let opts = {
+                                cronTime: schedule, 
+                                onTick: null,
+                                start: false,
+                                context: obj
+                            };
+                            if (timeZone) { opts.timeZone = timeZone; }
+                        descriptor.value = function() {
+                            if (!job) { // set job on first call
+                                let isRunning = false;
+                                opts.onTick = () => {
+                                    if (!isRunning) {
+                                        const onDone = () => {
+                                            isRunning = false;    
+                                            xLog('debug', `Job ${obj._.name}.${name} finished.`);
+                                        };
+                                        isRunning = true;
+                                        xLog('debug', `Job ${obj._.name}.${name} started.`);
+                                        let result = fn();
+                                        if (result && (typeof result.then === 'function' && typeof result.catch === 'function')) {
+                                            result.then(onDone).catch(onDone);
+                                        } else {
+                                            onDone();
+                                        }
+                                    }
+                                };
+                                job = new CronJob(opts);
+                                job.start();
+                                xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${schedule} schedule.`);
+                            } else { // clear interval on second call
+                                xLog('debug', `Job ${obj._.name}.${name} deactivated.`);
+                                job.stop();
+                                job = null;
+                            }
+                        }.bind(obj);
+                    });
+                }));             
+            }
             
             // dome
             resolve();

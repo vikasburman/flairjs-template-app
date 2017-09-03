@@ -8,13 +8,19 @@
 	"link": "http://",
 	"repository": "https://github.com/vikasburman/appgears.git",
 	"scripts": {
+		"dbstart": "mongod --config mongod.conf --fork",
+		"dbstop": "mongo admin --eval 'db.shutdownServer()' > logs/temp.log",
 		"update": "node upd/update.js ./oojs.json",
 		"build": "gulp",
 		"test": "gulp test",
 		"dev": "gulp dev && nodemon sys/modules/core/static/loader.js silly",
 		"dbg": "gulp dbg && nodemon sys/modules/core/static/loader.js debug",
 		"prod": "gulp prod && forever sys/modules/core/static/loader.js",
-		"start": "forever sys/modules/core/static/loader.js"
+		"prestart": "mongod --config mongod.conf --fork",
+		"start": "forever start -p ./ -a -l logs/server.log sys/modules/core/static/loader.js",
+		"stop": "forever stopall",
+		"poststop": "mongo admin --eval 'db.shutdownServer()' > logs/temp.log",
+		"list": "forever list"
 	},
 	"devDependencies": {
 		"babel-eslint": "^7.2.3",
@@ -53,6 +59,7 @@
 		"body-parser": "^1.17.2",
 		"compression": "^1.6.2",
 		"cookie-parser": "^1.4.3",
+		"cron": "^1.2.1",
 		"diskdb": "^0.1.17",
 		"express-bearer-token": "^2.1.0",
 		"forever": "^0.15.3",

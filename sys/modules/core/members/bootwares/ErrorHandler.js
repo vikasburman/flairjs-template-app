@@ -44,12 +44,12 @@ define([
             if (!this.env.isServer) {
                 // setup global error handler
                 window.onerror = function(desc, url, line, col, err) {
-                    this.onError(new ErrorInfo('fatal_error', desc + ' at: ' + url + ', ' + line + ':' + col, '', err));
+                    App.error(new ErrorInfo('fatal_error', desc + ' at: ' + url + ', ' + line + ':' + col, '', err));
                 };
 
                 // global requirejs error handler
                 require.onError = function(err) {
-                    this.onError(new ErrorInfo(err));
+                    App.error(new ErrorInfo(err));
                 };  
             }
 
