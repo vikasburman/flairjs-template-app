@@ -7,9 +7,7 @@ define([
      * @desc Starts client application.
      */       
     return Class('web.core.app.ClientApp', App, function(attr) {
-        attr('override');
-        this.func('navigate', (base, url, returnUrlORisReplace) => {
-            base(url);
+        this.func('navigate', (url, returnUrlORisReplace) => {
             let currentHash = document.location.hash.replace('#', '');
             if (typeof returnUrlORisReplace === 'string') {
                 url += '?returnUrl=' + returnUrlORisReplace;

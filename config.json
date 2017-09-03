@@ -21,7 +21,7 @@
         "static": [
         ],
 
-        "xLog": "info",
+        "xLog": "silly",
         "minify": false,
         "docs": false
     }
