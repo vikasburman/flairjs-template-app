@@ -1,5 +1,6 @@
 {
     "catalog": {
+        "CredentialsChecker": "app.core.security.CredentialsChecker",
         "TokenManager": "app.core.security.TokenManager",
         "Crypt": "app.core.security.Crypt",
         "Service": "app.core.comm.Service",

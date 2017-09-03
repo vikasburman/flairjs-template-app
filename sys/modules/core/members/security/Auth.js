@@ -4,11 +4,11 @@ define([
     use('[ClaimsChecker]')
 ], (Base, User, ClaimsChecker) => {
     /**
-     * @class web.core.security.Auth
-     * @classdesc web.core.security.Auth
+     * @class sys.core.security.Auth
+     * @classdesc sys.core.security.Auth
      * @desc App authentication and authorization (client side)
      */    
-    return Class('web.core.security.Auth', Base, function(attr) {
+    return Class('sys.core.security.Auth', Base, function(attr) {
         attr('override');
         attr('singleton');
         this.func('constructor', (base) => {

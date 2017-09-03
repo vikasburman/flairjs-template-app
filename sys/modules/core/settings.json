@@ -14,7 +14,7 @@
         "ServiceAdapter": "sys.core.comm.ServiceAdapter",
         "Bootstrapper": "app.core.boot.Server | web.core.boot.Client",
         "App": "app.core.app.ServerApp | web.core.app.ClientApp",
-        "Auth": "app.core.security.Auth | web.core.security.Auth"
+        "Auth": "app.core.security.Auth | sys.core.security.Auth"
     },
     "container": {
     },

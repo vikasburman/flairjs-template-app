@@ -7,6 +7,6 @@ define(() => {
     return Structure('sys.core.security.Credentials', function(loginId, pwd, clientId = '') {
         this.clientId = clientId;
         this.loginId = loginId;
-        this.pwdHash = pwd;
+        this.pwd = pwd;
     });
 });

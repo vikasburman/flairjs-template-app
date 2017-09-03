@@ -1,8 +1,6 @@
 define([
-    use('sys.core.app.App'),
-    use('[Credentials]'),
-    use('[Hash]')
-], (App, Credentials, Hash) => {
+    use('sys.core.app.App')
+], (App) => {
     /**
      * @class web.core.app.ClientApp
      * @classdesc web.core.app.ClientApp
@@ -28,9 +26,5 @@ define([
                 window.dispatchEvent(new HashChangeEvent("hashchange"));
             }
         });
-
-        this.func('auth', (loginId = '', pwd = '', clientId = '') => {
-            return new Credentials(loginId, new Hash().get(pwd), clientId);
-        });        
     });
 });

@@ -18,10 +18,6 @@ define([
         attr('async');
         this.func('start', this.noopAsync);
 
-        this.func('navigate', (url) => {
-            xLog('debug', `navigate: ${url}`);
-        });
-
         attr('readonly');
         this.prop('info', {});    
     });

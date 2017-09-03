@@ -3,9 +3,10 @@ define([
     use('[User]'),
     use('[ClaimsChecker]'),
     use('[Credentials]'),
+    use('[CredentialsChecker]'),
     use('[TokenManager]'),
     use('[AuthInfo]')
-], (Base, User, ClaimsChecker, Credentials, TokenManager, AuthInfo) => {
+], (Base, User, ClaimsChecker, Credentials, CredentialsChecker, TokenManager, AuthInfo) => {
     /**
      * @class app.core.security.Auth
      * @classdesc app.core.security.Auth
@@ -43,8 +44,9 @@ define([
 
         attr('async');
         this.func('login', (resolve, reject, request) => {
-            let credentials = request.data.credentials || {};
-            App.auth(credentials).then((user) => {
+            let credentials = request.data.credentials || {},
+                credentialsChecker = new CredentialsChecker();
+            credentials.check(credentials).then((user) => {
                 if (user) {
                     tokenManager = new TokenManager();
                     tokenManager.create(user).then((token) => {
