@@ -4,6 +4,7 @@
         "TokenManager": "app.core.security.TokenManager",
         "Crypt": "app.core.security.Crypt",
         "Service": "app.core.comm.Service",
+        "Context": "app.core.comm.Context",
         "Controller": "app.core.domain.Controller",
         "Entity": "app.core.domain.Entity",
         "DbContext": "app.core.data.DbContext",
