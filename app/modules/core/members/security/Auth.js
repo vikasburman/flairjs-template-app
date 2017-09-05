@@ -46,7 +46,7 @@ define([
         this.func('login', (resolve, reject, request) => {
             let credentials = request.data.credentials || {},
                 credentialsChecker = new CredentialsChecker();
-            credentials.check(credentials).then((user) => {
+            credentialsChecker.check(credentials).then((user) => {
                 if (user) {
                     tokenManager = new TokenManager();
                     tokenManager.create(user).then((token) => {
