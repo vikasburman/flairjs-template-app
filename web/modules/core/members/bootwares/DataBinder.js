@@ -145,12 +145,6 @@ define([
                     .then(loadAdapters)
                     .then(resolve)
                     .catch(reject);
-                // loadBinders().then(() => {
-                //     loadFormatters().then(() => {
-                //         loadAdapters().then(() => {
-                //             resolve();
-                //         }).catch(reject);
-                //     }).catch(reject);
             }).catch(reject);
         });
 
