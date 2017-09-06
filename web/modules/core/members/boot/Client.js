@@ -60,7 +60,7 @@ define([
                         _resolve();
                     }
                 }).then(() => {
-                    // nothins as such to boot on client
+                    // nothing as such to boot on client
 
                     // done
                     resolve();                        
