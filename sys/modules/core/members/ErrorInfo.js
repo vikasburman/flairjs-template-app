@@ -22,10 +22,10 @@ define(() => {
                 this.stack = console.trace();
             } else { // some other error object
                 this.raw = code;
-                this.code = raw.status || raw.code || this.code;
-                this.desc = raw.statusText || raw.desc || raw.toString() || '';
-                this.details = raw.details || '';
-                this.stack = raw.stack || raw.responseText || console.trace();
+                this.code = code.status || code.code || this.code;
+                this.desc = code.statusText || code.desc || code.toString() || '';
+                this.details = code.details || '';
+                this.stack = code.stack || code.responseText || console.trace();
             }
             if (config.env.isProd && !config.env.isServer) { this.stack = ''; }
         });
