@@ -307,10 +307,10 @@ define([
                             let auth = new Auth();
                             auth.validate(request).then(onAuth).catch((err) => {
                                 if (this.env.isServer) {
-                                    xLog('error', `Failed to authenticate ${request.url}. (${this.errorText(err)})`);
+                                    xLog('error', `Failed to authenticate ${request.url}. \n${this.errorText(err)}`);
                                     request.response.send.error(401, err);
                                 } else {
-                                    xLog('error', `Failed to authenticate ${document.location.hash}. (${this.errorText(err)})`);
+                                    xLog('error', `Failed to authenticate ${document.location.hash}. \n${this.errorText(err)}`);
                                     let loginUrl = settings('sys.core:view.login');
                                     App.navigate(loginUrl, document.location.hash);
                                 }
@@ -350,7 +350,7 @@ define([
                             for(let validationCfg of validations) {
                                 err = validator.validate(value, ...validationCfg);
                                 if (err) {
-                                    xLog('error', `Validation failed for: ${obj._.name}.${name}. (${this.errorText(err)})`);
+                                    xLog('error', `Validation failed for: ${obj._.name}.${name}. \n${this.errorText(err)}`);
                                     throw err;
                                 } 
                             }

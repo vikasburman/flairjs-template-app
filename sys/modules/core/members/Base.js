@@ -1,4 +1,6 @@
-define(() => {
+define([
+    use('[ErrorInfo]')
+], (ErrorInfo) => {
     /**
      * @class sys.core.Base
      * @classdesc sys.core.Base
@@ -36,36 +38,13 @@ define(() => {
 
         attr('protected');
         this.func('onError', (err) => {
-            xLog('error', `Error in ${this._.name} (${this.errorText(err)})`);
+            xLog('error', `Error in ${this._.name}. \n${this.errorText(err)}`);
         });
 
         attr('protected');
-        this.func('errorText', (err, list) => {
-            let errCode = 'default',
-                errText = `Unknown error. (${err})`;
-            if (err) {
-                if (typeof err === 'string' || typeof err === 'number') { // just any error code
-                    errCode = err.toString();
-                    errText = 'Error: ' + errCode || err;
-                } else if (err.code) { // ErrorInfo object
-                    errCode = err.code;
-                    errText = 'Error: ' + (err.desc || err.toString());
-                } else if (err.error) { // ClientResponse object
-                    if (err.error.code) { // ErrorInfo object inside clientResponse object
-                        errCode = err.error.code;
-                        errText = 'Error: ' + (err.desc || err.toString() || errCode);
-                    } else {
-                        errCode = (err.error || err.toString());
-                    }
-                }
-            }
-            if (list) {
-                if (list[errCode]) {
-                    errText = list[errCode];
-                } else if (errCode !== 'default' && list['default']) {
-                     errText = list['default'];
-                }
-            }
+        this.func('errorText', (err) => {
+            let error = new ErrorInfo(err),
+                errText = error.getText();
             return errText;
         });
     });
