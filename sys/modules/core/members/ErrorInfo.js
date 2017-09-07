@@ -15,10 +15,22 @@ define(() => {
                 this.details = code.details;
                 this.raw = code.raw;
                 this.stack = code.stack || console.trace();
+            } else if (code && desc && details && raw) {
+                this.code = code;
+                this.desc = desc;
+                this.details = details;
+                this.raw = raw;
+                this.stack = console.trace();
             } else if (typeof code === 'string') { // error string
                 this.desc = code;
                 this.details = '';
                 this.raw = '';
+                this.stack = console.trace();
+            } else if (typeof code === 'number') {
+                this.code = code.toString();
+                this.desc = desc || code.toString();
+                this.details = details || '';
+                this.raw = raw || '';
                 this.stack = console.trace();
             } else { // some other error object
                 this.raw = code;
