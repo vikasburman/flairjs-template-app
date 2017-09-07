@@ -43,7 +43,7 @@ define([
                 error = new ErrorInfo(err);
             message = message + '\n' + error.getText();
             xLog('error', message);
-            console.log(err);
+            if (!this.env.isProd) { console.log(err); }
         });
     });
 });
