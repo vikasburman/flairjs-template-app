@@ -1,6 +1,7 @@
 define([
-    use('sys.core.comm.Response')
-], (Response) => {
+    use('sys.core.comm.Response'),
+    use('[ErrorInfo]')
+], (Response, ErrorInfo) => {
     /**
      * @class app.core.comm.ServerResponse
      * @classdesc app.core.comm.ServerResponse
@@ -56,6 +57,10 @@ define([
                 } else {
                     this.res.redirect(path);
                 }
+            },
+            err: (err) => {
+                let error = new ErrorInfo(err);
+                this.send.error(error.code, error.desc);
             },
             error: (status, message) => {
                 xLog('debug', status + ': ' + message);
