@@ -50,7 +50,7 @@ define(() => {
         this.prop('stack');
 
         this.func('getText', () => {
-            return `Error: [${this.code}] ${this.desc} ${(this.details ? '\n' + this.details : '')} ${(this.stack ? '\n' + this.stack : '')} \n**dump**\n${this.raw}`;
+            return `Error: [${this.code}] ${this.desc} ${(this.details ? '\n' + this.details : '')} ${(this.stack ? '\n' + this.stack : '')}`;
         });
     });
 });

@@ -43,6 +43,7 @@ define([
                 error = new ErrorInfo(err);
             message = message + '\n' + error.getText();
             xLog('error', message);
+            xLog('error', err);
         });
     });
 });
