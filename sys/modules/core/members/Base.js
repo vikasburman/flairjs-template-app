@@ -39,11 +39,15 @@ define([
         attr('protected');
         this.func('onError', (err, ctx) => {
             if (!ctx) { ctx = ''; }
-            let message = `**Error in ${this._.name}**` + (ctx ? '\n' + ctx : ''),
+            let message = `*** Error in ${this._.name} ***` + (ctx ? '\n' + ctx : ''),
                 error = new ErrorInfo(err);
             message = message + '\n' + error.getText();
             xLog('error', message);
-            if (!this.env.isProd) { console.log(err); }
+            if (!this.env.isProd) { 
+                console.log('*** raw dump:start ***'); 
+                console.log(err); 
+                console.log('*** raw dump:end ***'); 
+            }
         });
     });
 });
