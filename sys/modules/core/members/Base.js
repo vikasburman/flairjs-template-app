@@ -37,15 +37,12 @@ define([
         });
 
         attr('protected');
-        this.func('onError', (err) => {
-            xLog('error', `Error in ${this._.name}. \n${this.errorText(err)}`);
-        });
-
-        attr('protected');
-        this.func('errorText', (err) => {
-            let error = new ErrorInfo(err),
-                errText = error.getText();
-            return errText;
+        this.func('onError', (err, ctx) => {
+            if (!ctx) { ctx = ''; }
+            let message = `**Error in ${this._.name}**\n` + ctx,
+                error = new ErrorInfo(err);
+            message = message + '\n' + error.getText();
+            xLog('error', message);
         });
     });
 });

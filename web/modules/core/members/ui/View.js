@@ -34,7 +34,7 @@ define([
                 document.title = this.data.title + ' - ' + App.info.title
                 resolve(this.current);
             }).catch((err) => {
-                xLog('error', `Failed to navigate to ${request.url}. \n${this.errorText(err)};`);
+                this.onError(err, `Failed to navigate to ${request.url}.`);
                 reject(err);
             });
         });

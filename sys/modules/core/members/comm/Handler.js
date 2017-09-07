@@ -22,7 +22,7 @@ define([
         this.prop('funcName', null);
 
         this.func('handle', (request) => {
-            let errorText = (!this.env.isServer ? `Error handling: ${request.url}#${request.verb}` : `Error handling: ${request.url} \n%ERROR%`);
+            let errorText = (!this.env.isServer ? `Error handling: ${request.url}#${request.verb}.` : `Error handling: ${request.url}.`);
             include([use(this.className)]).then((Handler) => {
                 let handler = new Handler();
                 let handlerInfo = Reflector.get(handler);
@@ -32,10 +32,10 @@ define([
                     this.env.reset('currentRequest');
                 }).catch((err) => {
                     this.env.reset('currentRequest');
-                    xLog('error', errorText.replace('%ERROR%', this.errorText(err)));
+                    this.onError(err, errorText);
                 });   
             }).catch((err) => {
-                xLog('error', errorText.replace('%ERROR%', this.errorText(err)));
+                this.onError(err, errorText);
             });
         });
     });

@@ -29,7 +29,7 @@ define([
                             request = new Request(handler, route.verb, req, res);
                         handler.handle(request);
                     } catch (err) {
-                        xLog('error', `Error handling ${fullUrl}. \n${this.errorText(err)}`);
+                        this.onError(err, `Error handling ${fullUrl}.`);
                         res.status(500).end();
                     }
                 }
@@ -80,7 +80,7 @@ define([
                                 try {
                                     handler.handle(request);
                                 } catch (err) {
-                                    xLog('error', `Error handling ${fullUrl}. \n${this.errorText(err)}`);
+                                    this.onError(err, `Error handling ${fullUrl}.`);
                                     throw err;
                                 }
                             });

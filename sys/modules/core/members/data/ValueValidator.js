@@ -1,12 +1,16 @@
-define(() => {
+define([
+    use('[Base]')
+], (Base) => {
     /**
      * @class sys.core.data.ValueValidator
      * @classdesc sys.core.data.ValueValidator
      * @desc Data value validator.
      */
-    return Class('sys.core.data.ValueValidator', function(attr) {
+    return Class('sys.core.data.ValueValidator', Base, function(attr) {
         attr('singleton');
-        this.func('constructor', () => {
+        attr('override');
+        this.func('constructor', (base) => {
+            base();
         });
 
         this.func('validate', (dataValue, validator, ...validationCfg) => {
@@ -22,7 +26,7 @@ define(() => {
             try {
                 fn(dataValue, ...validationCfg);
             } catch (err) {
-                xLog('error', `${this.errorText(err)}`);
+                this.onError(err);
                 result = err;
             }
             return result;
