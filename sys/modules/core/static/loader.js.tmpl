@@ -585,7 +585,7 @@
     };
     const onError = (err) => { 
         if (!config.env.isProd) { 
-            xLog('error', `boot failed. (${err})`); 
+            xLog('error', `boot failed.\n${err}`); 
         }
     };
     const onDone = () => { 
