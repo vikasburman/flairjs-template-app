@@ -3,9 +3,8 @@ const buildSettings = require('./.build.json');
 const fs = require('fs');
 
 // generate env
-const generateEnv = (isDev, isProd, isTest, asms) => {
-    let fileName = 'sys/modules/core/static/loader.js',
-        fileContent = fs.readFileSync(fileName).toString();
+const generateEnv = (isDev, isProd, isTest, asms, fileName) => {
+    let fileContent = fs.readFileSync(fileName).toString();
     fileContent = fileContent.replace('[%]DATE[%]', (new Date()).toUTCString());
     fileContent = fileContent.replace('[%]DEV[%]', isDev.toString());
     fileContent = fileContent.replace('[%]PROD[%]', isProd.toString());
@@ -15,8 +14,12 @@ const generateEnv = (isDev, isProd, isTest, asms) => {
     fs.writeFileSync(fileName, fileContent);
 };
 exports.generator = function(isDev, isProd, isTest, asms, cb) {
-    generateEnv(isDev, isProd, isTest, asms);
+    // for client side loader file
+    generateEnv(isDev, isProd, isTest, asms, 'sys/modules/core/static/loader.js');
 
+    // for server side loader file
+    generateEnv(isDev, isProd, isTest, asms, 'sys/loader.js');
+        
     // done
     cb();
 };

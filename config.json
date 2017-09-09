@@ -24,5 +24,12 @@
         "xLog": "silly",
         "minify": false,
         "docs": false
-    }
+    },
+
+    "app.core": {
+        "test": true    
+    },
+    "web.core": {
+        "test": true    
+    }    
 }

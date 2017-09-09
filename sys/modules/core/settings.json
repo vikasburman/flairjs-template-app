@@ -22,6 +22,10 @@
         "root": "/api",
         "version": "v"
     },
+    "core": [
+        "sys.core",
+        "app.core | web.core"
+    ],
     "locales": {
         "default": "en-us",
         "supported": {

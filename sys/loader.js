@@ -1,9 +1,18 @@
+/** 
+ * appgears - Unified application framework for JavaScript
+ * @copyright (c) 2017, Vikas Burman
+ * @version v0.1.0
+ * @link 
+ * @license MIT
+ *
+ * (powered by appgears - https://github.com/vikasburman/appgears)
+ */
 (() => {
     let isServer = (new Function("try {return this===global;}catch(e){return false;}"))(),
         getGlobal = new Function("try {return (this===global ? global : window);}catch(e){return window;}");
 
     // base config
-    const config = JSON.parse(`<!-- inject: ./.config.json -->`);
+    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"main":"app.sample | web.sample","routes":{"server":[],"client":[]},"static":[],"xLog":"silly","minify":false,"docs":false,"source":{"sys":"sys/modules/","app":"app/modules/"}},"app.core":{"catalog":{"CredentialsChecker":"app.core.security.CredentialsChecker","TokenManager":"app.core.security.TokenManager","Crypt":"app.core.security.Crypt","Service":"app.core.comm.Service","Context":"app.core.comm.Context","Controller":"app.core.domain.Controller","Entity":"app.core.domain.Entity","DbContext":"app.core.data.DbContext","Repository":"app.core.data.Repository","UnitOfWork":"app.core.data.UnitOfWork","Automapper":"app.core.data.Automapper"},"container":{},"routes":{"server":[{"ver":"1","root":"/","url":"/auth","verb":"post","class":"app.core.security.Auth","func":"login"}]},"express":{"case sensitive routing":false,"strict routing":false},"server":{"http":{"enable":true,"port":8080,"timeout":-1},"https":{"enable":false,"port":8443,"timeout":-1,"ssl":{"public":"./cert.pem","private":"./key.pem"}}},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.Attributes","app.core.bootwares.Middlewares","sys.core.bootwares.Router","app.core.bootwares.StaticServer","app.core.bootwares.LocalTunnel","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales"],"middlewares":[{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"more":{"response":{"headers":[]},"bootwares":[],"middlewares":[]},"localtunnel":{"enable":false,"subdomain":"appgears","localhost":"localhost","port":8080},"static":{"favIcon":"","caching":{"enable":true,"age":86400000}},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}},"test":true},"sys.core":{"catalog":{"IBootware":"sys.core.boot.IBootware","IApp":"sys.core.app.IApp","Base":"sys.core.Base","ErrorInfo":"sys.core.ErrorInfo","Dto":"sys.core.domain.Dto","AuthInfo":"sys.core.security.AuthInfo","Credentials":"sys.core.security.Credentials","User":"sys.core.security.User","ClaimsChecker":"sys.core.security.ClaimsChecker","ValueValidator":"sys.core.data.ValueValidator","Hash":"sys.core.security.Hash","ServiceAdapter":"sys.core.comm.ServiceAdapter","Bootstrapper":"app.core.boot.Server | web.core.boot.Client","App":"app.core.app.ServerApp | web.core.app.ClientApp","Auth":"app.core.security.Auth | sys.core.security.Auth"},"container":{},"api":{"root":"/api","version":"v"},"core":["sys.core","app.core | web.core"],"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"app.sample":{"routes":{"server":[]}}}`);
     
     // basic env
     config.env = {
@@ -21,10 +30,10 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: '[%]DATE[%]',         
-        isDev: [%]DEV[%],
-        isProd: [%]PROD[%],
-        isTest: [%]TEST[%],
+        lupdate: 'Sat, 09 Sep 2017 03:08:40 GMT',         
+        isDev: true,
+        isProd: false,
+        isTest: false,
         isReady: false,
         root: (isServer ? (require('app-root-path') + '/') : '/'),
         logger: null,
@@ -32,9 +41,9 @@
         require: {
             baseUrl: '/',
             paths: {
-                text: './libs/text{.min}',
-                json: './libs/json{.min}',
-                css: './libs/css{.min}'
+                text: './libs/text',
+                json: './libs/json',
+                css: './libs/css'
             },
             bundles: {}
         }
@@ -42,8 +51,8 @@
 
     // env path considerations
     if (!config.env.isDev) { // dev mode get files as is from server, instead of bundles, as there are no bundles
-        Object.assign(config.env.require.paths, JSON.parse('[%]PATHS[%]'));
-        Object.assign(config.env.require.bundles, JSON.parse('[%]BUNDLES[%]'));
+        Object.assign(config.env.require.paths, JSON.parse('{}'));
+        Object.assign(config.env.require.bundles, JSON.parse('{}'));
     }
 
     // env flags (client side)
@@ -173,7 +182,7 @@
      *
      * 2. Any file with relative path: 
      *    use('../../file1.js') --> '../../file1.js'
-     *    use('../../file1{.min}.js') --> '../../file1.js' (in debug) and '../../file1.min.js' (in prod)
+     *    use('../../file1.js') --> '../../file1.js' (in debug) and '../../file1.min.js' (in prod)
      *
      * 3. Any assembly member:
      *    use('sys.core.Base') --> 'sys/modules/core/members/Base.js'
@@ -598,7 +607,7 @@
             require.config(config.env.require); // setup require config
         }
 
-        include([use('./libs/oojs{.min}.js')]).then((oojs) => {
+        include([use('./modules/core/static/libs/oojs.js | ./libs/oojs.js')]).then((oojs) => {
             // initialize OOJS
             let symbols = [];
             if (!config.env.isProd) { symbols.push('DEBUG'); }
@@ -649,9 +658,9 @@
                         if (isServer) {
                             bootstrapper.ready().then(onDone).catch(onError);
                         } else {
-                            include(['./libs/domReady{.min}.js']).then((domReady) => {
+                            include(['./libs/domReady.js']).then((domReady) => {
                                 domReady(() => {
-                                    include(['./libs/deviceReady{.min}.js']).then((deviceReady) => {
+                                    include(['./libs/deviceReady.js']).then((deviceReady) => {
                                         deviceReady((isCordova) => {
                                             config.env.isCordova = isCordova;
                                             bootstrapper.ready().then(onDone).catch(onError);
@@ -668,6 +677,6 @@
     if (isServer) {
         onLoad();
     } else {
-        _loadScript('./libs/require{.min}.js', onLoad, onError);
+        _loadScript('./libs/require.js', onLoad, onError);
     }
 })();
