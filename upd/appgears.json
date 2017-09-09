@@ -24,6 +24,7 @@
         ],
         "files": [
             { "name": "gulpfile.js", "src": "" },
+            { "name": "loader.js.tmpl", "src": "sys/" },
             { "name": "update.js", "src": "upd/" },
             { "name": "appgears.json", "src": "upd/" }
         ]
