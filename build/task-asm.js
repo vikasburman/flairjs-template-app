@@ -126,6 +126,7 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
             .on('error', utils.errorHandler('dest'));
     }
     const processAsms = (folders, onDone) => {
+        if (!folders || folders.length === 0) { onDone(); return; }
         let folder = folders.shift().trim();
         if (folder && ['node_modules'].indexOf(folder) === -1) {
             processAsm(folder, () => {
