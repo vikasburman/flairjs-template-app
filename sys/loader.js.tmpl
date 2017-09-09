@@ -25,6 +25,8 @@
         isDev: [%]DEV[%],
         isProd: [%]PROD[%],
         isTest: [%]TEST[%],
+        sysAppModules: JSON.parse('[%]SYS_APP[%]'),
+        sysWebModules: JSON.parse('[%]SYS_WEB[%]'),
         isReady: false,
         root: (isServer ? (require('app-root-path') + '/') : '/'),
         logger: null,
@@ -193,6 +195,8 @@
      *    use('app.main.Server | web.main.Client') 
      *      when called on server: --> app/modules/main/members/Server.js
      *      when called on client: --> web/modules/main/members/Client.js
+     * 
+     * 8. Special treatment to handle modules_app and modules_web cases as applicable
      */    
     const use = (_path, as) => {
         let isAsServer = isServer;
@@ -262,6 +266,25 @@
             if (!isAsServer) { _path = '/' + _path; } // add root relativity
             return _path;
         };
+        const fixPath = (_path) => {
+            let isAppModule = _path.indexOf('app/modules/') !== -1,
+                isWebModule = _path.indexOf('web/modules/') !== -1;
+            if (isAppModule || isWebModule) {
+                _path = _path.replace(config.env.root, ''); // remove root first
+                let moduleName = _path.split('/')[2]; // pick 3rd place item that is moduleName
+                if (isWebModule) {
+                    if (config.env.sysWebModules.indexOf(moduleName) !== -1) {
+                        _path = _path.replace('web/modules/', 'sys/modules_web/');
+                    }
+                } else if (isAppModule) {
+                    if (config.env.sysAppModules.indexOf(moduleName) !== -1) {
+                        _path = _path.replace('app/modules/', 'sys/modules_app/');
+                    }
+                }
+                _path = config.env.root + _path; // add root again
+            }
+            return _path;
+        };
 
         // path can be:
         // (1) node/require modules path
@@ -326,20 +349,20 @@
 
         // type #4: assembly files path
         if (_path.startsWith('sys/')) {
-            _path = getAssemblyFilePath(_path, config.settings.source.sys);
+            _path = getAssemblyFilePath(_path, 'sys/modules/');
         } else if (_path.startsWith('app/')) {
-            _path = getAssemblyFilePath(_path, config.settings.source.app);
+            _path = getAssemblyFilePath(_path, 'app/modules/');
         } else if (_path.startsWith('web/')) {
-            _path = getAssemblyFilePath(_path, config.settings.source.web);
+            _path = getAssemblyFilePath(_path, 'web/modules/');
         }
 
         // type #3: namespaced package members path
         if (_path.startsWith('sys.')) {
-            _path = getAssemblyMemberPath(_path, config.settings.source.sys, isMock);
+            _path = getAssemblyMemberPath(_path, 'sys/modules/', isMock);
         } else if (_path.startsWith('app.')) {
-            _path = getAssemblyMemberPath(_path, config.settings.source.app, isMock);
+            _path = getAssemblyMemberPath(_path, 'app/modules/', isMock);
         } else if (_path.startsWith('web.')) {
-            _path = getAssemblyMemberPath(_path, config.settings.source.web, isMock);
+            _path = getAssemblyMemberPath(_path, 'web/modules/', isMock);
         }
 
         // add loader
@@ -352,6 +375,9 @@
                 _path = 'text!' + _path;
             }
         }
+
+        // type #8: fix path, if required
+        _path = fixPath(_path);
 
         // type #1, if nothing was of match OR processed result
         return _path;
@@ -461,7 +487,7 @@
                     }
                 });
             };
-            if (items.length > 0) {
+            if (items && items.length > 0) {
                 processItems(items.slice(), resolve);
             } else {
                 resolve();
@@ -584,9 +610,8 @@
         window.document.head.appendChild(script);
     };
     const onError = (err) => { 
-        if (!config.env.isProd) { 
-            xLog('error', `boot failed.\n${err}`); 
-        }
+        xLog('error', `boot failed. (${err})`); 
+        console.log(err);
     };
     const onDone = () => { 
         xLog('verbose', 'boot success.'); 
@@ -598,7 +623,7 @@
             require.config(config.env.require); // setup require config
         }
 
-        include([use('./modules/core/static/libs/oojs{.min}.js | ./libs/oojs{.min}.js')]).then((oojs) => {
+        include([use('./modules_web/core/static/libs/oojs{.min}.js | ./libs/oojs{.min}.js')]).then((oojs) => {
             // initialize OOJS
             let symbols = [];
             if (!config.env.isProd) { symbols.push('DEBUG'); }

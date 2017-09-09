@@ -52,8 +52,6 @@ define([
             //  on server, the function name of the class that handles this
             //  on client, this is fixed as 'navigate'
             routesOrder = this.settings(routesKey);
-            routesOrder.unshift(this.env.getMainModule()); // add main module by default, on top both in server and client side
-            routesOrder.unshift((this.env.isServer ? 'app.core' : 'web.core')); // add app.core or web.core by default, on top of main module, both in server and client side
             for(let routesOf of routesOrder) {
                 xLog('debug', `routes of: ${routesOf}`);
                 routes = this.settings(routesOf + routesKey, []);

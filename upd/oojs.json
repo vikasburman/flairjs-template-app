@@ -17,8 +17,8 @@
     "update": {
         "folders": [],
         "files": [
-            { "name": "oojs.js", "src": "src/", "dest": "sys/modules/core/static/libs/" },
-            { "name": "oojs.min.js", "src": "src/", "dest": "sys/modules/core/static/libs/" }
+            { "name": "oojs.js", "src": "src/", "dest": "sys/modules_web/core/static/libs/" },
+            { "name": "oojs.min.js", "src": "src/", "dest": "sys/modules_web/core/static/libs/" }
         ]
     }
 }

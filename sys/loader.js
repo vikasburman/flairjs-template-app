@@ -12,7 +12,7 @@
         getGlobal = new Function("try {return (this===global ? global : window);}catch(e){return window;}");
 
     // base config
-    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"main":"app.sample | web.sample","routes":{"server":[],"client":[]},"static":[],"xLog":"silly","minify":false,"docs":false,"source":{"sys":"sys/modules/","app":"app/modules/"}},"app.core":{"catalog":{"CredentialsChecker":"app.core.security.CredentialsChecker","TokenManager":"app.core.security.TokenManager","Crypt":"app.core.security.Crypt","Service":"app.core.comm.Service","Context":"app.core.comm.Context","Controller":"app.core.domain.Controller","Entity":"app.core.domain.Entity","DbContext":"app.core.data.DbContext","Repository":"app.core.data.Repository","UnitOfWork":"app.core.data.UnitOfWork","Automapper":"app.core.data.Automapper"},"container":{},"routes":{"server":[{"ver":"1","root":"/","url":"/auth","verb":"post","class":"app.core.security.Auth","func":"login"}]},"express":{"case sensitive routing":false,"strict routing":false},"server":{"http":{"enable":true,"port":8080,"timeout":-1},"https":{"enable":false,"port":8443,"timeout":-1,"ssl":{"public":"./cert.pem","private":"./key.pem"}}},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.Attributes","app.core.bootwares.Middlewares","sys.core.bootwares.Router","app.core.bootwares.StaticServer","app.core.bootwares.LocalTunnel","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales"],"middlewares":[{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"more":{"response":{"headers":[]},"bootwares":[],"middlewares":[]},"localtunnel":{"enable":false,"subdomain":"appgears","localhost":"localhost","port":8080},"static":{"favIcon":"","caching":{"enable":true,"age":86400000}},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}},"test":true},"sys.core":{"catalog":{"IBootware":"sys.core.boot.IBootware","IApp":"sys.core.app.IApp","Base":"sys.core.Base","ErrorInfo":"sys.core.ErrorInfo","Dto":"sys.core.domain.Dto","AuthInfo":"sys.core.security.AuthInfo","Credentials":"sys.core.security.Credentials","User":"sys.core.security.User","ClaimsChecker":"sys.core.security.ClaimsChecker","ValueValidator":"sys.core.data.ValueValidator","Hash":"sys.core.security.Hash","ServiceAdapter":"sys.core.comm.ServiceAdapter","Bootstrapper":"app.core.boot.Server | web.core.boot.Client","App":"app.core.app.ServerApp | web.core.app.ClientApp","Auth":"app.core.security.Auth | sys.core.security.Auth"},"container":{},"api":{"root":"/api","version":"v"},"core":["sys.core","app.core | web.core"],"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"app.sample":{"routes":{"server":[]}}}`);
+    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"routes":{"server":["app.core","app.sample"],"client":["web.core","web.sample"]},"static":["web.core","web.sample"],"xLog":"silly","minify":false,"docs":false},"app.core":{"catalog":{"CredentialsChecker":"app.core.security.CredentialsChecker","TokenManager":"app.core.security.TokenManager","Crypt":"app.core.security.Crypt","Service":"app.core.comm.Service","Context":"app.core.comm.Context","Controller":"app.core.domain.Controller","Entity":"app.core.domain.Entity","DbContext":"app.core.data.DbContext","Repository":"app.core.data.Repository","UnitOfWork":"app.core.data.UnitOfWork","Automapper":"app.core.data.Automapper"},"container":{},"routes":{"server":[{"ver":"1","root":"/","url":"/auth","verb":"post","class":"app.core.security.Auth","func":"login"}]},"express":{"case sensitive routing":false,"strict routing":false},"server":{"http":{"enable":true,"port":8080,"timeout":-1},"https":{"enable":false,"port":8443,"timeout":-1,"ssl":{"public":"./cert.pem","private":"./key.pem"}}},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.Attributes","app.core.bootwares.Middlewares","sys.core.bootwares.Router","app.core.bootwares.StaticServer","app.core.bootwares.LocalTunnel","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales"],"middlewares":[{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"more":{"response":{"headers":[]},"bootwares":[],"middlewares":[]},"localtunnel":{"enable":false,"subdomain":"appgears","localhost":"localhost","port":8080},"static":{"favIcon":"web/sample/static/favicon.ico","caching":{"enable":true,"age":86400000}},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.core":{"catalog":{"Binder":"web.core.ui.Binder","Formatter":"web.core.ui.Formatter","Adapter":"web.core.ui.Adapter","Transition":"web.core.ui.Transition","DataBinder":"web.core.bootwares.DataBinder","ComponentTypes":"web.core.ui.ComponentTypes","Component":"web.core.ui.Component","View":"web.core.ui.View","Shell":"web.core.ui.Shell","Partial":"web.core.ui.Partial"},"routes":{"client":[]},"dependencies":[],"bootwares":["sys.core.bootwares.Attributes","web.core.bootwares.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales","[DataBinder]"],"more":{"bootwares":[],"dependencies":[]},"rivets":{"config":{},"formatters":["web.core.ui.formatters.Percent"],"binders":["web.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"},"test":true},"sys.core":{"catalog":{"IBootware":"sys.core.boot.IBootware","IApp":"sys.core.app.IApp","Base":"sys.core.Base","ErrorInfo":"sys.core.ErrorInfo","Dto":"sys.core.domain.Dto","AuthInfo":"sys.core.security.AuthInfo","Credentials":"sys.core.security.Credentials","User":"sys.core.security.User","ClaimsChecker":"sys.core.security.ClaimsChecker","ValueValidator":"sys.core.data.ValueValidator","Hash":"sys.core.security.Hash","ServiceAdapter":"sys.core.comm.ServiceAdapter","Bootstrapper":"app.core.boot.Server | web.core.boot.Client","App":"app.core.app.ServerApp | web.core.app.ClientApp","Auth":"app.core.security.Auth | sys.core.security.Auth"},"container":{},"api":{"root":"/api","version":"v"},"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.sample":{"routes":{"server":[]}}}`);
     
     // basic env
     config.env = {
@@ -30,10 +30,12 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Sat, 09 Sep 2017 03:08:40 GMT',         
+        lupdate: 'Sat, 09 Sep 2017 08:06:33 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
+        sysAppModules: JSON.parse('["core"]'),
+        sysWebModules: JSON.parse('["core"]'),
         isReady: false,
         root: (isServer ? (require('app-root-path') + '/') : '/'),
         logger: null,
@@ -202,6 +204,8 @@
      *    use('app.main.Server | web.main.Client') 
      *      when called on server: --> app/modules/main/members/Server.js
      *      when called on client: --> web/modules/main/members/Client.js
+     * 
+     * 8. Special treatment to handle modules_app and modules_web cases as applicable
      */    
     const use = (_path, as) => {
         let isAsServer = isServer;
@@ -271,6 +275,25 @@
             if (!isAsServer) { _path = '/' + _path; } // add root relativity
             return _path;
         };
+        const fixPath = (_path) => {
+            let isAppModule = _path.indexOf('app/modules/') !== -1,
+                isWebModule = _path.indexOf('web/modules/') !== -1;
+            if (isAppModule || isWebModule) {
+                _path = _path.replace(config.env.root, ''); // remove root first
+                let moduleName = _path.split('/')[2]; // pick 3rd place item that is moduleName
+                if (isWebModule) {
+                    if (config.env.sysWebModules.indexOf(moduleName) !== -1) {
+                        _path = _path.replace('web/modules/', 'sys/modules_web/');
+                    }
+                } else if (isAppModule) {
+                    if (config.env.sysAppModules.indexOf(moduleName) !== -1) {
+                        _path = _path.replace('app/modules/', 'sys/modules_app/');
+                    }
+                }
+                _path = config.env.root + _path; // add root again
+            }
+            return _path;
+        };
 
         // path can be:
         // (1) node/require modules path
@@ -335,20 +358,20 @@
 
         // type #4: assembly files path
         if (_path.startsWith('sys/')) {
-            _path = getAssemblyFilePath(_path, config.settings.source.sys);
+            _path = getAssemblyFilePath(_path, 'sys/modules/');
         } else if (_path.startsWith('app/')) {
-            _path = getAssemblyFilePath(_path, config.settings.source.app);
+            _path = getAssemblyFilePath(_path, 'app/modules/');
         } else if (_path.startsWith('web/')) {
-            _path = getAssemblyFilePath(_path, config.settings.source.web);
+            _path = getAssemblyFilePath(_path, 'web/modules/');
         }
 
         // type #3: namespaced package members path
         if (_path.startsWith('sys.')) {
-            _path = getAssemblyMemberPath(_path, config.settings.source.sys, isMock);
+            _path = getAssemblyMemberPath(_path, 'sys/modules/', isMock);
         } else if (_path.startsWith('app.')) {
-            _path = getAssemblyMemberPath(_path, config.settings.source.app, isMock);
+            _path = getAssemblyMemberPath(_path, 'app/modules/', isMock);
         } else if (_path.startsWith('web.')) {
-            _path = getAssemblyMemberPath(_path, config.settings.source.web, isMock);
+            _path = getAssemblyMemberPath(_path, 'web/modules/', isMock);
         }
 
         // add loader
@@ -361,6 +384,9 @@
                 _path = 'text!' + _path;
             }
         }
+
+        // type #8: fix path, if required
+        _path = fixPath(_path);
 
         // type #1, if nothing was of match OR processed result
         return _path;
@@ -470,7 +496,7 @@
                     }
                 });
             };
-            if (items.length > 0) {
+            if (items && items.length > 0) {
                 processItems(items.slice(), resolve);
             } else {
                 resolve();
@@ -593,9 +619,8 @@
         window.document.head.appendChild(script);
     };
     const onError = (err) => { 
-        if (!config.env.isProd) { 
-            xLog('error', `boot failed.\n${err}`); 
-        }
+        xLog('error', `boot failed. (${err})`); 
+        console.log(err);
     };
     const onDone = () => { 
         xLog('verbose', 'boot success.'); 
@@ -607,7 +632,7 @@
             require.config(config.env.require); // setup require config
         }
 
-        include([use('./modules/core/static/libs/oojs.js | ./libs/oojs.js')]).then((oojs) => {
+        include([use('./modules_web/core/static/libs/oojs.js | ./libs/oojs.js')]).then((oojs) => {
             // initialize OOJS
             let symbols = [];
             if (!config.env.isProd) { symbols.push('DEBUG'); }

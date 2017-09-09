@@ -53,6 +53,7 @@ exports.compressor = function(isDev, isProd, isTest, cb) {
     // note: server side assemblies (.app) are explicitely left as compressing is not required/not used
     let dirs = [
         'sys/modules/',
+        'sys/modules_web/',
         'web/modules/'
     ];
     let doProcess = () => {

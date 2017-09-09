@@ -12,15 +12,17 @@ const generateDocs = (isDev, isProd, isTest, done) => {
     jsdocsConfig.docs = [];
     jsdocsConfig.docs.push('README.md');
     if (buildSettings.docs.isAddSysDocs) {
-        jsdocsConfig.docs.push('sys/modules/core/static/loader.js');
+        jsdocsConfig.docs.push('sys/loader.js');
     }
     let dirs = [
         'sys/modules/',
+        'sys/modules_web/',
+        'sys/modules_app/',
         'web/modules/',
         'app/modules/'
     ];    
     for(let root of dirs) {
-        if (!buildSettings.docs.isAddSysDocs && root === 'sys/modules/') {
+        if (!buildSettings.docs.isAddSysDocs && root.startsWith('sys/')) {
             continue;
         }
         let globs = utils.getSource(root, 'members', '*.js', '**/*.js');

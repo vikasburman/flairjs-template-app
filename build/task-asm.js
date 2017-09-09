@@ -53,8 +53,9 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
                     switch(root) {
                         case 'sys/modules/':
                             rootName = 'sys.'; break;
+                        case 'sys/modules_web/':
                         case 'web/modules/':
-                            rootName = 'web.'; break;
+                        rootName = 'web.'; break;
                     }
                     return rootName + folder + (namespace ? ('.' + namespace) : '') + (fileName ? ('.' + fileName) : '');
                 };
@@ -75,10 +76,10 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
                 ]);
 
                 // add to packs (for bundle based resolving on client side)
-                // remove "/modules/" because use() adds 'modules/' automatically when resolved
-                let newAsmId = asmId.replace('/modules/', '/'),
-                    newAsmUrl = asmUrl.replace('/modules/', '/'),
-                    newModuleName = moduleName.replace('/modules/', '/');
+                // remove "/modules/" (or /modules_web/) because use() adds 'modules/' (or /modules_web/) automatically when resolved
+                let newAsmId = (asmId.indexOf('/modules_web/') !== -1 ? asmId.replace('/modules_web/', '/') : asmId.replace('/modules/', '/')),
+                    newAsmUrl = (asmUrl.indexOf('/modules_web/') !== -1 ? asmUrl.replace('/modules_web/', '/') : asmUrl.replace('/modules/', '/')),
+                    newModuleName = (moduleName.indexOf('/modules_web/') !== -1 ? moduleName.replace('/modules_web/', '/') : moduleName.replace('/modules/', '/'));
                 if (!asms.paths[newAsmId]) {
                     asms.paths[newAsmId] = newAsmUrl.replace('.js', ''); // requirejs automatically adds a .js
                     asms.bundles[newAsmId] = [];
@@ -138,8 +139,10 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
 };
 exports.assembler = function (isDev, isProd, isTest, asms, cb) {
     // note: server side assemblies (.app) are explicitely left as assembling is not required/not used
+    // which means the process code above also do not consider app/modules and sys/modules_app cases
     let dirs = [
         'sys/modules/',
+        'sys/modules_web/',
         'web/modules/'
     ];
     let doProcess = () => {

@@ -9,7 +9,7 @@ const deleteGenerateConfig = (configFile) => {
 };
 exports.trasher = function(isDev, isProd, isTest, cb) {
     // delete client side temp version
-    configFile = 'sys/modules/core/static/.config.json';
+    configFile = 'sys/modules_web/core/static/.config.json';
     deleteGenerateConfig(configFile);
 
     // delete server side temp version

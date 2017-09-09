@@ -10,24 +10,29 @@
             "url": "...",
             "org": "..."
         },
-        
-        "main": "app.sample | web.sample",
         "routes": {
             "server": [
+                "app.core",
+                "app.sample"
             ],
             "client": [
+                "web.core",
+                "web.sample"
             ]
         },
         "static": [
+            "web.core",
+            "web.sample"
         ],
-
         "xLog": "silly",
         "minify": false,
         "docs": false
     },
 
     "app.core": {
-        "test": true    
+        "static": {
+            "favIcon": "web/sample/static/favicon.ico"
+        }
     },
     "web.core": {
         "test": true    

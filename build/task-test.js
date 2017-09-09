@@ -9,10 +9,12 @@ const doTest = (isDev, isProd, isTest, done) => {
     const jasminConfig = require('./.jasmine.json'),
         tests = [];
 
-    // fill tests array
-    tests.push(require('app-root-path') + '/' + 'sys/modules/core/static/loader.js');
+    // fill tests array (for both server and client-side tests)
+    tests.push(require('app-root-path') + '/' + 'sys/loader.js');
     let dirs = [
         'sys/modules/',
+        'sys/modules_web/',
+        'sys/modules_app/',
         'web/modules/',
         'app/modules/'
     ];   

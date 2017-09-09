@@ -70,6 +70,8 @@ exports.processor = function(isDev, isProd, isTest, cb) {
  let folders = [],
      dirs = [
         'sys/modules/',
+        'sys/modules_web/',
+        'sys/modules_app/',
         'web/modules/',
         'app/modules/'
     ]; 
@@ -79,12 +81,15 @@ exports.processor = function(isDev, isProd, isTest, cb) {
 
     let onAllDone = () => {
         // at the end, also process special templates placed at root folders of sys
-        processTemplates(isDev, isProd, isTest, 'sys/', cb);
+        processTemplates(isDev, isProd, isTest, 'sys/', () => {
+            // since loader.js.tmpl is copied from sys/loader.js.tmpl to sys/modules_web/core/static/loader.js.tmpl
+            // to avoid editing cofusion, delete sys/modules_web/core/static/loader.js.tmpl version, as this is no longer 
+            // required after loader.js is generated
+            fs.unlinkSync('sys/modules_web/core/static/loader.js.tmpl');
 
-        // since loade.js.tmpl is copied from sys/loader.js.tmpl to sys/modules/core/static/loader.js.tmpl
-        // to avoid editing cofusion, delete sys/modules/core/static/loader.js.tmpl version, as this is no longer 
-        // required after loader.js is generated
-        fs.unlinkSync('sys/modules/core/static/loader.js.tmpl');
+            // done
+            cb();
+        });
     };
 
     let doProcess = () => {

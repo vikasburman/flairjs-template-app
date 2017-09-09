@@ -80,6 +80,7 @@ define([
             }
 
             // boot configured bootwares
+            xLog('debug', `Bootwares: ${this.bootwares.length}`);
             include(this.bootwares, true).then((items) => {
                 forAsync(items, (_resolve, _reject, Bootware) => {
                     if (Bootware && typeof Bootware === 'function') {
