@@ -11,7 +11,7 @@ const fs = require('fs');
 const cfg = require('../config.json');
 
 const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
-    let folders = utils.getFolders(root);
+    let folders = utils.getFolders(root, true);
     const babelConfig = require('./.babel.json');
     const processContent = (folder) => {
         return (file, t) => {
@@ -54,8 +54,9 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
                         case 'sys/modules/':
                             rootName = 'sys.'; break;
                         case 'sys/modules_web/':
+                            rootName = 'web.'; break;
                         case 'web/modules/':
-                        rootName = 'web.'; break;
+                            rootName = 'web.'; break;
                     }
                     return rootName + folder + (namespace ? ('.' + namespace) : '') + (fileName ? ('.' + fileName) : '');
                 };
@@ -65,7 +66,7 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
                     content = file.contents.toString(),
                     asmId = root + folder,
                     asmUrl = root + folder + ((isProd && cfg.settings.minify) ? '/index.asm.min.js' : '/index.asm.js'); 
-                
+
                 // update content
                 file.contents = Buffer.concat([
                     new Buffer(`\n// START: (${file.path})\n`),
@@ -77,15 +78,18 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
 
                 // add to packs (for bundle based resolving on client side)
                 // remove "/modules/" (or /modules_web/) because use() adds 'modules/' (or /modules_web/) automatically when resolved
-                let newAsmId = (asmId.indexOf('/modules_web/') !== -1 ? asmId.replace('/modules_web/', '/') : asmId.replace('/modules/', '/')),
-                    newAsmUrl = (asmUrl.indexOf('/modules_web/') !== -1 ? asmUrl.replace('/modules_web/', '/') : asmUrl.replace('/modules/', '/')),
-                    newModuleName = (moduleName.indexOf('/modules_web/') !== -1 ? moduleName.replace('/modules_web/', '/') : moduleName.replace('/modules/', '/'));
+                const fixPath = (_path) => {
+                    return (_path.indexOf('sys/modules_web/') !== -1 ? _path.replace('sys/modules_web/', 'web/') : _path.replace('/modules/', '/'));
+                };
+                let newAsmId = fixPath(asmId),
+                    newAsmUrl = fixPath(asmUrl),
+                    newModuleName = fixPath(moduleName);
                 if (!asms.paths[newAsmId]) {
                     asms.paths[newAsmId] = newAsmUrl.replace('.js', ''); // requirejs automatically adds a .js
                     asms.bundles[newAsmId] = [];
                 }
                 asms.bundles[newAsmId].push(newModuleName);
-                console.log('           Packing > ' + newModuleName + ' >> ' + newAsmUrl);
+                console.log('   Packing > ' + newModuleName + ' >> ' + newAsmUrl);
             } else {
                 file.contents = new Buffer(''); // empty string
             }
@@ -122,8 +126,8 @@ const assembleFiles = (isDev, isProd, isTest, asms, root, whenDone) => {
             .on('error', utils.errorHandler('dest'));
     }
     const processAsms = (folders, onDone) => {
-        let folder = folders.shift(); 
-        if (folder) {
+        let folder = folders.shift().trim();
+        if (folder && ['node_modules'].indexOf(folder) === -1) {
             processAsm(folder, () => {
                 if (folders.length === 0) {
                     onDone();
