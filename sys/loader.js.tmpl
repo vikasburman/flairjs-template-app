@@ -162,6 +162,18 @@
             }
         }
     };
+    let startFuncs = [];
+    const onStart = (fn) => {
+        // fn must be a function
+        // can be sync or async, bounded or unbounded
+        // all will be just executed one after another without waiting to finish
+        startFuncs.push(fn);
+    };
+    const callOnStart = () => {
+        for (let fn of startFuncs) {
+            fn();
+        }
+    };
 
     /**
      * @global
@@ -517,7 +529,7 @@
     g.config = config;
     g.use = use; g.include = include;
     g.settings = settings;
-    g.forAsync = forAsync; g.replaceAll = replaceAll; g.xLog = xLog;
+    g.forAsync = forAsync; g.replaceAll = replaceAll; g.xLog = xLog; g.onStart = onStart;
     g.getNestedKeyValue = getNestedKeyValue; g.setNestedKeyValue = setNestedKeyValue;
     g.App = null;
 
@@ -593,6 +605,7 @@
         console.log(err);
     };
     const onDone = () => { 
+        callOnStart();
         xLog('verbose', 'boot success.'); 
     };
     const onLoad = () => {

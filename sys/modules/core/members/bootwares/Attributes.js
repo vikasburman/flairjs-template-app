@@ -223,8 +223,9 @@ define([
             }));
             
             // poll
-            // poll(intervalInSeconds)
+            // poll(intervalInSeconds, autoStart)
             //  - intervalInSeconds can be a decimal value for milliseconds or a whole number for seconds
+            //  - autoStart (true, if polling to be started as soon as app is started)
             Container.register(Class('poll', Attribute, function() {
                 this.decorator((obj, type, name, descriptor) => {
                     // validate
@@ -233,6 +234,7 @@ define([
 
                     // decorate
                     let interval = this.args[0] || 0,
+                        isAutoStart = this.args[1] || false,
                         ms = interval * 1000,
                         fn = descriptor.value,
                         intervalHandle = null;
@@ -244,10 +246,10 @@ define([
                                 if (!isRunning) {
                                     const onDone = () => {
                                         isRunning = false;    
-                                        xLog('debug', `Poll ${obj._.name}.${name} finished.`);
+                                        xLog('debug', `${obj._.name}.${name}.stop`);
                                     };
                                     isRunning = true;
-                                    xLog('debug', `Poll ${obj._.name}.${name} started.`);
+                                    xLog('debug', `${obj._.name}.${name}.start`);
                                     let result = fn(...passedArgs);
                                     if (result && (typeof result.then === 'function' && typeof result.catch === 'function')) {
                                         result.then(onDone).catch(onDone);
@@ -263,6 +265,11 @@ define([
                             clearInterval(intervalHandle);
                         }
                     }.bind(obj);
+
+                    // auto start
+                    if (isAutoStart) {
+                        onStart(descriptor.value); // push to auto start
+                    }
                 });
             }));       
             
@@ -359,6 +366,7 @@ define([
                 // job
                 // job(schedule, timezone)
                 //  - schedule is standard cron pattern string (https://www.npmjs.com/package/cron)
+                //  - autoStart (true, if polling to be started as soon as app is started)
                 //  - timezone is optional
                 Container.register(Class('job', Attribute, function() {
                     this.decorator((obj, type, name, descriptor) => {
@@ -368,7 +376,8 @@ define([
 
                         // decorate
                         let schedule = this.args[0] || '* * * * * *',
-                            timeZone = this.args[1] || '',
+                            isAutoStart = this.args[1] || false,
+                            timeZone = this.args[2] || '',
                             fn = descriptor.value,
                             job = null,
                             CronJob = require('cron').CronJob;
@@ -410,6 +419,11 @@ define([
                                 job = null;
                             }
                         }.bind(obj);
+
+                        // auto start
+                        if (isAutoStart) {
+                            onStart(descriptor.value); // push to auto start
+                        }                        
                     });
                 }));             
             }
