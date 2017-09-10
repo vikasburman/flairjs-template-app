@@ -20,16 +20,10 @@ define([
             //      - enableCookies: true (for same origin), false (no cookies sent), all (even for cross-origin calls)
             //      - requestDataType: any of the possible Content-Type (this sets Content-Type header itself)
             //      - responseDataType: text, json, blob, buffer, formData, objectUrl
-            //      - pre: can be a function where all passed args are send for pre-processing before fetch is called
-            //        pre function is passed a structure { 
-            //          url: <-- if url contains '/:' type fillers, this contains the first arg passed to wrapped function (which could be a structure or one single string)
-            //          body: <-- if url fillers are given, this will be second arg passsed, else first arg itself
-            //        }
-            //        pre is generally used to pre-process arg values, e.g., serialize structures or give proper structure to fill values, etc.
             //      - auth: can be any of these three values
             //          'none': (or absence of this key itself), means no auth data to be send
             //          'auto': automatically picks the auth header from the session (only on client, throws on server)
-            //          fn: a function reference, that gives access headers for fetch operation (key-value pairs returned from here are added under headers)
+            //          fn: a (private/protected/public) function reference, that gives access headers for fetch operation (key-value pairs returned from here are added under headers)
             //      - Additionally it can have everything else that 'init' option of fetch request looks for (https://developer.mozilla.org/en/docs/Web/API/Fetch_API)
             Container.register(Class('service', Attribute, function() {
                 this.decorator((obj, type, name, descriptor) => {
@@ -378,7 +372,9 @@ define([
                             fn = descriptor.value,
                             job = null,
                             CronJob = require('cron').CronJob;
+                            if (typeof schedule === 'function') { schedule = schedule.apply(obj); }
                             if (!schedule) { schedule = '* * * * * *'; } // defaults to run every second
+                            if (typeof timezone === 'function') { timezone = timezone.apply(obj); }
                             let opts = {
                                 cronTime: schedule, 
                                 onTick: null,
