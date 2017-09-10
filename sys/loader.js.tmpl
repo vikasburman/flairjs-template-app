@@ -162,14 +162,20 @@
             }
         }
     };
-    let startFuncs = [];
+    let startFuncs = [],
+        isStarted = false;
     const onStart = (fn) => {
         // fn must be a function
         // can be sync or async, bounded or unbounded
         // all will be just executed one after another without waiting to finish
-        startFuncs.push(fn);
+        if (isStarted) {
+            fn(); // since app is already started, start this function now itself
+        } else {
+            startFuncs.push(fn);
+        }
     };
     const callOnStart = () => {
+        isStarted = true;
         xLog('debug', `${startFuncs.length} functions auto started.`);
         for (let fn of startFuncs) {
             fn();
