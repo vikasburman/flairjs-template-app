@@ -76,35 +76,29 @@ define([
                 //  transtion this in
                 //  this afterShow
                 // this focus
-                xLog('debug', `  ${parentProtectedRef._.name}.init (start)`);
+                xLog('debug', `  ${parentProtectedRef._.name}.init`);
                 parentProtectedRef.init().then(() => {
-                    xLog('debug', `  ${parentProtectedRef._.name}.init (done)`);
-                    xLog('debug', `  ${protectedRef._.name}.init (start)`);
+                    xLog('debug', `  ${protectedRef._.name}.init`);
                     protectedRef.init().then(() => {
-                        xLog('debug', `  ${protectedRef._.name}.init (done)`);
                         if (last) {
                             lastProtectedRef = as(last, 'protected')
-                            xLog('debug', `  ${lastProtectedRef._.name}.beforeHide (start)`);
+                            xLog('debug', `  ${lastProtectedRef._.name}.beforeHide`);
                             last._.cfas('beforeHide').then(() => {
-                                xLog('debug', `  ${lastProtectedRef._.name}.beforeHide (done)`);
-                                xLog('debug', `  ${current._.name}.beforeShow (start)`);
+                                xLog('debug', `  ${current._.name}.beforeShow`);
                                 current._.cfas('beforeShow').then(() => {
                                     currentProtectedRef.mount();
                                     currentProtectedRef.bind();
                                     this.setDirection();
-                                    xLog('debug', `  ${current._.name}.beforeShow (done)`);
                                     this.transition.in(currentProtectedRef.$el, lastProtectedRef.$el);
-                                    xLog('debug', `  - ${lastProtectedRef._.name} is hidden`);
-                                    xLog('debug', `  - ${currentProtectedRef._.name} is visible`);
-                                    xLog('debug', `  ${lastProtectedRef._.name}.afterHide (start)`);
+                                    xLog('debug', `  - ${lastProtectedRef._.name}.hide`);
+                                    xLog('debug', `  - ${currentProtectedRef._.name}.show`);
+                                    xLog('debug', `  ${lastProtectedRef._.name}.afterHide`);
                                     last._.cfas('afterHide').then(() => {
                                         lastProtectedRef.unbind();
                                         lastProtectedRef.unmount();
-                                        xLog('debug', `  ${lastProtectedRef._.name}.afterHide (done)`);
-                                        xLog('debug', `  ${current._.name}.afterShow (start)`);
+                                        xLog('debug', `  ${current._.name}.afterShow`);
                                         current._.cfas('afterShow').then(() => {
                                             currentProtectedRef.focus();
-                                            xLog('debug', `  ${current._.name}.afterShow (done)`);
                                             xLog('debug', `${this._.name}.stage (done)`);
                                             resolve();
                                         }).catch(reject);
@@ -112,18 +106,16 @@ define([
                                 }).catch(reject);
                             }).catch(reject);
                         } else {
-                            xLog('debug', `  ${current._.name}.beforeShow (start)`);
+                            xLog('debug', `  ${current._.name}.beforeShow`);
                             current._.cfas('beforeShow').then(() => {
                                 currentProtectedRef.mount();
                                 currentProtectedRef.bind();
                                 this.setDirection();
-                                xLog('debug', `  ${current._.name}.beforeShow (done)`);
                                 this.transition.in(currentProtectedRef.$el);
-                                xLog('debug', `  - ${current._.name} is visible`);
-                                xLog('debug', `  ${current._.name}.afterShow (start)`);
+                                xLog('debug', `  - ${current._.name}.show`);
+                                xLog('debug', `  ${current._.name}.afterShow`);
                                 current._.cfas('afterShow').then(() => {
                                     currentProtectedRef.focus();
-                                    xLog('debug', `  ${current._.name}.afterShow (done)`);
                                     xLog('debug', `${this._.name}.stage (done)`);
                                     resolve();
                                 }).catch(reject);
@@ -184,13 +176,11 @@ define([
             // mount partials
             let spc = 2;
             let mountPartial = (partial) => {
-                xLog('debug', `${' '.repeat(spc)}${partial._.name}.mount (start)`);
                 let partialProtectedRef = as(partial, 'protected');
+                xLog('debug', `${' '.repeat(spc)}${partial._.name}[${partialProtectedRef.tagName}].mount`);
                 partialProtectedRef.$host.append(partialProtectedRef.$el);
                 mountStyles(partial);
                 mountPartials(partial.partials);
-                xLog('debug', `${' '.repeat(spc)}${partial._.name}.mount (end)`);
-               
             };
             let mountPartials = (partials) => {
                 let partial = null;
@@ -232,12 +222,11 @@ define([
             // unmount partials
             let spc = 2;
             let unmountPartial = (partial) => {
-                xLog('debug', `${' '.repeat(spc)}${partial._.name}.unmount (start)`);
                 let partialProtectedRef = as(partial, 'protected');
+                xLog('debug', `${' '.repeat(spc)}${partial._.name}[${partialProtectedRef.tagName}].unmount`);
                 unmountStyles(partial);
                 partialProtectedRef.$el.remove();
                 unmountPartials(partial.partials);
-                xLog('debug', `${' '.repeat(spc)}${partial._.name}.unmount (done)`);
             };
             let unmountPartials = (partials) => {
                 let partial = null;
