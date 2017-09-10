@@ -22,8 +22,7 @@ define([
         attr('sealed');
         this.func('init', () => {
             return new Promise((resolve, reject) => {
-                let protectedRef = as(this, 'protected'),
-                    parentProtectedRef = as (this.parent, 'protected');
+                let protectedRef = as(this, 'protected');
                 const defineHost = () => {
                     return new Promise((_resolve, _reject) => {
                         let $host = null,
@@ -48,6 +47,7 @@ define([
                                 protectedRef.$host = $host;
                                 break;
                             case ComponentTypes.View:
+                                let parentProtectedRef = as(this.parent, 'protected')
                                 $host = parentProtectedRef.$el.querySelector(this.settings('view.$container', '#container'));
                                 if (!$host) {
                                     let $container = document.createElement('div');

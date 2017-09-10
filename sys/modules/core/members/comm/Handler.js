@@ -36,6 +36,7 @@ define([
                     if (this.params && this.params.length > 0) {
                         args.push(...this.params);
                     }
+                    xLog('debug', `Routing to ${this.className}.${this.funcName}`);
                     fn(...args).then((result) => {
                         this.env.reset('currentRequest');
                     }).catch((err) => {
@@ -43,7 +44,7 @@ define([
                         this.onError(err, errorText);
                     });   
                 } else {
-                    this.onError(`Invalid service handler. (${this.className}.${this.funcName})`, errorText);
+                    this.onError(`Invalid handler. (${this.className}.${this.funcName})`, errorText);
                 }
             }).catch((err) => {
                 this.onError(err, errorText);

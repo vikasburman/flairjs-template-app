@@ -101,6 +101,7 @@ define([
                 window.onhashchange = () => {
                     let url = window.location.hash;
                     if (url.substr(0, 1) === '#') { url = url.substr(1); }
+                    xLog('debug', `route hit: ${url}`);
                     router.run(url);
                 };
             }

@@ -43,6 +43,8 @@ define([
         attr('async');
         this.func('stage', (resolve, reject) => {
             if (this.current !== this) {
+                xLog('debug', `${this._.name}.stage (start)`);
+                
                 // reset handlers
                 this.env.set('handlers', {});
 
@@ -74,34 +76,55 @@ define([
                 //  transtion this in
                 //  this afterShow
                 // this focus
+                xLog('debug', `  ${parentProtectedRef._.name}.init (start)`);
                 parentProtectedRef.init().then(() => {
+                    xLog('debug', `  ${parentProtectedRef._.name}.init (done)`);
+                    xLog('debug', `  ${protectedRef._.name}.init (start)`);
                     protectedRef.init().then(() => {
+                        xLog('debug', `  ${protectedRef._.name}.init (done)`);
                         if (last) {
-                            lastProtectedRef = as(current, 'protected')
+                            lastProtectedRef = as(last, 'protected')
+                            xLog('debug', `  ${lastProtectedRef._.name}.beforeHide (start)`);
                             last._.cfas('beforeHide').then(() => {
+                                xLog('debug', `  ${lastProtectedRef._.name}.beforeHide (done)`);
+                                xLog('debug', `  ${current._.name}.beforeShow (start)`);
                                 current._.cfas('beforeShow').then(() => {
                                     currentProtectedRef.mount();
-                                    ccurrentProtectedRef.bind();
+                                    currentProtectedRef.bind();
                                     this.setDirection();
+                                    xLog('debug', `  ${current._.name}.beforeShow (done)`);
                                     this.transition.in(currentProtectedRef.$el, lastProtectedRef.$el);
+                                    xLog('debug', `  - ${lastProtectedRef._.name} is hidden`);
+                                    xLog('debug', `  - ${currentProtectedRef._.name} is visible`);
+                                    xLog('debug', `  ${lastProtectedRef._.name}.afterHide (start)`);
                                     last._.cfas('afterHide').then(() => {
                                         lastProtectedRef.unbind();
                                         lastProtectedRef.unmount();
+                                        xLog('debug', `  ${lastProtectedRef._.name}.afterHide (done)`);
+                                        xLog('debug', `  ${current._.name}.afterShow (start)`);
                                         current._.cfas('afterShow').then(() => {
                                             currentProtectedRef.focus();
+                                            xLog('debug', `  ${current._.name}.afterShow (done)`);
+                                            xLog('debug', `${this._.name}.stage (done)`);
                                             resolve();
                                         }).catch(reject);
                                     }).catch(reject);
                                 }).catch(reject);
                             }).catch(reject);
                         } else {
+                            xLog('debug', `  ${current._.name}.beforeShow (start)`);
                             current._.cfas('beforeShow').then(() => {
-                                ccurrentProtectedRef.mount();
-                                ccurrentProtectedRef.bind();
+                                currentProtectedRef.mount();
+                                currentProtectedRef.bind();
                                 this.setDirection();
-                                this.transition.in(ccurrentProtectedRef.$el);
+                                xLog('debug', `  ${current._.name}.beforeShow (done)`);
+                                this.transition.in(currentProtectedRef.$el);
+                                xLog('debug', `  - ${current._.name} is visible`);
+                                xLog('debug', `  ${current._.name}.afterShow (start)`);
                                 current._.cfas('afterShow').then(() => {
-                                    ccurrentProtectedRef.focus();
+                                    currentProtectedRef.focus();
+                                    xLog('debug', `  ${current._.name}.afterShow (done)`);
+                                    xLog('debug', `${this._.name}.stage (done)`);
                                     resolve();
                                 }).catch(reject);
                             }).catch(reject);
@@ -109,6 +132,7 @@ define([
                     }).catch(reject);
                 }).catch(reject);
             } else {
+                xLog('debug', `${this._.name}.stage (not required)`);
                 resolve();
             }
         });
@@ -129,10 +153,14 @@ define([
             if (this.env.getLocale().rtl) {
                 if (currentRTL !== 'rtl') {
                     document.body.setAttribute('dir', 'rtl');
+                    xLog('debug', `    - direction set to rtl`);
                 }
             } else {
                 if (currentRTL === 'rtl') {
                     document.body.setAttribute('dir', '');
+                    xLog('debug', `    - direction set to default`);
+                } else {
+                    xLog('debug', `    - direction remains unchanged`);
                 }
             }
         });
@@ -154,20 +182,26 @@ define([
             };
 
             // mount partials
+            let spc = 2;
             let mountPartial = (partial) => {
+                xLog('debug', `${' '.repeat(spc)}${partial._.name}.mount (start)`);
                 let partialProtectedRef = as(partial, 'protected');
                 partialProtectedRef.$host.append(partialProtectedRef.$el);
                 mountStyles(partial);
                 mountPartials(partial.partials);
+                xLog('debug', `${' '.repeat(spc)}${partial._.name}.mount (end)`);
+               
             };
             let mountPartials = (partials) => {
                 let partial = null;
+                spc = spc + 2;
                 for(let po in partials) {
                     if (partials.hasOwnProperty(po)) {
-                        partial = partials[po];                
+                        partial = partials[po];
                         mountPartial(partial);
                     }
                 }
+                spc = spc - 2;
             };
 
             // mount shell to stage
@@ -185,7 +219,7 @@ define([
         attr('sealed');
         this.func('unmount', () => {
             let protectedRef = as(this, 'protected'),
-            parentProtectedRef = as(this.parent, 'protected');
+                parentProtectedRef = as(this.parent, 'protected');
         
             // unmount styles
             let unmountStyles = (obj) => {
@@ -196,20 +230,25 @@ define([
             };
 
             // unmount partials
+            let spc = 2;
             let unmountPartial = (partial) => {
+                xLog('debug', `${' '.repeat(spc)}${partial._.name}.unmount (start)`);
                 let partialProtectedRef = as(partial, 'protected');
                 unmountStyles(partial);
                 partialProtectedRef.$el.remove();
                 unmountPartials(partial.partials);
+                xLog('debug', `${' '.repeat(spc)}${partial._.name}.unmount (done)`);
             };
             let unmountPartials = (partials) => {
                 let partial = null;
+                spc = spc + 2;
                 for(let po in partials) {
                     if (partials.hasOwnProperty(po)) {
                         partial = partials[po];                
                         unmountPartial(partial);
                     }
                 }
+                spc = spc - 2;
             };
 
             // unmount view from shell container
@@ -252,6 +291,7 @@ define([
                 // bind
                 let binder = new DataBinder(); // its singleton, so no issue
                 _bindedView = binder.bind(parentProtectedRef.$el, obj);
+                xLog('debug', `    - data bindings applied`);
             }
         });
 
@@ -262,6 +302,7 @@ define([
                 let binder = new DataBinder(); // its singleton, so no issue
                 binder.unbind(_bindedView);
                 _bindedView = null;
+                xLog('debug', `    - data bindings cleared`);
             }
         });
 
@@ -272,12 +313,16 @@ define([
             let $focus = protectedRef.$el.querySelector('[ag-focus]');
             if ($focus) {
                 $focus.focus();
+                xLog('debug', `    - focus set on (${$focus.innerText})`);
+            } else {
+                xLog('debug', `    - focus not configured`);
             }
         });
 
         attr('protected');
         this.func('redirect', () => {
             if (this.request.query && this.request.query.returnUrl) {
+                xLog('debug', `redirecting to: ${this.request.query.returnUrl}`);
                 App.navigate(this.request.query.returnUrl, true);
             }
         });        
