@@ -269,7 +269,7 @@ define([
         attr('sealed');
         this.func('focus', () => {
             let protectedRef = as(this, 'protected');
-            let $focus = protectedRef.$el.querySelector('[ag-focus');
+            let $focus = protectedRef.$el.querySelector('[ag-focus]');
             if ($focus) {
                 $focus.focus();
             }
