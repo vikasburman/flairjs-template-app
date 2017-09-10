@@ -23,7 +23,7 @@ define([
         attr('async');
         this.func('start', (resolve, reject) => {
             this.onStart().then(() => {
-                let items = this.settings('start', []),
+                let items = this.settings(':start', []),
                 starters = [];
                 for (let item of items) {
                     starters.push(use(item));
