@@ -29,7 +29,7 @@ define([
                     starters.push(use(item));
                 }
                 include(starters, true).then((Starters) => {
-                    forASync(Starters, (_resolve, _reject, Starter) => {
+                    forAsync(Starters, (_resolve, _reject, Starter) => {
                         let starter = as(new Starter(), IStarter);
                          if (starter) {
                             xLog('debug', `${starter._.name}.start`);
