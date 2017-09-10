@@ -32,7 +32,7 @@ define([
                     fn = getNestedKeyValue(handler, this.funcName, null);
                 this.env.set('currentRequest', request);
                 if (fn) {
-                    let args = [request]; args.push(...params);
+                    let args = [request]; args.push(...this.params);
                     fn(...args).then((result) => {
                         this.env.reset('currentRequest');
                     }).catch((err) => {
