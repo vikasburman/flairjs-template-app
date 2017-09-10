@@ -170,6 +170,7 @@
         startFuncs.push(fn);
     };
     const callOnStart = () => {
+        xLog('debug', `${startFuncs.length} functions auto started.`);
         for (let fn of startFuncs) {
             fn();
         }
