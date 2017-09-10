@@ -9,17 +9,21 @@ define([
     return Class('sys.core.comm.Handler', Base, function(attr) {
         attr('override');
         attr('sealed');
-        this.func('constructor', (base, className, funcName) => {
+        this.func('constructor', (base, className, funcName, params) => {
             base();
             this.className = className;
             this.funcName = funcName;
+            this.params = params;
         });
 
         attr('private');
-        this.prop('className', null);
+        this.prop('className');
 
         attr('private');
-        this.prop('funcName', null);
+        this.prop('funcName');
+
+        attr('private');
+        this.prop('params');
 
         this.func('handle', (request) => {
             let errorText = (!this.env.isServer ? `Error handling: ${request.url}#${request.verb}.` : `Error handling: ${request.url}.`);
@@ -28,7 +32,8 @@ define([
                     fn = getNestedKeyValue(handler, this.funcName, null);
                 this.env.set('currentRequest', request);
                 if (fn) {
-                    fn(request).then((result) => {
+                    let args = [request]; args.push(...params);
+                    fn(...args).then((result) => {
                         this.env.reset('currentRequest');
                     }).catch((err) => {
                         this.env.reset('currentRequest');

@@ -15,6 +15,7 @@ define([
         this.func('boot', (resolve, reject, app) => {
             let routesOrder = [],
                 routes = [],
+                params = [],
                 router = (this.env.isServer ? app : new RouteManager({})),
                 fullUrl = '',
                 routesKey = (this.env.isServer ? ':routes.server' : ':routes.client'),
@@ -36,7 +37,7 @@ define([
             };
 
             // each route definition (both on server and client) is as:
-            // { "ver":"1", "root":"", url": "", "verb": "", "class": "", "func": ""}
+            // { "ver":"1", "root":"", url": "", "verb": "", "class": "", "func": "", "params": ["", ""]}
             // ver: 
             //  on server, this represents version of the api
             //  on client, this is not required
@@ -51,6 +52,8 @@ define([
             // func: 
             //  on server, the function name of the class that handles this
             //  on client, this is fixed as 'navigate'
+            // params:
+            //  an array of static parameters to be passed to function
             routesOrder = this.settings(routesKey);
             for(let routesOf of routesOrder) {
                 xLog('debug', `routes of: ${routesOf}`);
@@ -59,11 +62,12 @@ define([
                     if (route.url && route.class) {
                         fullUrl = (route.root || '') + route.url;
                         fullUrl = fullUrl.replace('//', '/');
+                        params = route.params || [];
                         if (this.env.isServer) {
                             if (apiPrefix) { fullUrl = apiPrefix + '/' + versionPrefix + (route.ver || "1") + fullUrl; }
                             if (route.func && route.verb) {
                                 if (['get', 'post', 'put', 'delete'].indexOf(route.verb) === -1) { throw `Unknown verb for: ${route.url}`; }
-                                router[route.verb](fullUrl, getHandler(fullUrl, route));
+                                router[route.verb](fullUrl, getHandler(fullUrl, route, params));
                                 xLog('debug', `  ${route.verb}: ${fullUrl}`);
                             } else {
                                 let err = `Invalid route definiton: ${fullUrl}#${route.verb}`;
@@ -73,7 +77,7 @@ define([
                         } else {
                             router.add(fullUrl, function() {
                                 // "this"" will have all route values (e.g., abc/xyz when resolved against abc/:name will have name: 'xyz' in this object)
-                                let handler = new Handler(route.class, 'navigate'),
+                                let handler = new Handler(route.class, 'navigate', params),
                                     request = new Request(handler, route.url, this);
                                 try {
                                     handler.handle(request);
