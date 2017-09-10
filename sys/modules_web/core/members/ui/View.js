@@ -30,7 +30,7 @@ define([
             this.request = request;
             this.args = request.args;
             this.stage().then(() => {
-                this.current = this._.pu; // store public reference
+                this.current = as(this, 'public'); // store public reference
                 document.title = this.data.title + ' - ' + App.info.title
                 resolve(this.current);
             }).catch((err) => {
@@ -47,7 +47,11 @@ define([
                 this.env.set('handlers', {});
 
                 let last = this.current,
-                    current = this;
+                    current = this,
+                    protectedRef = as(this, 'protected'),
+                    currentProtectedRef = as(current, 'protected'),
+                    lastProtectedRef = null,
+                    parentProtectedRef = as(this.parent, 'protected');
                 // sequence
                 // (partials are processed along with shell/view)
                 // this init
@@ -70,20 +74,21 @@ define([
                 //  transtion this in
                 //  this afterShow
                 // this focus
-                this.parent._.pr.init().then(() => {
-                    this._.pr.init().then(() => {
+                parentProtectedRef.init().then(() => {
+                    protectedRef.init().then(() => {
                         if (last) {
+                            lastProtectedRef = as(current, 'protected')
                             last._.cfas('beforeHide').then(() => {
                                 current._.cfas('beforeShow').then(() => {
-                                    current._.pr.mount();
-                                    current._.pr.bind();
+                                    currentProtectedRef.mount();
+                                    ccurrentProtectedRef.bind();
                                     this.setDirection();
-                                    this.transition.in(current._.pr.$el, last._.pr.$el);
+                                    this.transition.in(currentProtectedRef.$el, lastProtectedRef.$el);
                                     last._.cfas('afterHide').then(() => {
-                                        last._.pr.unbind();
-                                        last._.pr.unmount();
+                                        lastProtectedRef.unbind();
+                                        lastProtectedRef.unmount();
                                         current._.cfas('afterShow').then(() => {
-                                            current._.pr.focus();
+                                            currentProtectedRef.focus();
                                             resolve();
                                         }).catch(reject);
                                     }).catch(reject);
@@ -91,12 +96,12 @@ define([
                             }).catch(reject);
                         } else {
                             current._.cfas('beforeShow').then(() => {
-                                current._.pr.mount();
-                                current._.pr.bind();
+                                ccurrentProtectedRef.mount();
+                                ccurrentProtectedRef.bind();
                                 this.setDirection();
-                                this.transition.in(current._.pr.$el);
+                                this.transition.in(ccurrentProtectedRef.$el);
                                 current._.cfas('afterShow').then(() => {
-                                    current._.pr.focus();
+                                    ccurrentProtectedRef.focus();
                                     resolve();
                                 }).catch(reject);
                             }).catch(reject);
@@ -135,19 +140,23 @@ define([
         attr('protected');
         attr('sealed');
         this.func('mount', () => {
+            let protectedRef = as(this, 'protected'),
+                parentProtectedRef = as(this.parent, 'protected');
             // mount styles
             let mountStyles = (obj) => {
-                if (obj._.pr.styles) {
-                    obj._.pr.$style = document.createElement('style');
-                    obj._.pr.$style.setAttribute('scoped', '');
-                    obj._.pr.$style.appendChild(document.createTextNode(obj._.pr.styles));
-                    obj._.pr.$el.prepend(obj._.pr.$style);
+                let objProtectedRef = as(obj, 'protected');
+                if (objProtectedRef.styles) {
+                    objProtectedRef.$style = document.createElement('style');
+                    objProtectedRef.$style.setAttribute('scoped', '');
+                    objProtectedRef.$style.appendChild(document.createTextNode(objProtectedRef.styles));
+                    objProtectedRef.$el.prepend(objProtectedRef.$style);
                 }
             };
 
             // mount partials
             let mountPartial = (partial) => {
-                partial._.pr.$host.append(partial._.pr.$el);
+                let partialProtectedRef = as(partial, 'protected');
+                partialProtectedRef.$host.append(partialProtectedRef.$el);
                 mountStyles(partial);
                 mountPartials(partial.partials);
             };
@@ -162,12 +171,12 @@ define([
             };
 
             // mount shell to stage
-            this.parent._.pr.$host.append(this.parent._.pr.$el);
+            parentProtectedRef.$host.append(parentProtectedRef.$el);
             mountStyles(this.parent);
             mountPartials(this.parent.partials);
 
             // mount view to shell container
-            this._.pr.$host.append(this._.pr.$el);
+            protectedRef.$host.append(protectedRef.$el);
             mountStyles(this);
             mountPartials(this.partials);
         });
@@ -175,17 +184,22 @@ define([
         attr('protected');
         attr('sealed');
         this.func('unmount', () => {
+            let protectedRef = as(this, 'protected'),
+            parentProtectedRef = as(this.parent, 'protected');
+        
             // unmount styles
             let unmountStyles = (obj) => {
-                if (obj._.pr.$style) {
-                    obj._.pr.$style.remove();
+                let objProtectedRef = as(obj, 'protected');
+                if (objProtectedRef.$style) {
+                    objProtectedRef.$style.remove();
                 }
             };
 
             // unmount partials
             let unmountPartial = (partial) => {
+                let partialProtectedRef = as(partial, 'protected');
                 unmountStyles(partial);
-                partial._.pr.$el.remove();
+                partialProtectedRef.$el.remove();
                 unmountPartials(partial.partials);
             };
             let unmountPartials = (partials) => {
@@ -200,12 +214,12 @@ define([
 
             // unmount view from shell container
             unmountStyles(this);
-            this._.pr.$el.remove();
+            protectedRef.$el.remove();
             unmountPartials(this.partials);
 
             // unmount shell from stage
             unmountStyles(this.parent);
-            this.parent._.pr.$el.remove();
+            parentProtectedRef.$el.remove();
             unmountPartials(this.parent.partials);
         });
 
@@ -213,6 +227,7 @@ define([
         attr('protected');
         attr('sealed');
         this.func('bind', () => {
+            let parentProtectedRef = as(this.parent, 'protected');
             if (!_bindedView) {
                 let getPartialBindings = (target, _obj) => {
                     let partial = null;
@@ -236,7 +251,7 @@ define([
 
                 // bind
                 let binder = new DataBinder(); // its singleton, so no issue
-                _bindedView = binder.bind(this.parent._.pr.$el, obj);
+                _bindedView = binder.bind(parentProtectedRef.$el, obj);
             }
         });
 
@@ -253,7 +268,8 @@ define([
         attr('protected');
         attr('sealed');
         this.func('focus', () => {
-            let $focus = this._.pr.$el.querySelector('[ag-focus');
+            let protectedRef = as(this, 'protected');
+            let $focus = protectedRef.$el.querySelector('[ag-focus');
             if ($focus) {
                 $focus.focus();
             }

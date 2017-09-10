@@ -22,53 +22,58 @@ define([
         attr('sealed');
         this.func('init', () => {
             return new Promise((resolve, reject) => {
+                let protectedRef = as(this, 'protected'),
+                    parentProtectedRef = as (this.parent, 'protected');
                 const defineHost = () => {
-                    let $host = null,
-                        elClass = '';
-                    switch(this.type) {
-                        case ComponentTypes.Shell:
-                            $host = document.querySelector(this.settings('view.$stage', '#stage'));
-                            if (!$host) {
-                                let $stage = document.createElement('div');
-                                $stage.setAttribute('id', 'stage');
-                                document.body.append($stage);
-                                $host = $stage;
-                            }
+                    return new Promise((_resolve, _reject) => {
+                        let $host = null,
+                            elClass = '';
+                        switch(this.type) {
+                            case ComponentTypes.Shell:
+                                $host = document.querySelector(this.settings('view.$stage', '#stage'));
+                                if (!$host) {
+                                    let $stage = document.createElement('div');
+                                    $stage.setAttribute('id', 'stage');
+                                    document.body.append($stage);
+                                    $host = $stage;
+                                }
 
-                            // set class
-                            elClass = $host.getAttribute('class') || '';
-                            if (elClass.indexOf('ag-stage') === -1) {
-                                elClass = 'ag-stage ' + elClass;
-                            }
-                            $host.setAttribute('class', elClass.trim());
-                            
-                            this._.pr.$host = $host;
-                            break;
-                        case ComponentTypes.View:
-                            $host = this.parent._.pr.$el.querySelector(this.settings('view.$container', '#container'));
-                            if (!$host) {
-                                let $container = document.createElement('div');
-                                $container.setAttribute('id', 'container');
-                                this.parent._.pr.$el.append($container);
-                                $host = $container;
-                            }
+                                // set class
+                                elClass = $host.getAttribute('class') || '';
+                                if (elClass.indexOf('ag-stage') === -1) {
+                                    elClass = 'ag-stage ' + elClass;
+                                }
+                                $host.setAttribute('class', elClass.trim());
+                                
+                                protectedRef.$host = $host;
+                                break;
+                            case ComponentTypes.View:
+                                $host = parentProtectedRef.$el.querySelector(this.settings('view.$container', '#container'));
+                                if (!$host) {
+                                    let $container = document.createElement('div');
+                                    $container.setAttribute('id', 'container');
+                                    parentProtectedRef.$el.append($container);
+                                    $host = $container;
+                                }
 
-                            // set class
-                            elClass = $host.getAttribute('class') || '';
-                            if (elClass.indexOf('ag-container') === -1) {
-                                elClass = 'ag-container ' + elClass;
-                            }
-                            $host.setAttribute('class', elClass.trim());
-                            
-                            this._.pr.$host = $host;
-                            break;
-                        case ComponentTypes.Partial:
-                            // already defined where instantiated
-                            break;
-                    }
+                                // set class
+                                elClass = $host.getAttribute('class') || '';
+                                if (elClass.indexOf('ag-container') === -1) {
+                                    elClass = 'ag-container ' + elClass;
+                                }
+                                $host.setAttribute('class', elClass.trim());
+                                
+                                protectedRef.$host = $host;
+                                break;
+                            case ComponentTypes.Partial:
+                                // already defined where instantiated
+                                break;
+                        }
+                        _resolve();
+                    });
                 };
                 const loadHtml = () => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise((_resolve, _reject) => {
                         let onLoadHtml = (html) => {
                             // process html
                             // 1. replace all {.min}.<> with .min.<> or .<> as per debug mode
@@ -91,11 +96,11 @@ define([
                             // build element
                             let template = document.createElement('template');
                             template.innerHTML = html;
-                            this._.pr.$el = template.content.firstElementChild;
-                            this._.pr.$el.setAttribute('id', this._.id);
+                            protectedRef.$el = template.content.firstElementChild;
+                            protectedRef.$el.setAttribute('id', this._.id);
 
                             // add class
-                            let elClass = this._.pr.$el.getAttribute('class') || '',
+                            let elClass = protectedRef.$el.getAttribute('class') || '',
                                 elClassName = '';
                             switch(this.type) {
                                 case ComponentTypes.Shell: elClassName = 'shell'; break;
@@ -105,16 +110,16 @@ define([
                             if (elClass.indexOf('ag-' + elClassName) === -1) {
                                 elClass = 'ag-' + elClassName + ' ' + elClass;
                             }
-                            this._.pr.$el.setAttribute('class', elClass.trim());
+                            protectedRef.$el.setAttribute('class', elClass.trim());
 
                             // done
-                            resolve();
+                            _resolve();
                         };
                         if (this.template) {
                             onLoadHtml(this.template);
                         } else {
                             let template = this.url('index.html');
-                            include([template]).then(onLoadHtml).catch(reject);
+                            include([template]).then(onLoadHtml).catch(_reject);
                         }
                     });
                 };
@@ -123,7 +128,7 @@ define([
                         // find partials
                         // a partial is defined in html as:
                         //  <div ag-partial="web.sample.partials.SimpleList" ag-args="abc=10&xyz=20"></div>
-                        let $partials = this._.pr.$el.querySelectorAll('[ag-partial]'),
+                        let $partials = protectedRef.$el.querySelectorAll('[ag-partial]'),
                             partials = [],
                             partialClassParams = [],
                             partialObjects = [],
@@ -145,23 +150,27 @@ define([
                             if (PartialClasses) {
                                 let i = 0,
                                     pa = null,
-                                    po = null;
+                                    po = null,
+                                    poProtectedRef = null;
                                 for(let PartialClass of PartialClasses) {
                                     pa = partialClassParams[i];
                                     po = new PartialClass(this, pa.args);
-                                    po._.pr.$host = pa.$host;
-                                    po._.pr.tagName = pa.tagName || po._.id;
+                                    poProtectedRef = as(po, 'protected');
+                                    poProtectedRef.$host = pa.$host;
+                                    poProtectedRef.tagName = pa.tagName || po._.id;
                                     partialObjects.push(po);
                                     i++; 
                                 }
 
                                 // init all partials
+
                                 forAsync(partialObjects, (__resolve, __reject, partialObject) => { 
-                                    partialObject._.pr.init().then(() => {
-                                        if (this.partials[partialObject._.pr.tagName]) {
-                                            throw `partial names must be unique. ${partialObject._.pr.tagName}`;
+                                    poProtectedRef = as(partialObject, 'protected');
+                                    poProtectedRef.init().then(() => {
+                                        if (this.partials[poProtectedRef.tagName]) {
+                                            throw `partial names must be unique. ${poProtectedRef.tagName}`;
                                         }
-                                        this.partials[partialObject._.pr.tagName] = partialObject;
+                                        this.partials[poProtectedRef.tagName] = partialObject;
                                         __resolve();
                                     }).catch(__reject);
                                 }).then(_resolve).catch(_reject);
@@ -172,10 +181,10 @@ define([
                     });
                 };
                 const loadDeps = () => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise((_resolve, _reject) => {
                         // deps are defined on main node as <div ag-deps="..., ..., ..."></div>
                         // each dep is scoped to current component's home url and are seperated by a ','
-                        let deps = this._.pr.$el.getAttribute('ag-deps');
+                        let deps = protectedRef.$el.getAttribute('ag-deps');
                         if (deps) {
                             let items = deps.split(','),
                                 styles = [],
@@ -197,16 +206,16 @@ define([
                                             }
                                         }
                                     }
-                                    resolve();
-                                }).catch(reject);
-                            }).catch(reject);
+                                    _resolve();
+                                }).catch(_reject);
+                            }).catch(_reject);
                         } else {
-                            resolve();
+                            _resolve();
                         }
                     });
                 };
                 const loadAssets = () => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise((_resolve, _reject) => {
                         // assets are non-nested resource bundle JSON files
                         // { 
                         //      "key1": "stringValue",
@@ -253,24 +262,22 @@ define([
                                 }
                                 i++; // next asset
                             }
-                            resolve();
-                        }).catch(reject);
+                            _resolve();
+                        }).catch(_reject);
                     });
                 };
 
                 // init
-                this._.pr.beforeInit().then(() => {
-                    loadAssets().then(() => {
-                        loadHtml().then(() => {
-                            defineHost();
-                            loadDeps().then(() => {
-                                initPartials().then(() => {
-                                    this._.pr.afterInit().then(resolve).catch(reject);
-                                }).catch(reject);
-                            }).catch(reject);
-                        }).catch(reject);                    
-                    }).catch(reject);
-                }).catch(reject);
+                protectedRef.beforeInit()
+                    .then(loadAssets)
+                    .then(loadHtml)
+                    .then(defineHost)
+                    .then(loadDeps)
+                    .then(initPartials)
+                    .then(() => {
+                        protectedRef.afterInit().then(resolve).catch(reject);
+                    })
+                    .catch(reject);
             });
         });
 
@@ -331,6 +338,7 @@ define([
         attr('sealed');
         this.func('url', (relativeUrl = '') => {
             if (!_root) {
+                // TODO: modules_web and modules_app considetation
                 _root = use(this._.name, 'server'); // e.g., web.sample.shells.Full --> /web/modules/sample/members/shell/Full.js
                 _root = _root.replace('modules/', '').replace('.js', '') + '/'; // /web/sample/members/shell/Full/
             }
@@ -441,6 +449,7 @@ define([
 
         this._.cfas = (asyncFuncName, isSkipPartials = false, ...args) => {
             return new Promise((resolve, reject) => {
+                let protectedRef = as(this, 'protected');
                 let callOnPartials = (_obj) => {
                     return new Promise((_resolve, _reject) => {
                         let allPartials = [];
@@ -462,8 +471,8 @@ define([
                 // cumulative function call (async)
                 switch(this.type) {
                     case ComponentTypes.Shell:
-                        if (typeof this._.pr[asyncFuncName] === 'function') {
-                            this._.pr[asyncFuncName](...args).then(() => {
+                        if (typeof protectedRef[asyncFuncName] === 'function') {
+                            protectedRef[asyncFuncName](...args).then(() => {
                                 if (!isSkipPartials) {
                                     callOnPartials(this).then(resolve).catch(reject);
                                 } else {
@@ -476,8 +485,8 @@ define([
                         break;                  
                     case ComponentTypes.View:
                         this.parent._.cfas(asyncFuncName, isSkipPartials, ...args).then(() => {
-                            if (typeof this._.pr[asyncFuncName] === 'function') {
-                                this._.pr[asyncFuncName](...args).then(() => {
+                            if (typeof protectedRef[asyncFuncName] === 'function') {
+                                protectedRef[asyncFuncName](...args).then(() => {
                                     if (!isSkipPartials) {
                                         callOnPartials(this).then(resolve).catch(reject);
                                     } else {
@@ -490,8 +499,8 @@ define([
                         }).catch(reject);
                         break;
                     case ComponentTypes.Partial:
-                        if (typeof this._.pr[asyncFuncName] === 'function') {
-                            this._.pr[asyncFuncName](...args).then(() => {
+                        if (typeof protectedRef[asyncFuncName] === 'function') {
+                            protectedRef[asyncFuncName](...args).then(() => {
                                 callOnPartials(this).then(resolve).catch(reject);
                             }).catch(reject);
                         } else {

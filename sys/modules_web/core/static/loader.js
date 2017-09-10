@@ -30,9 +30,9 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Sat, 09 Sep 2017 10:48:03 GMT',         
-        isDev: false,
-        isProd: true,
+        lupdate: 'Sun, 10 Sep 2017 06:51:39 GMT',         
+        isDev: true,
+        isProd: false,
         isTest: false,
         sysAppModules: JSON.parse('[]'),
         sysWebModules: JSON.parse('["core"]'),
@@ -53,8 +53,8 @@
 
     // env path considerations
     if (!config.env.isDev) { // dev mode get files as is from server, instead of bundles, as there are no bundles
-        Object.assign(config.env.require.paths, JSON.parse('{"sys/core":"sys/core/index.asm","web/core":"web/core/index.asm","web/sample":"web/sample/index.asm"}'));
-        Object.assign(config.env.require.bundles, JSON.parse('{"sys/core":["sys.core.Base","sys.core.ErrorInfo","sys.core.app.App","sys.core.app.IApp","sys.core.boot.IBootware","sys.core.bootwares.Attributes","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales","sys.core.bootwares.Router","sys.core.comm.ClientRequest","sys.core.comm.ClientResponse","sys.core.comm.Handler","sys.core.comm.Request","sys.core.comm.Response","sys.core.comm.ServiceAdapter","sys.core.data.ValueValidator","sys.core.domain.Dto","sys.core.security.Auth","sys.core.security.AuthInfo","sys.core.security.ClaimsChecker","sys.core.security.Credentials","sys.core.security.Hash","sys.core.security.User"],"web/core":["web.core.app.ClientApp","web.core.boot.Client","web.core.bootwares.DataBinder","web.core.bootwares.Dependencies","web.core.ui.Adapter","web.core.ui.Binder","web.core.ui.Component","web.core.ui.ComponentTypes","web.core.ui.Formatter","web.core.ui.Partial","web.core.ui.Shell","web.core.ui.Transition","web.core.ui.View","web.core.ui.binders.xClass","web.core.ui.formatters.Percent"],"web/sample":["web.sample.partials.SimpleList","web.sample.shells.Full","web.sample.views.Home","web.sample.views.View1","web.sample.views.View2"]}'));
+        Object.assign(config.env.require.paths, JSON.parse('{}'));
+        Object.assign(config.env.require.bundles, JSON.parse('{}'));
     }
 
     // env flags (client side)
@@ -547,27 +547,6 @@
         return args;
     };  
     config.env.currentRequest = () => { return config.env.get('currentRequest'); };
-    config.env.getMainModule = (part = '') => {
-        let mainModule = settings(':main', 'app.sample | web.sample'),
-            parts = mainModule.split('|');
-        if (parts.length === 2) {
-            if (part) {
-                switch(part) {
-                    case 'server':
-                        mainModule = parts[0]; break;
-                    case 'client':
-                        mainModule = parts[1]; break;
-                }
-            } else {
-                if (config.env.isServer) {
-                    mainModule = parts[0];
-                } else {
-                    mainModule = parts[1];
-                }
-            }
-        }
-        return mainModule.trim();      
-    };
 
     // extend env (client only)
     if (!isServer) {
