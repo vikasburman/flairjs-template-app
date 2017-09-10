@@ -23,8 +23,12 @@ define([
         attr('async');
         this.func('start', (resolve, reject) => {
             this.onStart().then(() => {
-                let starters = this.settings('start', []);
-                include([starters], true).then((Starters) => {
+                let items = this.settings('start', []),
+                starters = [];
+                for (let item of items) {
+                    starters.push(use(item));
+                }
+                include(starters, true).then((Starters) => {
                     forASync(Starters, (_resolve, _reject, Starter) => {
                         let starter = as(new Starter(), IStarter);
                          if (starter) {
