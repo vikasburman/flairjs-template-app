@@ -238,8 +238,9 @@ define([
                         ms = interval * 1000,
                         fn = descriptor.value,
                         intervalHandle = null;
-                    descriptor.value = function(...args) {
+                    descriptor.value = function(updatedInterval) {
                         if (!intervalHandle) { // set interval on first call
+                            if (updatedInterval) { ms = updatedInterval * 1000; }
                             if (ms < 0) { ms = 1; } // min is set as 1 millisecond
                             let isRunning = false;
                             const wrappedFn = (...passedArgs) => {
@@ -258,7 +259,7 @@ define([
                                     }
                                 }
                             };
-                            intervalHandle = setInterval(wrappedFn, ms, ...args);
+                            intervalHandle = setInterval(wrappedFn, ms);
                             xLog('debug', `Poll ${obj._.name}.${name} activated to run every ${ms} ms.`);
                         } else { // clear interval on second call
                             xLog('debug', `Poll ${obj._.name}.${name} deactivated.`);
@@ -391,7 +392,7 @@ define([
                                 context: obj
                             };
                             if (timeZone) { opts.timeZone = timeZone; }
-                        descriptor.value = function() {
+                        descriptor.value = function(updatedSchedule) {
                             if (!job) { // set job on first call
                                 let isRunning = false;
                                 opts.onTick = () => {
@@ -410,6 +411,7 @@ define([
                                         }
                                     }
                                 };
+                                if (updatedSchedule) { opts.schedule = updatedSchedule; }
                                 job = new CronJob(opts);
                                 job.start();
                                 xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${schedule} schedule.`);
