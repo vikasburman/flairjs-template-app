@@ -222,15 +222,15 @@ define([
                 });
             }));
             
-            // poll
-            // poll(intervalInSeconds, autoStart)
+            // tick
+            // tick(intervalInSeconds, autoStart)
             //  - intervalInSeconds can be a decimal value for milliseconds or a whole number for seconds
-            //  - autoStart (true, if polling to be started as soon as app is started)
-            Container.register(Class('poll', Attribute, function() {
+            //  - autoStart (true, if timer to be started as soon as app is started)
+            Container.register(Class('tick', Attribute, function() {
                 this.decorator((obj, type, name, descriptor) => {
                     // validate
-                    if (['func'].indexOf(type) === -1) { throw `poll attribute cannot be applied on ${type} members. (${name})`; }
-                    if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `poll attribute cannot be applied on special function. (${name})`; }
+                    if (['func'].indexOf(type) === -1) { throw `tick attribute cannot be applied on ${type} members. (${name})`; }
+                    if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `tick attribute cannot be applied on special function. (${name})`; }
 
                     // decorate
                     let interval = this.args[0] || 0,
@@ -260,9 +260,9 @@ define([
                                 }
                             };
                             intervalHandle = setInterval(wrappedFn, ms);
-                            xLog('debug', `Poll ${obj._.name}.${name} activated to run every ${ms} ms.`);
+                            xLog('debug', `Tick ${obj._.name}.${name} activated to run every ${ms} ms.`);
                         } else { // clear interval on second call
-                            xLog('debug', `Poll ${obj._.name}.${name} deactivated.`);
+                            xLog('debug', `Tick ${obj._.name}.${name} deactivated.`);
                             clearInterval(intervalHandle);
                         }
                     }.bind(obj);
@@ -367,7 +367,7 @@ define([
                 // job
                 // job(schedule, timezone)
                 //  - schedule is standard cron pattern string (https://www.npmjs.com/package/cron)
-                //  - autoStart (true, if polling to be started as soon as app is started)
+                //  - autoStart (true, if timer to be started as soon as app is started)
                 //  - timezone is optional
                 Container.register(Class('job', Attribute, function() {
                     this.decorator((obj, type, name, descriptor) => {
@@ -414,7 +414,7 @@ define([
                                 if (updatedSchedule) { opts.schedule = updatedSchedule; }
                                 job = new CronJob(opts);
                                 job.start();
-                                xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${schedule} schedule.`);
+                                xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${opts.schedule} schedule.`);
                             } else { // clear interval on second call
                                 xLog('debug', `Job ${obj._.name}.${name} deactivated.`);
                                 job.stop();
