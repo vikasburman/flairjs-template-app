@@ -412,7 +412,7 @@ define([
                                     }
                                 };
                                 if (updatedSchedule) { opts.cronTime = updatedSchedule; }
-                                if (job.cronTime) {
+                                if (opts.cronTime) {
                                     job = new CronJob(opts);
                                     job.start();
                                     xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${opts.cronTime} schedule.`);
