@@ -9,6 +9,6 @@ define(() => {
          * @return {object} - promise object
          * @desc Runs anything that is required to execute now, when app is loaded and ready.
          */ 
-        this.func('onStart');
+        this.func('start');
     });
 });
