@@ -2,6 +2,7 @@
     "catalog": {
         "IBootware": "sys.core.boot.IBootware",
         "IApp": "sys.core.app.IApp",
+        "IStarter": "sys.core.app.IStarter",
         "Base": "sys.core.Base",
         "ErrorInfo": "sys.core.ErrorInfo",
         "Dto": "sys.core.domain.Dto",
@@ -27,5 +28,7 @@
         "supported": {
             "en-us": { "lcid": "1033", "display": "English (United States)", "rtl": false }
         }
-    }
+    },
+    "start": [
+    ]
 }
