@@ -376,14 +376,14 @@ define([
                         if (['_constructor', '_dispose'].indexOf(type) !== -1) { throw `job attribute cannot be applied on special function. (${name})`; }
 
                         // decorate
-                        let schedule = this.args[0] || '* * * * * *',
+                        let schedule = this.args[0] || '',
                             isAutoStart = this.args[1] || false,
                             timeZone = this.args[2] || '',
                             fn = descriptor.value,
                             job = null,
                             CronJob = require('cron').CronJob;
                             if (typeof schedule === 'function') { schedule = schedule.apply(obj); }
-                            if (!schedule) { schedule = '* * * * * *'; } // defaults to run every second
+                            if (!schedule) { schedule = ''; }
                             if (typeof timezone === 'function') { timezone = timezone.apply(obj); }
                             let opts = {
                                 cronTime: schedule, 
@@ -411,10 +411,12 @@ define([
                                         }
                                     }
                                 };
-                                if (updatedSchedule) { opts.schedule = updatedSchedule; }
-                                job = new CronJob(opts);
-                                job.start();
-                                xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${opts.schedule} schedule.`);
+                                if (updatedSchedule) { opts.cronTime = updatedSchedule; }
+                                if (job.cronTime) {
+                                    job = new CronJob(opts);
+                                    job.start();
+                                    xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${opts.cronTime} schedule.`);
+                                }
                             } else { // clear interval on second call
                                 xLog('debug', `Job ${obj._.name}.${name} deactivated.`);
                                 job.stop();
