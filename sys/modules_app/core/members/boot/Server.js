@@ -87,11 +87,11 @@ define([
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.boot(this.app).then(() => {
-                                xLog('debug', `Bootware (booted): ${bootware._.name}`);
+                                xLog('debug', `${bootware._.name}.boot`);
                                 _resolve();
                             }).catch(_reject);
                         } else {
-                            xLog('debug', `Bootware (skipped): ${Bootware._.name} (not a bootware)`);
+                            xLog('debug', `${Bootware._.name} (not a bootware)`);
                             _resolve();
                         }
                     } else {
@@ -153,7 +153,7 @@ define([
                         let bootware = as(new Bootware(), IBootware);
                         if (bootware) {
                             bootware.ready(this.app).then(() => {
-                                xLog('debug', `Bootware (ready): ${bootware._.name}`);
+                                xLog('debug', `${bootware._.name}.ready`);
                                 _resolve();
                             }).catch(_reject);
                         } else {
