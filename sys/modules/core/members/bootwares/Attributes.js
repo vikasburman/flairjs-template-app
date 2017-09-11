@@ -440,7 +440,7 @@ define([
                                 context: obj
                             };
                             if (timeZone) { opts.timeZone = timeZone; }
-                        descriptor.value = function(updatedSchedule) {
+                        descriptor.value = function(command) {
                             const turnOn = (newSchedule) => {
                                 if (!job) {
                                     let isRunning = false;
