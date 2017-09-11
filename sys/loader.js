@@ -12,7 +12,7 @@
         getGlobal = new Function("try {return (this===global ? global : window);}catch(e){return window;}");
 
     // base config
-    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"routes":{"server":["app.core","app.sample"],"client":["web.core","web.sample"]},"static":["web.core","web.sample"],"xLog":"silly","minify":false,"docs":false},"app.core":{"catalog":{"CredentialsChecker":"app.core.security.CredentialsChecker","TokenManager":"app.core.security.TokenManager","Crypt":"app.core.security.Crypt","Service":"app.core.comm.Service","Context":"app.core.comm.Context","Controller":"app.core.domain.Controller","Entity":"app.core.domain.Entity","DbContext":"app.core.data.DbContext","Repository":"app.core.data.Repository","UnitOfWork":"app.core.data.UnitOfWork","Automapper":"app.core.data.Automapper"},"container":{},"routes":{"server":[{"ver":"1","root":"/","url":"/auth","verb":"post","class":"app.core.security.Auth","func":"login"}]},"express":{"case sensitive routing":false,"strict routing":false},"server":{"http":{"enable":true,"port":8080,"timeout":-1},"https":{"enable":false,"port":8443,"timeout":-1,"ssl":{"public":"./cert.pem","private":"./key.pem"}}},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.Attributes","app.core.bootwares.Middlewares","sys.core.bootwares.Router","app.core.bootwares.StaticServer","app.core.bootwares.LocalTunnel","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales"],"middlewares":[{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"more":{"response":{"headers":[]},"bootwares":[],"middlewares":[]},"localtunnel":{"enable":false,"subdomain":"appgears","localhost":"localhost","port":8080},"static":{"favIcon":"web/sample/static/favicon.ico","caching":{"enable":true,"age":86400000}},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.core":{"catalog":{"Binder":"web.core.ui.Binder","Formatter":"web.core.ui.Formatter","Adapter":"web.core.ui.Adapter","Transition":"web.core.ui.Transition","DataBinder":"web.core.bootwares.DataBinder","ComponentTypes":"web.core.ui.ComponentTypes","Component":"web.core.ui.Component","View":"web.core.ui.View","Shell":"web.core.ui.Shell","Partial":"web.core.ui.Partial"},"routes":{"client":[]},"dependencies":[],"bootwares":["sys.core.bootwares.Attributes","web.core.bootwares.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales","[DataBinder]"],"more":{"bootwares":[],"dependencies":[]},"rivets":{"config":{},"formatters":["web.core.ui.formatters.Percent"],"binders":["web.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"},"test":true},"sys.core":{"catalog":{"IBootware":"sys.core.boot.IBootware","IApp":"sys.core.app.IApp","Base":"sys.core.Base","ErrorInfo":"sys.core.ErrorInfo","Dto":"sys.core.domain.Dto","AuthInfo":"sys.core.security.AuthInfo","Credentials":"sys.core.security.Credentials","User":"sys.core.security.User","ClaimsChecker":"sys.core.security.ClaimsChecker","ValueValidator":"sys.core.data.ValueValidator","Hash":"sys.core.security.Hash","ServiceAdapter":"sys.core.comm.ServiceAdapter","Bootstrapper":"app.core.boot.Server | web.core.boot.Client","App":"app.core.app.ServerApp | web.core.app.ClientApp","Auth":"app.core.security.Auth | sys.core.security.Auth"},"container":{},"api":{"root":"/api","version":"v"},"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.sample":{"routes":{"server":[]}}}`);
+    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"routes":{"server":["app.core","app.sample"],"client":["web.core","web.sample"]},"static":["web.core","web.sample"],"xLog":"silly","minify":false,"docs":false},"app.core":{"catalog":{"CredentialsChecker":"app.core.security.CredentialsChecker","TokenManager":"app.core.security.TokenManager","Crypt":"app.core.security.Crypt","Service":"app.core.comm.Service","Context":"app.core.comm.Context","Controller":"app.core.domain.Controller","Entity":"app.core.domain.Entity","DbContext":"app.core.data.DbContext","Repository":"app.core.data.Repository","UnitOfWork":"app.core.data.UnitOfWork","Automapper":"app.core.data.Automapper"},"container":{},"routes":{"server":[{"ver":"1","root":"/","url":"/auth","verb":"post","class":"app.core.security.Auth","func":"login"}]},"express":{"case sensitive routing":false,"strict routing":false},"server":{"http":{"enable":true,"port":8080,"timeout":-1},"https":{"enable":false,"port":8443,"timeout":-1,"ssl":{"public":"./cert.pem","private":"./key.pem"}}},"response":{"headers":[{"name":"Access-Control-Allow-Credentials","value":true},{"name":"Access-Control-Allow-Origin","value":"*"},{"name":"Access-Control-Allow-Methods","value":"GET, PUT, POST, DELETE"},{"name":"Access-Control-Allow-Headers","value":"X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request"}]},"bootwares":["sys.core.bootwares.Attributes","app.core.bootwares.Middlewares","sys.core.bootwares.Router","app.core.bootwares.StaticServer","app.core.bootwares.LocalTunnel","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales"],"middlewares":[{"name":"compression"},{"name":"cookie-parser"},{"name":"express-bearer-token"},{"name":"body-parser","func":"urlencoded","args":[{"extended":true}]},{"name":"body-parser","func":"json"}],"more":{"response":{"headers":[]},"bootwares":[],"middlewares":[]},"localtunnel":{"enable":false,"subdomain":"appgears","localhost":"localhost","port":8080},"static":{"favIcon":"web/sample/static/favicon.ico","caching":{"enable":true,"age":86400000}},"security":{"crypt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85"},"jwt":{"secretKey":"adfdef1d-ce1a-470d-a652-f466292acf85","expiresInMinutes":30}}},"web.core":{"catalog":{"Binder":"web.core.ui.Binder","Formatter":"web.core.ui.Formatter","Adapter":"web.core.ui.Adapter","Transition":"web.core.ui.Transition","DataBinder":"web.core.bootwares.DataBinder","ComponentTypes":"web.core.ui.ComponentTypes","Component":"web.core.ui.Component","View":"web.core.ui.View","Shell":"web.core.ui.Shell","Partial":"web.core.ui.Partial"},"routes":{"client":[]},"dependencies":[],"bootwares":["sys.core.bootwares.Attributes","web.core.bootwares.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales","[DataBinder]"],"more":{"bootwares":[],"dependencies":[]},"rivets":{"config":{},"formatters":["web.core.ui.formatters.Percent"],"binders":["web.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"},"test":true},"sys.core":{"catalog":{"IBootware":"sys.core.boot.IBootware","IApp":"sys.core.app.IApp","IStarter":"sys.core.app.IStarter","Base":"sys.core.Base","ErrorInfo":"sys.core.ErrorInfo","Dto":"sys.core.domain.Dto","AuthInfo":"sys.core.security.AuthInfo","Credentials":"sys.core.security.Credentials","User":"sys.core.security.User","ClaimsChecker":"sys.core.security.ClaimsChecker","ValueValidator":"sys.core.data.ValueValidator","Hash":"sys.core.security.Hash","ServiceAdapter":"sys.core.comm.ServiceAdapter","Bootstrapper":"app.core.boot.Server | web.core.boot.Client","App":"app.core.app.ServerApp | web.core.app.ClientApp","Auth":"app.core.security.Auth | sys.core.security.Auth"},"container":{},"api":{"root":"/api","version":"v"},"locales":{"default":"en-us","supported":{"en-us":{"lcid":"1033","display":"English (United States)","rtl":false}}},"start":[]},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}},"app.sample":{"routes":{"server":[]}}}`);
     
     // basic env
     config.env = {
@@ -30,7 +30,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Sun, 10 Sep 2017 08:38:28 GMT',         
+        lupdate: 'Mon, 11 Sep 2017 03:28:05 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
@@ -78,6 +78,56 @@
     // env args (server side)
     if (isServer) {
         config.env.args = process.argv;
+    }
+
+    // jobs and ticks
+    if (isServer) {
+        config.env.jobs = {
+            list: [],
+            add: (id, obj, fn) => { 
+                config.env.jobs.list.push({ id: id, obj: obj, fn: fn }); 
+            },
+            remove: (id) => {
+                let i = 0,
+                    isFound = false;
+                for (let job of config.env.jobs.list) {
+                    if (job.id === id) { isFound = true; break; }
+                    i++;
+                }
+                if (isFound) {
+                    config.env.jobs.list.splice(i, 1);
+                }
+            },
+            turnOff: () => {
+                for (let job of config.env.jobs.list) {
+                    job.fn('just-off');
+                }
+                config.env.jobs.list = [];
+            }
+        }
+    }
+    config.env.tickers = {
+        list: [],
+        add: (id, obj, fn) => { 
+            config.env.tickers.list.push({ id: id, obj: obj, fn: fn }); 
+        },
+        remove: (id) => {
+            let i = 0,
+                isFound = false;
+            for (let ticker of config.env.tickers.list) {
+                if (ticker.id === id) { isFound = true; break; }
+                i++;
+            }
+            if (isFound) {
+                config.env.tickers.list.splice(i, 1);
+            }
+        },
+        turnOff: () => {
+            for (let ticker of config.env.tickers.list) {
+                ticker.fn('just-off');
+            }
+            config.env.tickers.list = [];
+        }
     }
 
     // logger env
@@ -169,6 +219,25 @@
             } else {
                 _obj = _obj[key];
             }
+        }
+    };
+    let startFuncs = [],
+        isStarted = false;
+    const onStart = (fn) => {
+        // fn must be a function
+        // can be sync or async, bounded or unbounded
+        // all will be just executed one after another without waiting to finish
+        if (isStarted) {
+            fn(); // since app is already started, start this function now itself
+        } else {
+            startFuncs.push(fn);
+        }
+    };
+    const callOnStart = () => {
+        isStarted = true;
+        xLog('debug', `${startFuncs.length} functions auto started.`);
+        for (let fn of startFuncs) {
+            fn();
         }
     };
 
@@ -526,7 +595,7 @@
     g.config = config;
     g.use = use; g.include = include;
     g.settings = settings;
-    g.forAsync = forAsync; g.replaceAll = replaceAll; g.xLog = xLog;
+    g.forAsync = forAsync; g.replaceAll = replaceAll; g.xLog = xLog; g.onStart = onStart;
     g.getNestedKeyValue = getNestedKeyValue; g.setNestedKeyValue = setNestedKeyValue;
     g.App = null;
 
@@ -602,6 +671,7 @@
         console.log(err);
     };
     const onDone = () => { 
+        callOnStart();
         xLog('verbose', 'boot success.'); 
     };
     const onLoad = () => {

@@ -71,6 +71,56 @@
         config.env.args = process.argv;
     }
 
+    // jobs and ticks
+    if (isServer) {
+        config.env.jobs = {
+            list: [],
+            add: (id, obj, fn) => { 
+                config.env.jobs.list.push({ id: id, obj: obj, fn: fn }); 
+            },
+            remove: (id) => {
+                let i = 0,
+                    isFound = false;
+                for (let job of config.env.jobs.list) {
+                    if (job.id === id) { isFound = true; break; }
+                    i++;
+                }
+                if (isFound) {
+                    config.env.jobs.list.splice(i, 1);
+                }
+            },
+            turnOff: () => {
+                for (let job of config.env.jobs.list) {
+                    job.fn('just-off');
+                }
+                config.env.jobs.list = [];
+            }
+        }
+    }
+    config.env.tickers = {
+        list: [],
+        add: (id, obj, fn) => { 
+            config.env.tickers.list.push({ id: id, obj: obj, fn: fn }); 
+        },
+        remove: (id) => {
+            let i = 0,
+                isFound = false;
+            for (let ticker of config.env.tickers.list) {
+                if (ticker.id === id) { isFound = true; break; }
+                i++;
+            }
+            if (isFound) {
+                config.env.tickers.list.splice(i, 1);
+            }
+        },
+        turnOff: () => {
+            for (let ticker of config.env.tickers.list) {
+                ticker.fn('just-off');
+            }
+            config.env.tickers.list = [];
+        }
+    }
+
     // logger env
     if (isServer) {
         let winston = require('winston');

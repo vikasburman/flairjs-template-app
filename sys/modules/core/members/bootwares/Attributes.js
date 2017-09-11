@@ -226,6 +226,7 @@ define([
             // tick(intervalInSeconds, autoStart)
             //  - intervalInSeconds can be a decimal value for milliseconds or a whole number for seconds
             //  - autoStart (true, if timer to be started as soon as app is started)
+            // commands: 'status', 'on', 'off', 'toggle', just-off', <ms>
             Container.register(Class('tick', Attribute, function() {
                 this.decorator((obj, type, name, descriptor) => {
                     // validate
@@ -238,33 +239,80 @@ define([
                         ms = interval * 1000,
                         fn = descriptor.value,
                         intervalHandle = null;
-                    descriptor.value = function(updatedInterval) {
-                        if (!intervalHandle) { // set interval on first call
-                            if (updatedInterval) { ms = updatedInterval * 1000; }
-                            if (ms < 0) { ms = 1; } // min is set as 1 millisecond
-                            let isRunning = false;
-                            const wrappedFn = (...passedArgs) => {
-                                if (!isRunning) {
-                                    const onDone = () => {
-                                        isRunning = false;    
-                                        xLog('debug', `${obj._.name}.${name}.stop`);
-                                    };
-                                    isRunning = true;
-                                    xLog('debug', `${obj._.name}.${name}.start`);
-                                    let result = fn(...passedArgs);
-                                    if (result && (typeof result.then === 'function' && typeof result.catch === 'function')) {
-                                        result.then(onDone).catch(onDone);
-                                    } else {
-                                        onDone();
+                    descriptor.value = function(command) {
+                        const turnOn = (newMS) => {
+                            if (!intervalHandle) {
+                                if (newMS) { ms = newMS * 1000; }
+                                if (ms < 0) { ms = 1; } // min is set as 1 millisecond
+                                let isRunning = false;
+                                const wrappedFn = () => {
+                                    if (!isRunning) {
+                                        const onDone = () => {
+                                            isRunning = false;    
+                                            xLog('debug', `${obj._.name}.${name}.stop`);
+                                        };
+                                        isRunning = true;
+                                        xLog('debug', `${obj._.name}.${name}.start`);
+                                        let result = fn();
+                                        if (result && (typeof result.then === 'function' && typeof result.catch === 'function')) {
+                                            result.then(onDone).catch(onDone);
+                                        } else {
+                                            onDone();
+                                        }
                                     }
+                                };
+                                intervalHandle = setInterval(wrappedFn, ms);
+                                config.env.tickers.add(obj._.id + '_' + name, obj, descriptor.value);
+                                xLog('debug', `Tick ${obj._.name}.${name} activated to run every ${ms} ms.`);
+                            }
+                        };
+                        const turnOff = (isSupressClearingFromList) => {
+                            if (intervalHandle) {
+                                xLog('debug', `Tick ${obj._.name}.${name} deactivated.`);
+                                clearInterval(intervalHandle);
+                                if (!isSupressClearingFromList) {
+                                    config.env.tickers.remove(obj._.id + '_' + name);
                                 }
-                            };
-                            intervalHandle = setInterval(wrappedFn, ms);
-                            xLog('debug', `Tick ${obj._.name}.${name} activated to run every ${ms} ms.`);
-                        } else { // clear interval on second call
-                            xLog('debug', `Tick ${obj._.name}.${name} deactivated.`);
-                            clearInterval(intervalHandle);
+                            }
+                        };
+                        const toggle = () => {
+                            if (intervalHandle) {
+                                turnOff();
+                            } else {
+                                turnOn();
+                            }
+                        };
+                        const status = () => {
+                            if (intervalHandle) {
+                                return 'on';
+                            } else {
+                                return 'off';
+                            }
+                        };
+                        if (!command) { command = 'toggle'; }
+                        let result = null;
+                        switch(command) {
+                            case 'on': 
+                                turnOn(); 
+                                break;
+                            case 'off': 
+                                turnOff(); 
+                                break;
+                            case 'just-off':
+                                turnOff(true); 
+                                break;
+                            case 'toggle':
+                                toggle();
+                                break;
+                            case 'status':
+                                result = status();
+                                break;
+                            default: // updated ms
+                                turnOff();
+                                turnOn(command);
+                                break;
                         }
+                        return result;
                     }.bind(obj);
 
                     // auto start
@@ -393,35 +441,82 @@ define([
                             };
                             if (timeZone) { opts.timeZone = timeZone; }
                         descriptor.value = function(updatedSchedule) {
-                            if (!job) { // set job on first call
-                                let isRunning = false;
-                                opts.onTick = () => {
-                                    if (!isRunning) {
-                                        const onDone = () => {
-                                            isRunning = false;    
-                                            xLog('debug', `Job ${obj._.name}.${name} finished.`);
-                                        };
-                                        isRunning = true;
-                                        xLog('debug', `Job ${obj._.name}.${name} started.`);
-                                        let result = fn();
-                                        if (result && (typeof result.then === 'function' && typeof result.catch === 'function')) {
-                                            result.then(onDone).catch(onDone);
-                                        } else {
-                                            onDone();
+                            const turnOn = (newSchedule) => {
+                                if (!job) {
+                                    let isRunning = false;
+                                    opts.onTick = () => {
+                                        if (!isRunning) {
+                                            const onDone = () => {
+                                                isRunning = false;    
+                                                xLog('debug', `Job ${obj._.name}.${name} finished.`);
+                                            };
+                                            isRunning = true;
+                                            xLog('debug', `Job ${obj._.name}.${name} started.`);
+                                            let result = fn();
+                                            if (result && (typeof result.then === 'function' && typeof result.catch === 'function')) {
+                                                result.then(onDone).catch(onDone);
+                                            } else {
+                                                onDone();
+                                            }
                                         }
+                                    };
+                                    if (newSchedule) { opts.cronTime = newSchedule; }
+                                    if (opts.cronTime) {
+                                        job = new CronJob(opts);
+                                        job.start();
+                                        config.env.jobs.add(obj._.id + '_' + name, obj, descriptor.value);
+                                        xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${opts.cronTime} schedule.`);
                                     }
-                                };
-                                if (updatedSchedule) { opts.cronTime = updatedSchedule; }
-                                if (opts.cronTime) {
-                                    job = new CronJob(opts);
-                                    job.start();
-                                    xLog('debug', `Job ${obj._.name}.${name} activated to run as per ${opts.cronTime} schedule.`);
                                 }
-                            } else { // clear interval on second call
-                                xLog('debug', `Job ${obj._.name}.${name} deactivated.`);
-                                job.stop();
-                                job = null;
+                            };
+                            const turnOff = (isSupressClearingFromList) => {
+                                if (job) {
+                                    xLog('debug', `Job ${obj._.name}.${name} deactivated.`);
+                                    job.stop();
+                                    job = null;
+                                    if (!isSupressClearingFromList) {
+                                        config.env.jobs.remove(obj._.id + '_' + name);
+                                    }
+                                }
+                            };
+                            const toggle = () => {
+                                if (job) {
+                                    turnOff();
+                                } else {
+                                    turnOn();
+                                }
+                            };
+                            const status = () => {
+                                if (job) {
+                                    return 'on';
+                                } else {
+                                    return 'off';
+                                }
+                            };
+                            if (!command) { command = 'toggle'; }
+                            let result = null;
+                            switch(command) {
+                                case 'on': 
+                                    turnOn(); 
+                                    break;
+                                case 'off': 
+                                    turnOff(); 
+                                    break;
+                                case 'just-off':
+                                    turnOff(true); 
+                                    break;
+                                case 'toggle':
+                                    toggle();
+                                    break;
+                                case 'status':
+                                    result = status();
+                                    break;
+                                default: // updated ms
+                                    turnOff();
+                                    turnOn(command);
+                                    break;
                             }
+                            return result;
                         }.bind(obj);
 
                         // auto start
