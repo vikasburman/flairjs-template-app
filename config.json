@@ -24,6 +24,8 @@
             "web.core",
             "web.sample"
         ],
+        "locales": ["en-us"],
+
         "xLog": "silly",
         "minify": false,
         "docs": false
@@ -33,8 +35,6 @@
         "static": {
             "favIcon": "web/sample/static/favicon.ico"
         }
-    },
-    "web.core": {
-        "test": true    
-    }    
+    }
+
 }

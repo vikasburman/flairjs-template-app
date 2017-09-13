@@ -1,8 +1,7 @@
 define([
     use('[Base]'),
-    use('[IBootware]'),
-    use('[ErrorInfo]')
-], (Base, IBootware, ErrorInfo) => {
+    use('[IBootware]')
+], (Base, IBootware) => {
     /**
      * @class sys.core.bootwares.Locales
      * @classdesc sys.core.bootwares.Locales
@@ -12,12 +11,13 @@ define([
         attr('async');
         this.func('boot', (resolve, reject, app) => {
             // load definitions
-            let defaultLocale = this.settings('locales.default', 'en-us'),
-                defaultLocaleInfo = { lcid: '1033', display: 'English (United States)', rtl: false },
-                supportedLocales = this.settings('locales.supported', {
-                    'en-us': defaultLocaleInfo
-                });
-
+            let inbuiltDefaultLocale = 'en-us',
+                inbuiltDefaultLocaleInfo = { name: inbuiltDefaultLocale, lcid: '1033', display: 'English (United States)', rtl: false },
+                localesList = {inbuiltDefaultLocale: inbuiltDefaultLocaleInfo},
+                locales = this.settings('locales', localesList),
+                supportedLocales = this.settings(':locales', [inbuiltDefaultLocale]),
+                defaultLocale = supportedLocales[0] || inbuiltDefaultLocale; // first is the default
+                
             // extend env (in global config) for locales related operations
             config.env.getLocale = () => { 
                 let locale = '';
@@ -27,21 +27,21 @@ define([
                     let currentRequest = config.env.currentRequest();
                     locale = (currentRequest ? currentRequest.getLocale() : '') || defaultLocale;
                 }
-                let localeObj = supportedLocales[locale];
+                let localeObj = localesList[locale];
                 if (!localeObj) {
-                    localeObj =  defaultLocaleInfo
+                    locale = inbuiltDefaultLocale;
+                    localeObj =  inbuiltDefaultLocaleInfo;
                 } 
-                localeObj.name = locale;
                 return localeObj;
             };
             config.env.getLocales = () => {
                 let items = [],
                     item = null;
-                for(let locale in supportedLocales) {
-                    if (supportedLocales.hasOwnProperty(locale)) {
-                        item = supportedLocales[locale];
-                        item.name = locale;
-                        items.push(item);
+                for(let locale in localesList) {
+                    if (localesList.hasOwnProperty(locale)) {
+                        if (supportedLocales.indexOf(locale.name) !== -1) {
+                            items.push(localesList[locale]);
+                        }
                     }
                 }
                 return items;
@@ -50,7 +50,7 @@ define([
             // further extend env for client only
             if (!this.env.isServer) {
                 config.env.setLocale = (locale, isSupressRefresh) => { 
-                    if (supportedLocales[locale]) {
+                    if (localesList[locale] && supportedLocales.indexOf(locale) !== -1) {
                         sessionStorage.setItem('locale', locale);
                         if (!isSupressRefresh) {
                             location.reload();

@@ -24,10 +24,9 @@
         "version": "v"
     },
     "locales": {
-        "default": "en-us",
-        "supported": {
-            "en-us": { "lcid": "1033", "display": "English (United States)", "rtl": false }
-        }
+        "en-us": { "name": "en-us", "lcid": "1033", "display": "English (United States)", "rtl": false },
+        "fr-fr": { "name": "fr-fr", "lcid": "1036", "display": "French (France)", "rtl": false },
+        "de-de": { "name": "de-de", "lcid": "1031", "display": "German (Germany)", "rtl": false }
     },
     "start": [
     ]
