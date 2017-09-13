@@ -14,10 +14,17 @@ define([
         
         attr('async');
         this.func('ready', (resolve, reject, app) => {
-            let enable = this.settings('localtunnel.enable', false),
-                subdomain = this.settings('localtunnel.subdomain', ''),
-                localhost = this.settings('localtunnel.localhost', ''),
-                port = this.settings('localtunnel.port', '8080');
+            let tunnel = this.settings(':tunnel', ''),  // format is --> subdomain@host:port
+                tunnelDefined = (tunnel !== ''),
+                tunnelParts = tunnel.split('@'),
+                tunnelSubDomain = tunnelParts[0],
+                tunnelHostParts = tunnelParts[1].split(':'),
+                tunnelHost = tunnelHostParts[0],
+                tunnelPort = tunnelHostParts[1];
+            let enable = tunnelDefined || this.settings('localtunnel.enable', false),
+                subdomain = tunnelSubDomain || this.settings('localtunnel.subdomain', ''),
+                localhost = tunnelHost || this.settings('localtunnel.localhost', 'localhost'),
+                port = tunnelPort || this.settings('localtunnel.port', '8080');
 
             // start
             if (enable) {
