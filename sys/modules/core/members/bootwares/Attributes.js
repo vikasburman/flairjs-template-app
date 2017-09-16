@@ -16,6 +16,9 @@ define([
             // request
             // request(url, [options])
             //  url: can be relative, full or url pattern with /:<key> as part of url
+            //      if specified as '@url', 'url' would assumed to be a setting of the same
+            //      assembly where this attribute is being applied and url would be extracted
+            //      from setting
             //  options: can be a literal having:
             //      - enableCookies: true (for same origin), false (no cookies sent), all (even for cross-origin calls)
             //      - requestDataType: any of the possible Content-Type (this sets Content-Type header itself)
@@ -45,7 +48,11 @@ define([
                     if (staticOpts.responseDataType) { delete staticOpts.responseDataType; }
                     if (staticOpts.requestDataType) { delete staticOpts.requestDataType; }
                     if (staticOpts.auth) { delete staticOpts.auth; }    
-                    if (staticOpts.enableCookies) { delete staticOpts.enableCookies; }    
+                    if (staticOpts.enableCookies) { delete staticOpts.enableCookies; }  
+                    if (fetchUrl.startsWith('@')) {
+                        let protectedRef = as(obj, 'protected');
+                        fetchUrl = protectedRef.settings(fetchUrl.substr(1));
+                    }
                     descriptor.value = function(urlFillsOrInputData, inputData) {
                         _fetchUrl = fetchUrl;
                         if (_fetchUrl.indexOf('/:') === -1) { // e.g., items/:id or http://www.abc.com/items/:type/:id or /home#/pages/:page
