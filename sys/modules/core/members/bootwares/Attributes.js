@@ -3,8 +3,9 @@ define([
     use('[IBootware]'),
     use('[Auth]'),
     use('[ValueValidator]'),
-    use('sys.core.comm.ClientResponse')
-], (Base, IBootware, Auth, ValueValidator, FetchResponse) => {
+    use('sys.core.comm.ClientResponse'),
+    use('node-fetch | ')
+], (Base, IBootware, Auth, ValueValidator, FetchResponse, _fetch) => {
     /**
      * @class sys.core.bootwares.Attributes
      * @classdesc sys.core.bootwares.Attributes
@@ -194,7 +195,8 @@ define([
                                 }                                    
 
                                 // actual call
-                                fetch(_fetchUrl, staticOpts).then((response) => {
+                                let fetchCmd = (this.env.isServer ? _fetch : fetch);
+                                fetchCmd(_fetchUrl, staticOpts).then((response) => {
                                     if (response.ok) {
                                         switch(responseDataType) {
                                             case 'json':
