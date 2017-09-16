@@ -87,8 +87,22 @@ define([
                         // fetch
                         let request = (updatedBody = null) => {
                             return new Promise((_resolve, _reject) => {
+                                xLog('debug', `fetch.start`);
+
                                 let onFetch = (err, response, data) => {
                                     let _response = new FetchResponse(response, err, data);
+                                    
+                                    // log
+                                    xLog('debug', `  status: ${_response.status}`);
+                                    xLog('debug', `  statusText: ${_response.statusText}`);
+                                    if (err) {
+                                        xLog('debug', `  error: ${_response.error}`);
+                                    } else {
+                                        xLog('debug', `  data:`);
+                                        xLog('debug', JSON.stringify(data, 2));
+                                    }
+                                    xLog('debug', `fetch.end`);
+                                    
                                     if (err) {
                                         _reject(_response);
                                     } else {
@@ -205,6 +219,14 @@ define([
                                     onFetch('invalid fetch url', null, null);
                                 }                                    
 
+                                // method
+                                staticOpts.method = staticOpts.method || method || 'GET';
+
+                                // record
+                                xLog('debug', `  url: ${_fetchUrl}`);
+                                xLog('debug', `  non default options:`);
+                                xLog('debug', JSON.stringify(staticOpts, 2));
+                                
                                 // actual call
                                 let fetchCmd = (this.env.isServer ? _fetch : fetch);
                                 fetchCmd(_fetchUrl, staticOpts).then((response) => {
