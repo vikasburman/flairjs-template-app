@@ -260,8 +260,10 @@ define([
                             inputArgs.body = updatedBody;
                         };
 
-                        fnArgs = [request, inputArgs.body];
-                        fn(...fnArgs);
+                        return new Promise((resolve, reject) => {
+                            fnArgs = [resolve, reject, request, inputArgs.body];
+                            fn(...fnArgs);
+                        });
                     }.bind(obj);
                 });
             }));
