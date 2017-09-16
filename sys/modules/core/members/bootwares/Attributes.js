@@ -35,6 +35,8 @@ define([
             //               'Bearer [config.clientAccessToken]
             //          fn: a (private/protected/public) function reference, that gives access headers for fetch operation (key-value pairs returned from here are added under headers)
             //      - Additionally it can have everything else that 'init' option of fetch request looks for (https://developer.mozilla.org/en/docs/Web/API/Fetch_API)
+            //  options can also be a string, and in that case it will be treated as value of 'auth' setting of options and
+            //  rest everything will be taken as default. This string value will be treated as '*' case of auth setting
             Container.register(Class('request', Attribute, function() {
                 this.decorator((obj, type, name, descriptor) => {
                     // validate
@@ -44,14 +46,16 @@ define([
                     // decorate
                     let fetchUrl = this.args[0] || '',
                         staticOpts = this.args[1] || {},
-                        fn = descriptor.value,
+                        auth = '';
+                    if (typeof staticOpts === 'string') { auth = staticOpts; staticOpts = {}; }
+                    let fn = descriptor.value,
                         protectedRef = as(obj, 'protected'),
                         fnArgs = null,
                         inputArgs = {},
                         enableCookies = staticOpts.enableCookies || false,
                         responseDataType = staticOpts.responseDataType || 'json', // defaults to json
-                        requestDataType = staticOpts.requestDataType || 'json', // defaults to json
-                        auth = staticOpts.auth || null;
+                        requestDataType = staticOpts.requestDataType || 'json'; // defaults to json
+                    auth = auth || staticOpts.auth || null;
                     if (staticOpts.responseDataType) { delete staticOpts.responseDataType; }
                     if (staticOpts.requestDataType) { delete staticOpts.requestDataType; }
                     if (staticOpts.auth) { delete staticOpts.auth; }    
