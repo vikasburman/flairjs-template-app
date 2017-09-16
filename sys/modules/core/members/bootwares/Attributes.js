@@ -227,7 +227,7 @@ define([
                                 inputArgs.body = updatedBody;
                             };
 
-                            fnArgs = [doFetch, resolve, reject, inputArgs.body];
+                            fnArgs = [resolve, reject, doFetch, inputArgs.body];
                             fn(...fnArgs);
                         });
                     }.bind(obj);
