@@ -98,7 +98,7 @@ define([
                                     if (err) {
                                         xLog('debug', `  error: ${_response.error}`);
                                     } else {
-                                        xLog('debug', `  data: ${data}`);
+                                        xLog('debug', `  data: ${JSON.stringyfy(data)}`);
                                     }
                                     xLog('debug', `fetch.end`);
 
@@ -223,7 +223,7 @@ define([
 
                                 // log
                                 xLog('debug', `  url: ${_fetchUrl}`);
-                                xLog('debug', `  non default options: ${staticOpts}`);
+                                xLog('debug', `  non default options: ${JSON.stringyfy(staticOpts, 2)}`);
                                 
                                 // actual call
                                 let fetchCmd = (this.env.isServer ? _fetch : fetch);
