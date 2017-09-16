@@ -89,6 +89,15 @@ define([
                                         //             additionally it can have
                                         if(inputArgs.body) {
                                             if (requestDataType) {
+                                                // do some standard mappings of well-known content-types
+                                                let rdt = requestDataType;
+                                                switch(rdt) {
+                                                    case 'json': requestDataType = 'application/json'; break;
+                                                    case 'xml': requestDataType = 'text/xml'; break;
+                                                    case 'html': requestDataType = 'text/html'; break;
+                                                    case 'csv': requestDataType = 'text/csv'; break;
+                                                }
+
                                                 if (staticOpts.headers && staticOpts.headers['Content-Type']) {
                                                     // both are defined, give Conteny-Type precedence and ignore requestDataType
                                                 } else {
