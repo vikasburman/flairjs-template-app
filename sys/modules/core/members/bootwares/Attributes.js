@@ -49,7 +49,7 @@ define([
                         auth = '';
                     if (typeof staticOpts === 'string') { auth = staticOpts; staticOpts = {}; }
                     let fn = descriptor.value,
-                        protectedRef = as(obj, 'protected'),
+                        protectedRef = as(obj, 'protected') || obj,
                         fnArgs = null,
                         inputArgs = {},
                         enableCookies = staticOpts.enableCookies || false,
@@ -73,196 +73,193 @@ define([
                         }
 
                         // fetch
-                        return new Promise((resolve, reject) => {
-                            // actual fetch
-                            let doFetch = (updatedBody = null) => {
-                                return new Promise((_resolve, _reject) => {
-                                    let onFetch = (err, response, data) => {
-                                        let _response = new FetchResponse(response, err, data);
-                                        if (err) {
-                                            _reject(_response);
-                                        } else {
-                                            _resolve(_response);
-                                        }
-                                    };
+                        let request = (updatedBody = null) => {
+                            return new Promise((_resolve, _reject) => {
+                                let onFetch = (err, response, data) => {
+                                    let _response = new FetchResponse(response, err, data);
+                                    if (err) {
+                                        _reject(_response);
+                                    } else {
+                                        _resolve(_response);
+                                    }
+                                };
 
-                                    // build url
-                                    if (inputArgs.urlFills) {
-                                        for(let fill in inputArgs.urlFills) {
-                                            if (inputArgs.urlFills.hasOwnProperty(fill)) {
-                                                _fetchUrl = _fetchUrl.replace('/:' + fill, encodeURIComponent('/' + inputArgs.urlFills[fill].toString()));
+                                // build url
+                                if (inputArgs.urlFills) {
+                                    for(let fill in inputArgs.urlFills) {
+                                        if (inputArgs.urlFills.hasOwnProperty(fill)) {
+                                            _fetchUrl = _fetchUrl.replace('/:' + fill, encodeURIComponent('/' + inputArgs.urlFills[fill].toString()));
+                                        }
+                                    }
+                                }
+
+                                // update body
+                                if (updatedBody) {
+                                    inputArgs.body = updatedBody;
+                                }
+
+                                // prepare call options
+                                if (_fetchUrl) {
+                                    // staticOpts: can be all that fetch's init argument expects
+                                    //             additionally it can have
+                                    if(inputArgs.body) {
+                                        if (requestDataType) {
+                                            // do some standard mappings of well-known content-types
+                                            let rdt = requestDataType;
+                                            switch(rdt) {
+                                                case 'json': requestDataType = 'application/json'; break;
+                                                case 'xml': requestDataType = 'text/xml'; break;
+                                                case 'html': requestDataType = 'text/html'; break;
+                                                case 'csv': requestDataType = 'text/csv'; break;
                                             }
+
+                                            if (staticOpts.headers && staticOpts.headers['Content-Type']) {
+                                                // both are defined, give Conteny-Type precedence and ignore requestDataType
+                                            } else {
+                                                staticOpts.headers = staticOpts.headers || {};
+                                                staticOpts.headers['Content-Type'] = requestDataType;
+                                            }
+                                        }
+                                        if (staticOpts.headers && staticOpts.headers['Content-Type'] && staticOpts.headers['Content-Type'].indexOf('json') !== -1) {
+                                            staticOpts.body = JSON.stringify(inputArgs.body); // json
+                                        } else {
+                                            staticOpts.body = inputArgs.body; // could be text, buffer, array, object or formData
                                         }
                                     }
 
-                                    // update body
-                                    if (updatedBody) {
-                                        inputArgs.body = updatedBody;
-                                    }
-
-                                    // prepare call options
-                                    if (_fetchUrl) {
-                                        // staticOpts: can be all that fetch's init argument expects
-                                        //             additionally it can have
-                                        if(inputArgs.body) {
-                                            if (requestDataType) {
-                                                // do some standard mappings of well-known content-types
-                                                let rdt = requestDataType;
-                                                switch(rdt) {
-                                                    case 'json': requestDataType = 'application/json'; break;
-                                                    case 'xml': requestDataType = 'text/xml'; break;
-                                                    case 'html': requestDataType = 'text/html'; break;
-                                                    case 'csv': requestDataType = 'text/csv'; break;
-                                                }
-
-                                                if (staticOpts.headers && staticOpts.headers['Content-Type']) {
-                                                    // both are defined, give Conteny-Type precedence and ignore requestDataType
-                                                } else {
-                                                    staticOpts.headers = staticOpts.headers || {};
-                                                    staticOpts.headers['Content-Type'] = requestDataType;
-                                                }
-                                            }
-                                            if (staticOpts.headers && staticOpts.headers['Content-Type'] && staticOpts.headers['Content-Type'].indexOf('json') !== -1) {
-                                                staticOpts.body = JSON.stringify(inputArgs.body); // json
-                                            } else {
-                                                staticOpts.body = inputArgs.body; // could be text, buffer, array, object or formData
-                                            }
-                                        }
-
-                                        // cookies
-                                        if (enableCookies) {
-                                            staticOpts.headers = staticOpts.headers || {};
-                                            if (enableCookies === 'all') {
-                                                staticOpts.headers.credentials = 'include';
-                                            } else {
-                                                staticOpts.headers.credentials = 'same-origin';
-                                            }
-                                        } else {
-                                            staticOpts.headers = staticOpts.headers || {};
-                                            staticOpts.headers.credentials = 'omit';
-                                        }
-
-                                        // locale
+                                    // cookies
+                                    if (enableCookies) {
                                         staticOpts.headers = staticOpts.headers || {};
-                                        staticOpts.headers.userLocale = this.env.getLocale(); // this is full locale object
-
-                                        // auth
-                                        if (auth) {
-                                            let applyHeaders = (authHeaders) => {
-                                                for(let authHeader in authHeaders) {
-                                                    if (authHeaders.hasOwnProperty(authHeader)) {
-                                                        staticOpts.headers = staticOpts.headers || {};
-                                                        staticOpts.headers[authHeader] = authHeaders[authHeader];
-                                                    }
-                                                }
-                                            };
-                                            if (typeof auth === 'function') {
-                                                auth(name).then((authHeaders) => {
-                                                    applyHeaders(authHeaders);
-                                                }).catch((err) => {
-                                                    onFetch(err, null, null);
-                                                });
-                                            } else if (typeof auth === 'string') {
-                                                switch(auth) {
-                                                    case 'auto':
-                                                        if (this.env.isServer) {
-                                                            onFetch('invalid auth settings for server.', null, null);
-                                                        } else {
-                                                            let auth = new Auth();
-                                                            applyHeaders(auth.getTokenHeader());
-                                                        }
-                                                        break;
-                                                    case 'none':
-                                                        // don't do anything
-                                                        break;
-                                                    default: // assume this is 'Authorization' header value
-                                                        staticOpts.headers = staticOpts.headers || {};
-                                                        if (auth.indexOf('[') !== -1 && auth.indexOf(']') !== -1) {
-                                                            let memberPath = ((auth.split('[')[1]).split(']')[0]),
-                                                                memberValue = getNestedKeyValue(protectedRef, memberPath),
-                                                                theString = memberValue;
-                                                            if (typeof memberValue === 'function') { theString = memberValue(); }
-                                                            auth = auth.replace('[' + memberPath + ']', theString);
-                                                        }
-                                                        staticOpts.headers['Authorization'] = auth;
-                                                        break;
-                                                }
-                                            } else {
-                                                onFetch('invalid auth settings.', null, null);
-                                            }
+                                        if (enableCookies === 'all') {
+                                            staticOpts.headers.credentials = 'include';
+                                        } else {
+                                            staticOpts.headers.credentials = 'same-origin';
                                         }
                                     } else {
-                                        onFetch('invalid fetch url', null, null);
-                                    }                                    
+                                        staticOpts.headers = staticOpts.headers || {};
+                                        staticOpts.headers.credentials = 'omit';
+                                    }
 
-                                    // actual call
-                                    fetch(_fetchUrl, staticOpts).then((response) => {
-                                        if (response.ok) {
-                                            switch(responseDataType) {
-                                                case 'json':
-                                                    response.json().then((data) => {
-                                                        onFetch(null, response, data);
-                                                    }).catch((err) => {
-                                                        onFetch(err, response, null);
-                                                    });
+                                    // locale
+                                    staticOpts.headers = staticOpts.headers || {};
+                                    staticOpts.headers.userLocale = this.env.getLocale(); // this is full locale object
+
+                                    // auth
+                                    if (auth) {
+                                        let applyHeaders = (authHeaders) => {
+                                            for(let authHeader in authHeaders) {
+                                                if (authHeaders.hasOwnProperty(authHeader)) {
+                                                    staticOpts.headers = staticOpts.headers || {};
+                                                    staticOpts.headers[authHeader] = authHeaders[authHeader];
+                                                }
+                                            }
+                                        };
+                                        if (typeof auth === 'function') {
+                                            auth(name).then((authHeaders) => {
+                                                applyHeaders(authHeaders);
+                                            }).catch((err) => {
+                                                onFetch(err, null, null);
+                                            });
+                                        } else if (typeof auth === 'string') {
+                                            switch(auth) {
+                                                case 'auto':
+                                                    if (this.env.isServer) {
+                                                        onFetch('invalid auth settings for server.', null, null);
+                                                    } else {
+                                                        let auth = new Auth();
+                                                        applyHeaders(auth.getTokenHeader());
+                                                    }
                                                     break;
-                                                case 'blob':
-                                                    response.blob().then((data) => {
-                                                        onFetch(null, response, data);
-                                                    }).catch((err) => {
-                                                        onFetch(err, response, null);
-                                                    });
+                                                case 'none':
+                                                    // don't do anything
                                                     break;
-                                                case 'buffer':
-                                                    response.arrayBuffer().then((data) => {
-                                                        onFetch(null, response, data);
-                                                    }).catch((err) => {
-                                                        onFetch(err, response, null);
-                                                    });
-                                                    break;                                    
-                                                case 'formData': 
-                                                    response.formData().then((data) => {
-                                                        onFetch(null, response, data);
-                                                    }).catch((err) => {
-                                                        onFetch(err, response, null);
-                                                    });
-                                                    break;
-                                                case 'objectUrl':
-                                                    response.blob().then((data) => {
-                                                        onFetch(null, response, URL.createObjectURL(data));
-                                                    }).catch((err) => {
-                                                        onFetch(err, response, null);
-                                                    });
-                                                    break;
-                                                case 'text': 
-                                                default:
-                                                    response.text().then((data) => {
-                                                        onFetch(null, response, data);
-                                                    }).catch((err) => {
-                                                        onFetch(err, response, null);
-                                                    });
+                                                default: // assume this is 'Authorization' header value
+                                                    staticOpts.headers = staticOpts.headers || {};
+                                                    if (auth.indexOf('[') !== -1 && auth.indexOf(']') !== -1) {
+                                                        let memberPath = ((auth.split('[')[1]).split(']')[0]),
+                                                            memberValue = getNestedKeyValue(protectedRef, memberPath),
+                                                            theString = memberValue;
+                                                        if (typeof memberValue === 'function') { theString = memberValue(); }
+                                                        auth = auth.replace('[' + memberPath + ']', theString);
+                                                    }
+                                                    staticOpts.headers['Authorization'] = auth;
                                                     break;
                                             }
                                         } else {
-                                            onFetch(response.status, response, null);
+                                            onFetch('invalid auth settings.', null, null);
                                         }
-                                    }).catch((err) => {
-                                        onFetch(err, null, null);
-                                    });
+                                    }
+                                } else {
+                                    onFetch('invalid fetch url', null, null);
+                                }                                    
+
+                                // actual call
+                                fetch(_fetchUrl, staticOpts).then((response) => {
+                                    if (response.ok) {
+                                        switch(responseDataType) {
+                                            case 'json':
+                                                response.json().then((data) => {
+                                                    onFetch(null, response, data);
+                                                }).catch((err) => {
+                                                    onFetch(err, response, null);
+                                                });
+                                                break;
+                                            case 'blob':
+                                                response.blob().then((data) => {
+                                                    onFetch(null, response, data);
+                                                }).catch((err) => {
+                                                    onFetch(err, response, null);
+                                                });
+                                                break;
+                                            case 'buffer':
+                                                response.arrayBuffer().then((data) => {
+                                                    onFetch(null, response, data);
+                                                }).catch((err) => {
+                                                    onFetch(err, response, null);
+                                                });
+                                                break;                                    
+                                            case 'formData': 
+                                                response.formData().then((data) => {
+                                                    onFetch(null, response, data);
+                                                }).catch((err) => {
+                                                    onFetch(err, response, null);
+                                                });
+                                                break;
+                                            case 'objectUrl':
+                                                response.blob().then((data) => {
+                                                    onFetch(null, response, URL.createObjectURL(data));
+                                                }).catch((err) => {
+                                                    onFetch(err, response, null);
+                                                });
+                                                break;
+                                            case 'text': 
+                                            default:
+                                                response.text().then((data) => {
+                                                    onFetch(null, response, data);
+                                                }).catch((err) => {
+                                                    onFetch(err, response, null);
+                                                });
+                                                break;
+                                        }
+                                    } else {
+                                        onFetch(response.status, response, null);
+                                    }
+                                }).catch((err) => {
+                                    onFetch(err, null, null);
                                 });
-                            };
+                            });
+                        };
 
-                            // helper methods
-                            doFetch.updateUrl = (urlFills) => {
-                                inputArgs.urlFills = urlFills;
-                            };
-                            doFetch.updateData = (updatedBody) => { // updated body can also be provided via direct doFetch() call
-                                inputArgs.body = updatedBody;
-                            };
+                        // helper methods
+                        request.updateUrl = (urlFills) => {
+                            inputArgs.urlFills = urlFills;
+                        };
+                        request.updateData = (updatedBody) => { // updated body can also be provided via direct request() call
+                            inputArgs.body = updatedBody;
+                        };
 
-                            fnArgs = [resolve, reject, doFetch, inputArgs.body];
-                            fn(...fnArgs);
-                        });
+                        fnArgs = [request, inputArgs.body];
+                        fn(...fnArgs);
                     }.bind(obj);
                 });
             }));
