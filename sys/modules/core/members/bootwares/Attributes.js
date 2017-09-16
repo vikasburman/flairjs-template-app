@@ -98,11 +98,10 @@ define([
                                     if (err) {
                                         xLog('debug', `  error: ${_response.error}`);
                                     } else {
-                                        xLog('debug', `  data:`);
-                                        xLog('debug', JSON.stringify(data, 2));
+                                        xLog('debug', `  data: ${data}`);
                                     }
                                     xLog('debug', `fetch.end`);
-                                    
+
                                     if (err) {
                                         _reject(_response);
                                     } else {
@@ -222,10 +221,9 @@ define([
                                 // method
                                 staticOpts.method = staticOpts.method || method || 'GET';
 
-                                // record
+                                // log
                                 xLog('debug', `  url: ${_fetchUrl}`);
-                                xLog('debug', `  non default options:`);
-                                xLog('debug', JSON.stringify(staticOpts, 2));
+                                xLog('debug', `  non default options: ${staticOpts}`);
                                 
                                 // actual call
                                 let fetchCmd = (this.env.isServer ? _fetch : fetch);
