@@ -39,8 +39,8 @@ define([
                         fnArgs = null,
                         inputArgs = {},
                         enableCookies = staticOpts.enableCookies || false,
-                        responseDataType = staticOpts.responseDataType || null,
-                        requestDataType = staticOpts.requestDataType || null,
+                        responseDataType = staticOpts.responseDataType || 'json', // defaults to json
+                        requestDataType = staticOpts.requestDataType || 'json', // defaults to json
                         auth = staticOpts.auth || null;
                     if (staticOpts.responseDataType) { delete staticOpts.responseDataType; }
                     if (staticOpts.requestDataType) { delete staticOpts.requestDataType; }
