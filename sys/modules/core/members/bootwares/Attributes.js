@@ -21,12 +21,17 @@ define([
             //      e.g., '@urls.query' will read 'url.query' setting
             //      assembly where this attribute is being applied and url would be extracted
             //      from setting
+            //      url can also ne clubbed with request method type, e.g.,
+            //      'get->https://some/url/' OR 'post->https://some/url/' OR
+            //      'get->@urls.query' OR 'post->@urls.query', ...
             //  options: can be a literal having:
             //      - enableCookies: true (for same origin), false (no cookies sent), all (even for cross-origin calls)
             //      - requestDataType: any of the possible Content-Type (this sets Content-Type header itself) 
             //          when not defined, it will be taken as json
             //      - responseDataType: text, json, blob, buffer, formData, objectUrl
             //          when not defined, it will be taken as json
+            //      - method: can be ay standard request methods (GET, POST, ...)
+            //        if not defined, it will be taken as GET or whatever defined with URL above
             //      - auth: can be any of these values
             //          'none': (or absence of this key itself), means no auth data to be send
             //          'auto': automatically picks the auth header from the session (only on client, throws on server)
@@ -53,6 +58,7 @@ define([
                         protectedRef = as(obj, 'protected') || obj,
                         fnArgs = null,
                         inputArgs = {},
+                        method = staticOpts.method || '',
                         enableCookies = staticOpts.enableCookies || false,
                         responseDataType = staticOpts.responseDataType || 'json', // defaults to json
                         requestDataType = staticOpts.requestDataType || 'json'; // defaults to json
@@ -61,6 +67,11 @@ define([
                     if (staticOpts.requestDataType) { delete staticOpts.requestDataType; }
                     if (staticOpts.auth) { delete staticOpts.auth; }    
                     if (staticOpts.enableCookies) { delete staticOpts.enableCookies; }  
+                    if (fetchUrl.indexOf('->') !== -1) {
+                        let parts = fetchUrl.split('->');
+                        method = method || parts[0].toUpperCase();
+                        fetchUrl = parts[1].trim();
+                    }
                     if (fetchUrl.startsWith('@')) {
                         fetchUrl = protectedRef.settings(fetchUrl.substr(1));
                     }
