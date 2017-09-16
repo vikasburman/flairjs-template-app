@@ -23,6 +23,7 @@ define([
             //      - auth: can be any of these three values
             //          'none': (or absence of this key itself), means no auth data to be send
             //          'auto': automatically picks the auth header from the session (only on client, throws on server)
+            //          '*': any other string is treated as Auth header content itself and set to 'Authorization' header
             //          fn: a (private/protected/public) function reference, that gives access headers for fetch operation (key-value pairs returned from here are added under headers)
             //      - Additionally it can have everything else that 'init' option of fetch request looks for (https://developer.mozilla.org/en/docs/Web/API/Fetch_API)
             Container.register(Class('request', Attribute, function() {
@@ -135,12 +136,23 @@ define([
                                                 }).catch((err) => {
                                                     onFetch(err, null, null);
                                                 });
-                                            } else if (typeof auth === 'string' && auth === 'auto') {
-                                                if (this.env.isServer) {
-                                                    onFetch('invalid auth settings for server.', null, null);
-                                                } else {
-                                                    let auth = new Auth();
-                                                    applyHeaders(auth.getTokenHeader());
+                                            } else if (typeof auth === 'string') {
+                                                switch(auth) {
+                                                    case 'auto':
+                                                        if (this.env.isServer) {
+                                                            onFetch('invalid auth settings for server.', null, null);
+                                                        } else {
+                                                            let auth = new Auth();
+                                                            applyHeaders(auth.getTokenHeader());
+                                                        }
+                                                        break;
+                                                    case 'none':
+                                                        // don't do anything
+                                                        break;
+                                                    default: // assume this is 'Authorizatio' header value
+                                                        staticOpts.headers = staticOpts.headers || {};
+                                                        staticOpts.headers['Authorization'] = auth;
+                                                        break;
                                                 }
                                             } else {
                                                 onFetch('invalid auth settings.', null, null);
