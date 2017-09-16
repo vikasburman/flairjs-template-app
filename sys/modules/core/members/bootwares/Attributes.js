@@ -17,16 +17,22 @@ define([
             // request(url, [options])
             //  url: can be relative, full or url pattern with /:<key> as part of url
             //      if specified as '@url', 'url' would assumed to be a setting of the same
+            //      e.g., '@urls.query' will read 'url.query' setting
             //      assembly where this attribute is being applied and url would be extracted
             //      from setting
             //  options: can be a literal having:
             //      - enableCookies: true (for same origin), false (no cookies sent), all (even for cross-origin calls)
-            //      - requestDataType: any of the possible Content-Type (this sets Content-Type header itself)
+            //      - requestDataType: any of the possible Content-Type (this sets Content-Type header itself) 
+            //          when not defined, it will be taken as json
             //      - responseDataType: text, json, blob, buffer, formData, objectUrl
-            //      - auth: can be any of these three values
+            //          when not defined, it will be taken as json
+            //      - auth: can be any of these values
             //          'none': (or absence of this key itself), means no auth data to be send
             //          'auto': automatically picks the auth header from the session (only on client, throws on server)
             //          '*': any other string is treated as Auth header content itself and set to 'Authorization' header
+            //               when this string contains [memberPath] somewhere, it will extract memberPath and will merge value
+            //               of property/function with overall string, e.g.,
+            //               'Bearer [config.clientAccessToken]
             //          fn: a (private/protected/public) function reference, that gives access headers for fetch operation (key-value pairs returned from here are added under headers)
             //      - Additionally it can have everything else that 'init' option of fetch request looks for (https://developer.mozilla.org/en/docs/Web/API/Fetch_API)
             Container.register(Class('request', Attribute, function() {
@@ -39,6 +45,7 @@ define([
                     let fetchUrl = this.args[0] || '',
                         staticOpts = this.args[1] || {},
                         fn = descriptor.value,
+                        protectedRef = as(obj, 'protected'),
                         fnArgs = null,
                         inputArgs = {},
                         enableCookies = staticOpts.enableCookies || false,
@@ -50,7 +57,6 @@ define([
                     if (staticOpts.auth) { delete staticOpts.auth; }    
                     if (staticOpts.enableCookies) { delete staticOpts.enableCookies; }  
                     if (fetchUrl.startsWith('@')) {
-                        let protectedRef = as(obj, 'protected');
                         fetchUrl = protectedRef.settings(fetchUrl.substr(1));
                     }
                     descriptor.value = function(urlFillsOrInputData, inputData) {
@@ -165,8 +171,15 @@ define([
                                                     case 'none':
                                                         // don't do anything
                                                         break;
-                                                    default: // assume this is 'Authorizatio' header value
+                                                    default: // assume this is 'Authorization' header value
                                                         staticOpts.headers = staticOpts.headers || {};
+                                                        if (auth.indexOf('[') !== -1 && auth.indexOf(']') !== -1) {
+                                                            let memberPath = ((auth.split('[')[1]).split(']')[0]),
+                                                                memberValue = getNestedKeyValue(protectedRef, memberPath),
+                                                                theString = memberValue;
+                                                            if (typeof memberValue === 'function') { theString = memberValue(); }
+                                                            auth = auth.replace('[' + memberPath + ']', theString);
+                                                        }
                                                         staticOpts.headers['Authorization'] = auth;
                                                         break;
                                                 }
