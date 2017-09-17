@@ -21,7 +21,7 @@ define([
         
         attr('async');
         this.func('validate', (resolve, reject, request) => {
-            let token = request.getToken();
+            let token = request.token;
             if (token) {
                 let tokenManager = new TokenManager();
                 tokenManager.verify(token).then((user) => {

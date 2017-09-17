@@ -36,15 +36,12 @@ define([
             }           
         });
 
-        attr('service', '/auth', {
-            method: 'POST',
-            requestDataType: 'application/json',
-            responseDataType: 'json',
-            pre: (args) => { args.body = { credentials: args.body }; }
-        });
-        this.func('login', (service, resolve, reject, loginId = '', pwd = '', clientId = '') => {
+        attr('request', 'post->/auth');
+        this.func('login', (request, resolve, reject, loginId = '', pwd = '', clientId = '') => {
+            // TODO: check if all three parameterss are coming - I Doubt with new changes in
+            // attribute, that all paras are coming... may need some change in attribute
             let credentials = App.auth(loginId, pwd, clientId);
-            service({credentials : credentials}).then((response) => {
+            request({credentials : credentials}).then((response) => {
                 if (response.isError) {
                     reject(response.error);
                 } else {
@@ -68,10 +65,10 @@ define([
 
         attr('private');
         attr('session');
-        this.prop('token', null);
+        this.prop('token');
 
         attr('private');
         attr('session');
-        this.prop('user', null);
+        this.prop('user');
     });
 });
