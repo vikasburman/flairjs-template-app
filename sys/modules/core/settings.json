@@ -23,6 +23,9 @@
         "root": "/api",
         "version": "v"
     },
+    "urls": {
+        "auth": "/auth"
+    },
     "locales": {
         "en-us": { "name": "en-us", "lcid": "1033", "display": "English (United States)", "rtl": false },
         "fr-fr": { "name": "fr-fr", "lcid": "1036", "display": "French (France)", "rtl": false },

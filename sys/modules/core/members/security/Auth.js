@@ -36,7 +36,7 @@ define([
             }           
         });
 
-        attr('request', 'post->/auth');
+        attr('request', 'post->@urls.auth');
         this.func('login', (request, resolve, reject, loginId = '', pwd = '', clientId = '') => {
             // TODO: check if all three parameterss are coming - I Doubt with new changes in
             // attribute, that all paras are coming... may need some change in attribute
