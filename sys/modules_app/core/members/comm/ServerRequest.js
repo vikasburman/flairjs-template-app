@@ -22,7 +22,7 @@ define([
             this.hostname = req.hostname;
             this.subdomains = req.subdomains;
             this.protocol = req.protocol;
-            this.query = this.env.queryStringToObject(req.query); // query strings, if any
+            this.query = req.query;
             this.originalUrl = req.originalUrl;
         });
 
