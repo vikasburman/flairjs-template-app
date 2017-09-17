@@ -22,11 +22,11 @@ define([
                 apiPrefix = (this.env.isServer ? this.settings('api.root', '') : ''),
                 versionPrefix = (this.env.isServer ? this.settings('api.version', '') : '');
 
-            const getHandler = (fullUrl, route) => {
+            const getHandler = (fullUrl, route, params) => {
                 return function(req, res) { // router here is express app.
                     xLog('debug', `route hit: ${fullUrl}`);
                     try {
-                        let handler = new Handler(route.class, route.func),
+                        let handler = new Handler(route.class, route.func, params),
                             request = new Request(handler, route.verb, req, res);
                         handler.handle(request);
                     } catch (err) {
