@@ -48,6 +48,9 @@ define([
         this.prop('isFresh', false);
 
         attr('readonly');
+        this.func('token', () => { return this.req.token || null; });
+
+        attr('readonly');
         this.prop('hostname', '');
 
         attr('readonly');
@@ -57,7 +60,6 @@ define([
         this.prop('protocol', '');
 
         this.func('getLocale', () => { return this.getHeader('userLocale'); })
-        this.func('getToken', () => { return this.req.token || null; });
         this.func('getHeader', (...args) => { return this.req.get(...args); });
         this.func('getCookie', (name, isSigned) => { 
             if (isSigned) {
