@@ -48,10 +48,10 @@ define([
         this.prop('isFresh', false);
 
         attr('readonly');
-        this.func('headers', () => { return this.req.headers || null; });
+        this.prop('headers', () => { return this.req.headers || null; });
 
         attr('readonly');
-        this.func('token', () => { return this.req.token || null; });
+        this.prop('token', () => { return this.req.token || null; });
 
         attr('readonly');
         this.prop('hostname', '');
