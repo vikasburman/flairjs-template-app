@@ -33,11 +33,11 @@ define([
                         let starter = as(new Starter(), IStarter);
                          if (starter) {
                             xLog('debug', `${starter._.name}.start`);
-                            starter.start();
+                            starter.start().then(_resolve).catch(_reject);
                          } else {
                              xLog('debug', `${starter._.name} is not a starter.`);
-                         }
-                         _resolve();
+                             _resolve();
+                        }
                     }).then(resolve).catch(reject);
                 }).catch(reject);
             }).catch(reject);
