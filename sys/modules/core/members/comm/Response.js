@@ -15,6 +15,6 @@ define([
         });
 
         attr('protected');
-        this.prop('res', null);
+        this.prop('res');
     });
 });

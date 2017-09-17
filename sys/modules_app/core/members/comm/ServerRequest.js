@@ -23,6 +23,7 @@ define([
             this.subdomains = req.subdomains;
             this.protocol = req.protocol;
             this.query = this.env.queryStringToObject(req.query); // query strings, if any
+            this.originalUrl = req.originalUrl;
         });
 
         attr('private');

@@ -17,24 +17,24 @@ define([
         });
 
         attr('readonly');
-        this.prop('handler', null);
+        this.prop('handler');
 
         attr('readonly');
-        this.prop('url', '');
+        this.prop('url');
 
-        attr('readonly');
-        this.prop('args', null);
-
-        attr('readonly');
         attr('once');
-        this.prop('user', null);
+        this.prop('originalUrl');
 
         attr('readonly');
-        attr('once');
-        this.prop('claims', null);
+        this.prop('args');
 
-        attr('readonly');
         attr('once');
-        this.prop('query', null);
+        this.prop('user');
+
+        attr('once');
+        this.prop('claims');
+
+        attr('once');
+        this.prop('query');
     });
 });

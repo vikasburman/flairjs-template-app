@@ -15,6 +15,7 @@ define([
             if (fullUrl.indexOf('?') !== -1) {
                 this.query = this.env.queryStringToObject(fullUrl.split('?')[1]); // query strings
             }
+            this.originalUrl = fullUrl;
         });
     });
 });
