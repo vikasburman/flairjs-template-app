@@ -10,7 +10,8 @@
         "DbContext": "app.core.data.DbContext",
         "Repository": "app.core.data.Repository",
         "UnitOfWork": "app.core.data.UnitOfWork",
-        "Automapper": "app.core.data.Automapper"
+        "Automapper": "app.core.data.Automapper",
+        "TopicQ": "app.core.mq.TopicQ"
     },
     "container": {
     },
