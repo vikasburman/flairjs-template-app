@@ -57,7 +57,11 @@ define([
                     // options chosen for topic messaging
                     _exch = _conn.exchange(this.name, {
                         type: 'topic',
-                        confirm: true
+                        passive: false,
+                        confirm: true,
+                        durable: true,
+                        autoDelete: true,
+                        noDeclare: false
                     });
                     resolve();
                 });
@@ -76,7 +80,7 @@ define([
                 timestamp: Date.now(),
                 mandatory: true,
                 immediate: false,
-                deliveryMode: 1,
+                deliveryMode: 2, // persistent
                 priority: 5,
                 appId: (App ? App.info.id : '')
             };
