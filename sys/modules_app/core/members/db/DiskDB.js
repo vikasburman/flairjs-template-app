@@ -1,7 +1,7 @@
 define([
     use('[Base]'),
-    use('fs-extra | '),
-    use('diskdb | ')
+    use('fs-extra'),
+    use('diskdb')
 ], (Base, fs, diskdb) => {
     /**
      * @class app.core.db.DiskDB
@@ -13,12 +13,15 @@ define([
         attr('sealed');
         this.func('constructor', (base, dbPath) => {
             base();
-            if (!this.env.isServer) { throw 'DiskDB implementation is available for server usage only.'; }
             
             // create db path, if does not exists
             if (!dbPath) { throw 'DiskDB path must be specified.'; }
             this.dbPath = dbPath;
             if (!fs.existsSync(dbPath)) { fs.ensureDirSync(dbPath); }
+        });
+
+        this.func('dispose', () => {
+            this.disconnect();
         });
 
         let _db = null;
@@ -39,7 +42,7 @@ define([
         });
 
         attr('readonly');
-        this.prop('dbPath', '');    
+        this.prop('dbPath');    
 
         this.func('getCollection', (collectionName) => {
             return Object.freeze({
@@ -74,6 +77,10 @@ define([
         });
         this.func('getAll', (collectionName, query) => {
             return this.collection(collectionName).find(query);
+        });
+
+        this.func('disconnect', () => {
+            _db = null;
         });
     });
 });

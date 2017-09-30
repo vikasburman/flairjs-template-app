@@ -1,6 +1,7 @@
 {
     "settings": {
         "app": {
+            "id": "myapp",
             "title": "My Application",
             "version": "1.0.0",
             "edition": "alpha",

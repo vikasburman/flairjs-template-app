@@ -10,6 +10,8 @@
 	"scripts": {
 		"dbstart": "mongod --config mongod.conf --fork",
 		"dbstop": "mongo admin --eval 'db.shutdownServer()' > logs/temp.log",
+		"mqstart": "",
+		"mqstop": "",
 		"update": "node upd/update.js ./oojs.json",
 		"build": "gulp",
 		"test": "gulp test",
@@ -56,6 +58,7 @@
 	},
 	"dependencies": {
 		"amdefine": "^1.0.1",
+		"amqp": "^0.2.6",
 		"app-root-path": "^2.0.1",
 		"body-parser": "^1.17.2",
 		"compression": "^1.6.2",
