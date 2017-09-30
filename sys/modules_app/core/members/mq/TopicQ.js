@@ -67,13 +67,12 @@ define([
             }
         });
 
-        this.func('message', (type, data) => {
+        this.func('message', (data) => {
             // https://www.npmjs.com/package/amqp#exchangepublishroutingkey-message-options-callback
             let msg = {};
             msg.data = data;
             msg.options = {
                 messageId: new Base()._.id,
-                type: type,
                 timestamp: Date.now(),
                 mandatory: true,
                 immediate: false,
