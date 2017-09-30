@@ -10,11 +10,11 @@ define([
     return Class('app.core.mq.TopicQ', Base, function(attr) {
         attr('override');
         attr('sealed');
-        this.func('constructor', (base, topicName, options) => {
+        this.func('constructor', (base, exchangeName, options) => {
             base();
 
-            // topic name
-            this.topicName = topicName;
+            // exchange name
+            this.exchangeName = exchangeName;
                         
             // options is a collective object having options for connection and amqp implementation
             // options and implOptions are: https://www.npmjs.com/package/amqp#connection-options-and-url
@@ -36,7 +36,7 @@ define([
         this.prop('implOptions');
 
         attr('readonly');
-        this.prop('topicName');
+        this.prop('exchangeName');
 
         let _conn = null,
             _exch = null;
@@ -55,7 +55,7 @@ define([
                 _conn.on('ready', () => {
                     // https://www.npmjs.com/package/amqp#connectionexchangename-options-opencallback
                     // options chosen for topic messaging
-                    _exch = _conn.exchange(this.topicName, {
+                    _exch = _conn.exchange(this.exchangeName, {
                         type: 'topic',
                         confirm: true
                     });
@@ -95,10 +95,9 @@ define([
         });
 
         attr('async');
-        this.func('publish', (resolve, reject, msg, subTopic) => {
+        this.func('publish', (resolve, reject, msg, topic) => {
             this.conn().then(() => {
-                let topic = this.topicName;
-                if (subTopic) { topic += '.' + subTopic; }
+                topic = this.exchangeName + (topic ? '.' + topic : '');
                 _exch.publish(topic, msg.data, msg.options, (success) => {
                     if (success) {
                         resolve();
@@ -110,11 +109,11 @@ define([
         });
 
         attr('async');
-        this.func('subscribe', (resolve, reject, qName, topicPatternSuffix, asyncFn) => {
+        this.func('subscribe', (resolve, reject, qName, topicPattern, asyncFn) => {
             this.conn().then(() => {
                 _conn.queue(qName, (mq) => {
-                    let fn = asyncFn,
-                        topicPattern = this.topicName + (topicPatternSuffix ? '.' + topicPatternSuffix : '');
+                    let fn = asyncFn;
+                    topicPattern = this.exchangeName + (topicPattern ? '.' + topicPattern : '');
                     mq.bind(_exch, topicPattern);
                     mq.subscribe({ ack: true }, (message, headers, deliveryInfo, messageObject) => {
                         fn(message.data).then(() => {
