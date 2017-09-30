@@ -6,7 +6,7 @@ define([
      * @class app.core.mq.TopicQ
      * @classdesc app.core.mq.TopicQ
      * @desc Message queue that works on a topic based routing.
-     */    
+     */
     return Class('app.core.mq.TopicQ', Base, function(attr) {
         attr('override');
         attr('sealed');
