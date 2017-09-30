@@ -14,7 +14,7 @@ define([
             base();
 
             // exchange name
-            this.exchangeName = exchangeName;
+            this.name = exchangeName;
                         
             // options is a collective object having options for connection and amqp implementation
             // options and implOptions are: https://www.npmjs.com/package/amqp#connection-options-and-url
@@ -36,7 +36,7 @@ define([
         this.prop('implOptions');
 
         attr('readonly');
-        this.prop('exchangeName');
+        this.prop('name');
 
         let _conn = null,
             _exch = null;
@@ -55,7 +55,7 @@ define([
                 _conn.on('ready', () => {
                     // https://www.npmjs.com/package/amqp#connectionexchangename-options-opencallback
                     // options chosen for topic messaging
-                    _exch = _conn.exchange(this.exchangeName, {
+                    _exch = _conn.exchange(this.name, {
                         type: 'topic',
                         confirm: true
                     });
@@ -97,7 +97,7 @@ define([
         attr('async');
         this.func('publish', (resolve, reject, topic, msg) => {
             this.conn().then(() => {
-                topic = this.exchangeName + (topic ? '.' + topic : '');
+                topic = this.name + (topic ? '.' + topic : '');
                 _exch.publish(topic, msg.data, msg.options, (success) => {
                     if (success) {
                         resolve();
@@ -113,7 +113,7 @@ define([
             this.conn().then(() => {
                 _conn.queue(topic, (mq) => {
                     let fn = asyncFn;
-                    topicPattern = this.exchangeName + (topicPattern ? '.' + topicPattern : '');
+                    topicPattern = this.name + (topicPattern ? '.' + topicPattern : '');
                     mq.bind(_exch, topicPattern);
                     mq.subscribe({ ack: true }, (message, headers, deliveryInfo, messageObject) => {
                         fn(message.data).then(() => {
