@@ -490,9 +490,9 @@ define([
             // server specfic attributes
             if (this.env.isServer) {
                 // job
-                // job(schedule, timezone)
+                // job(schedule, autoStart, timezone)
                 //  - schedule is standard cron pattern string (https://www.npmjs.com/package/cron)
-                //  - autoStart (true, if timer to be started as soon as app is started)
+                //  - autoStart (true, if scheduler to be started as soon as app is started)
                 //  - timezone is optional
                 Container.register(Class('job', Attribute, function() {
                     this.decorator((obj, type, name, descriptor) => {
@@ -507,9 +507,6 @@ define([
                             fn = descriptor.value,
                             job = null,
                             CronJob = require('cron').CronJob;
-                            if (typeof schedule === 'function') { schedule = schedule.apply(obj); }
-                            if (!schedule) { schedule = ''; }
-                            if (typeof timezone === 'function') { timezone = timezone.apply(obj); }
                             let opts = {
                                 cronTime: schedule, 
                                 onTick: null,

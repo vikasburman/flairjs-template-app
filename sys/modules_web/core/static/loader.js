@@ -12,7 +12,7 @@
         getGlobal = new Function("try {return (this===global ? global : window);}catch(e){return window;}");
 
     // base config
-    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"routes":{"server":["app.core","app.sample"],"client":["web.core","web.sample"]},"static":["web.core","web.sample"],"locales":["en-us"],"xLog":"silly","minify":false,"docs":false},"sys.core":{"catalog":{"IBootware":"sys.core.boot.IBootware","IApp":"sys.core.app.IApp","IStarter":"sys.core.app.IStarter","Base":"sys.core.Base","ErrorInfo":"sys.core.ErrorInfo","Dto":"sys.core.domain.Dto","AuthInfo":"sys.core.security.AuthInfo","Credentials":"sys.core.security.Credentials","User":"sys.core.security.User","ClaimsChecker":"sys.core.security.ClaimsChecker","ValueValidator":"sys.core.data.ValueValidator","Hash":"sys.core.security.Hash","ServiceAdapter":"sys.core.comm.ServiceAdapter","Bootstrapper":"app.core.boot.Server | web.core.boot.Client","App":"app.core.app.ServerApp | web.core.app.ClientApp","Auth":"app.core.security.Auth | sys.core.security.Auth"},"container":{},"api":{"root":"/api","version":"v"},"locales":{"en-us":{"name":"en-us","lcid":"1033","display":"English (United States)","rtl":false},"fr-fr":{"name":"fr-fr","lcid":"1036","display":"French (France)","rtl":false},"de-de":{"name":"de-de","lcid":"1031","display":"German (Germany)","rtl":false}},"start":[]},"web.core":{"catalog":{"Binder":"web.core.ui.Binder","Formatter":"web.core.ui.Formatter","Adapter":"web.core.ui.Adapter","Transition":"web.core.ui.Transition","DataBinder":"web.core.bootwares.DataBinder","ComponentTypes":"web.core.ui.ComponentTypes","Component":"web.core.ui.Component","View":"web.core.ui.View","Shell":"web.core.ui.Shell","Partial":"web.core.ui.Partial"},"routes":{"client":[]},"dependencies":[],"bootwares":["sys.core.bootwares.Attributes","web.core.bootwares.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales","[DataBinder]"],"more":{"bootwares":[],"dependencies":[]},"rivets":{"config":{},"formatters":["web.core.ui.formatters.Percent"],"binders":["web.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}}}`);
+    const config = JSON.parse(`{"settings":{"app":{"title":"My Application","version":"1.0.0","edition":"alpha","copyright":"Ⓒ xxxx, ...","tagline":"...","desc":"...","url":"...","org":"..."},"routes":{"server":["app.core","app.sample"],"client":["web.core","web.sample"]},"static":["web.core","web.sample"],"locales":["en-us"],"xLog":"silly","minify":false,"docs":false},"sys.core":{"catalog":{"IBootware":"sys.core.boot.IBootware","IApp":"sys.core.app.IApp","IStarter":"sys.core.app.IStarter","Base":"sys.core.Base","ErrorInfo":"sys.core.ErrorInfo","Dto":"sys.core.domain.Dto","AuthInfo":"sys.core.security.AuthInfo","Credentials":"sys.core.security.Credentials","User":"sys.core.security.User","ClaimsChecker":"sys.core.security.ClaimsChecker","ValueValidator":"sys.core.data.ValueValidator","Hash":"sys.core.security.Hash","ServiceAdapter":"sys.core.comm.ServiceAdapter","Bootstrapper":"app.core.boot.Server | web.core.boot.Client","App":"app.core.app.ServerApp | web.core.app.ClientApp","Auth":"app.core.security.Auth | sys.core.security.Auth"},"container":{},"api":{"root":"/api","version":"v"},"urls":{"auth":"/auth"},"locales":{"en-us":{"name":"en-us","lcid":"1033","display":"English (United States)","rtl":false},"fr-fr":{"name":"fr-fr","lcid":"1036","display":"French (France)","rtl":false},"de-de":{"name":"de-de","lcid":"1031","display":"German (Germany)","rtl":false}},"start":[]},"web.core":{"catalog":{"Binder":"web.core.ui.Binder","Formatter":"web.core.ui.Formatter","Adapter":"web.core.ui.Adapter","Transition":"web.core.ui.Transition","DataBinder":"web.core.bootwares.DataBinder","ComponentTypes":"web.core.ui.ComponentTypes","Component":"web.core.ui.Component","View":"web.core.ui.View","Shell":"web.core.ui.Shell","Partial":"web.core.ui.Partial"},"routes":{"client":[]},"dependencies":[],"bootwares":["sys.core.bootwares.Attributes","web.core.bootwares.Dependencies","sys.core.bootwares.Router","sys.core.bootwares.ErrorHandler","sys.core.bootwares.Locales","[DataBinder]"],"more":{"bootwares":[],"dependencies":[]},"rivets":{"config":{},"formatters":["web.core.ui.formatters.Percent"],"binders":["web.core.ui.binders.xClass"],"adapters":[]},"view":{"$stage":"#stage","$container":"#container","login":"#/login"}},"web.sample":{"routes":{"client":[{"url":"/","class":"web.sample.views.Home"},{"url":"/view1","class":"web.sample.views.View1"},{"url":"/view2","class":"web.sample.views.View2"}]}}}`);
     
     // basic env
     config.env = {
@@ -24,7 +24,7 @@
         isCordova: false,
         isMobile: false,
         isTablet: false,
-        lupdate: 'Sat, 16 Sep 2017 14:37:14 GMT',         
+        lupdate: 'Sun, 17 Sep 2017 15:40:55 GMT',         
         isDev: true,
         isProd: false,
         isTest: false,
@@ -665,8 +665,8 @@
         console.log(err);
     };
     const onDone = () => { 
-        callOnStart();
         xLog('verbose', 'boot success.'); 
+        callOnStart();
     };
     const onLoad = () => {
         if (isServer) {
