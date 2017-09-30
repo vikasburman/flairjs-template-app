@@ -95,7 +95,7 @@ define([
         });
 
         attr('async');
-        this.func('publish', (resolve, reject, msg, topic) => {
+        this.func('publish', (resolve, reject, topic, msg) => {
             this.conn().then(() => {
                 topic = this.exchangeName + (topic ? '.' + topic : '');
                 _exch.publish(topic, msg.data, msg.options, (success) => {
