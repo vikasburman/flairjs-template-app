@@ -11,7 +11,7 @@
         "Repository": "app.core.data.Repository",
         "UnitOfWork": "app.core.data.UnitOfWork",
         "Automapper": "app.core.data.Automapper",
-        "TopicQ": "app.core.mq.TopicQ"
+        "TopicExchange": "app.core.mq.TopicExchange"
     },
     "container": {
     },

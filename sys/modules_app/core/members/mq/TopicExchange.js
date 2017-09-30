@@ -3,11 +3,11 @@ define([
     use('amqp')
 ], (Base, amqp) => {
     /**
-     * @class app.core.mq.TopicQ
-     * @classdesc app.core.mq.TopicQ
-     * @desc Message queue that works on a topic based routing.
+     * @class app.core.mq.TopicExchange
+     * @classdesc app.core.mq.TopicExchange
+     * @desc Message queue implementation that works on a topic based routing.
      */
-    return Class('app.core.mq.TopicQ', Base, function(attr) {
+    return Class('app.core.mq.TopicExchange', Base, function(attr) {
         attr('override');
         attr('sealed');
         this.func('constructor', (base, exchangeName, options) => {
@@ -109,9 +109,9 @@ define([
         });
 
         attr('async');
-        this.func('subscribe', (resolve, reject, qName, topicPattern, asyncFn) => {
+        this.func('subscribe', (resolve, reject, topic, topicPattern, asyncFn) => {
             this.conn().then(() => {
-                _conn.queue(qName, (mq) => {
+                _conn.queue(topic, (mq) => {
                     let fn = asyncFn;
                     topicPattern = this.exchangeName + (topicPattern ? '.' + topicPattern : '');
                     mq.bind(_exch, topicPattern);
