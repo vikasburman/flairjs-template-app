@@ -11,7 +11,9 @@
         "Repository": "app.core.data.Repository",
         "UnitOfWork": "app.core.data.UnitOfWork",
         "Automapper": "app.core.data.Automapper",
-        "TopicExchange": "app.core.mq.TopicExchange"
+        "RabbitMQ": "app.core.mq.RabbitMQ",
+        "RedisCache": "app.core.cache.RedisCache",
+        "DiskDB": "app.core.db.DiskDB"
     },
     "container": {
     },
