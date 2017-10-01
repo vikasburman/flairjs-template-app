@@ -3,11 +3,11 @@ define([
     use('amqp')
 ], (Base, amqp) => {
     /**
-     * @class app.core.mq.RabbitMQ
-     * @classdesc app.core.mq.RabbitMQ
+     * @class app.core.mq.RabbitMQClient
+     * @classdesc app.core.mq.RabbitMQClient
      * @desc Message queue implementation that wraps the most common usage patterns of RabbitMQ.
      */
-    return Class('app.core.mq.RabbitMQ', Base, function(attr) {
+    return Class('app.core.mq.RabbitMQClient', Base, function(attr) {
         attr('override');
         attr('sealed');
         this.func('constructor', (base, exchangeName, options) => {

@@ -3,11 +3,11 @@ define([
     use('redis')
 ], (Base, redis) => {
     /**
-     * @class app.core.cache.RedisCache
-     * @classdesc app.core.cache.RedisCache
+     * @class app.core.cache.RedisCacheClient
+     * @classdesc app.core.cache.RedisCacheClient
      * @desc Cache implementation that wraps the most common usage patterns of RedisCache.
      */
-    return Class('app.core.cache.RedisCache', Base, function(attr) {
+    return Class('app.core.cache.RedisCacheClient', Base, function(attr) {
         attr('override');
         attr('sealed');
         this.func('constructor', (base, groupName, options) => {

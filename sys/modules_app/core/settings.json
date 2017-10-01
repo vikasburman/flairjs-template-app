@@ -11,8 +11,8 @@
         "Repository": "app.core.data.Repository",
         "UnitOfWork": "app.core.data.UnitOfWork",
         "Automapper": "app.core.data.Automapper",
-        "RabbitMQ": "app.core.mq.RabbitMQ",
-        "RedisCache": "app.core.cache.RedisCache",
+        "RabbitMQClient": "app.core.mq.RabbitMQClient",
+        "RedisCacheClient": "app.core.cache.RedisCacheClient",
         "DiskDB": "app.core.db.DiskDB"
     },
     "container": {
