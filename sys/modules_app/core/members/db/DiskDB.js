@@ -6,7 +6,7 @@ define([
     /**
      * @class app.core.db.DiskDB
      * @classdesc app.core.db.DiskDB
-     * @desc DiskDB access (for server as of now)
+     * @desc File system based database implementation that wraps the most common usage patterns of DiskDB.
      */    
     return Class('app.core.db.DiskDB', Base, function(attr) {
         attr('override');
