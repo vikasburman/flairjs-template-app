@@ -41,21 +41,21 @@ define([
                 // setup
                 _conn.on('error', reject);
                 _conn.on('ready', () => {
-                    resolve();
+                    resolve(_conn);
                 });
             } else {
-                resolve();
+                resolve(_conn);
             }
         });
 
         attr('async');
         this.func('set', (resolve, reject, key, value, expireInSeconds) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.set(key, value, (err, reply) => {
+                conn.set(key, value, (err, reply) => {
                     if (!err) { 
                         if (expireInSeconds) {
-                            _conn.expire(key, expireInSeconds);
+                            conn.expire(key, expireInSeconds);
                         }
                         resolve(value); 
                     } else {
@@ -67,9 +67,9 @@ define([
 
         attr('async');
         this.func('get', (resolve, reject, key, defaultValue) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.get(key, (err, value) => {
+                conn.get(key, (err, value) => {
                     if (!err) { 
                         resolve(value); 
                     } else {
@@ -81,9 +81,9 @@ define([
 
         attr('async');
         this.func('del', (resolve, reject, key) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.del(key, (err, value) => {
+                conn.del(key, (err, value) => {
                     if (!err) { 
                         resolve(); 
                     } else {
@@ -95,9 +95,9 @@ define([
 
         attr('async');
         this.func('exists', (resolve, reject, key) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.exists(key, (err, reply) => {
+                conn.exists(key, (err, reply) => {
                     if (!err) { 
                         if (reply === 1) {
                             resolve(true);
@@ -114,12 +114,12 @@ define([
         attr('async');
         this.func('setCounter', (resolve, reject, key, value, expireInSeconds) => {
             // value must be an integer
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.set(key, value, (err, reply) => {
+                conn.set(key, value, (err, reply) => {
                     if (!err) { 
                         if (expireInSeconds) {
-                            _conn.expire(key, expireInSeconds);
+                            conn.expire(key, expireInSeconds);
                         }
                         resolve(value); 
                     } else {
@@ -132,9 +132,9 @@ define([
         attr('async');
         this.func('getCounter', (resolve, reject, key, defaultValue) => {
             // defaultValue must be an integer
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.get(key, (err, value) => {
+                conn.get(key, (err, value) => {
                     if (!err) { 
                         resolve(value); 
                     } else {
@@ -147,10 +147,10 @@ define([
         attr('async');
         this.func('changeCounter', (resolve, reject, key, byValue = 1) => {
             // byValue must be an integer (positive or negative)
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
                 if (byValue > 0) {
-                    _conn.incrby(key, byValue, (err, newValue) => {
+                    conn.incrby(key, byValue, (err, newValue) => {
                         if (!err) { 
                             resolve(newValue); 
                         } else {
@@ -158,7 +158,7 @@ define([
                         }
                     });
                 } else if (byValue < 0) {
-                    _conn.decrby(key, byValue, (err, newValue) => {
+                    conn.decrby(key, byValue, (err, newValue) => {
                         if (!err) { 
                             resolve(newValue); 
                         } else {
@@ -166,7 +166,7 @@ define([
                         }
                     });
                 } else { // read current value
-                    _conn.get(key, (err, value) => {
+                    conn.get(key, (err, value) => {
                         if (!err) { 
                             resolve(value); 
                         } else {
@@ -179,9 +179,9 @@ define([
 
         attr('async');
         this.func('get', (resolve, reject, key, defaultValue) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.get(key, (err, value) => {
+                conn.get(key, (err, value) => {
                     if (!err) { 
                         resolve(value); 
                     } else {
@@ -193,9 +193,9 @@ define([
 
         attr('async');
         this.func('setField', (resolve, reject, key, field, value) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.hset(key, field, value, (err, reply) => {
+                conn.hset(key, field, value, (err, reply) => {
                     if (!err) { 
                         resolve(value); 
                     } else {
@@ -207,9 +207,9 @@ define([
 
         attr('async');
         this.func('getField', (resolve, reject, key, field, defaultValue) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.hget(key, field, (err, value) => {
+                conn.hget(key, field, (err, value) => {
                     if (!err) { 
                         resolve(value); 
                     } else {
@@ -221,9 +221,9 @@ define([
         
         attr('async');
         this.func('delField', (resolve, reject, key, field) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.hdel(key, field, (err, value) => {
+                conn.hdel(key, field, (err, value) => {
                     if (!err) { 
                         resolve(); 
                     } else {
@@ -236,9 +236,9 @@ define([
         attr('async');
         this.func('getFields', (resolve, reject, key, fields, defaultValue) => {
             // fields is an array of fields whose value is required in result
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.hmget(key, fields, (err, values) => {
+                conn.hmget(key, fields, (err, values) => {
                     if (!err) { 
                         // values will be a list of values for passed fields that exist in hash
                         resolve(values); 
@@ -251,9 +251,9 @@ define([
 
         attr('async');
         this.func('getFieldsList', (resolve, reject, key, defaultValue) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.hkeys(key, (err, fields) => {
+                conn.hkeys(key, (err, fields) => {
                     if (!err) { 
                         // fields will be a list of keys that exist in hash
                         resolve(fields); 
@@ -267,12 +267,12 @@ define([
         attr('async');
         this.func('setHash', (resolve, reject, key, hash, expireInSeconds) => {
             // hash must be a key:value pair object one level deep only
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.hmset(key, hash, (err, reply) => {
+                conn.hmset(key, hash, (err, reply) => {
                     if (!err) { 
                         if (expireInSeconds) {
-                            _conn.expire(key, expireInSeconds);
+                            conn.expire(key, expireInSeconds);
                         }                        
                         resolve(hash); 
                     } else {
@@ -284,9 +284,9 @@ define([
                
         attr('async');
         this.func('getHash', (resolve, reject, key, defaultValue) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.hgetall(key, (err, hash) => {
+                conn.hgetall(key, (err, hash) => {
                     if (!err) { 
                         // hash will be a key:value pair object one level deep
                         resolve(hash); 
@@ -299,13 +299,13 @@ define([
 
         attr('async');
         this.func('setList', (resolve, reject, key, list, expireInSeconds) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
                 let fullList = [key, ...list]
-                _conn.rpush(fullList, (err, reply) => {
+                conn.rpush(fullList, (err, reply) => {
                     if (!err) { 
                         if (expireInSeconds) {
-                            _conn.expire(key, expireInSeconds);
+                            conn.expire(key, expireInSeconds);
                         }                        
                         resolve(list);
                     } else {
@@ -317,9 +317,9 @@ define([
                
         attr('async');
         this.func('getList', (resolve, reject, key, defaultValue) => {
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.lrange(key, 0, -1, (err, list) => {
+                conn.lrange(key, 0, -1, (err, list) => {
                     if (!err) { 
                         resolve(list); 
                     } else {
@@ -332,9 +332,9 @@ define([
         attr('async');
         this.func('getListItems', (resolve, reject, key, start, stop, defaultValue) => {
             // start and stop are offset indexes
-            this.conn().then(() => {
+            this.conn().then((conn) => {
                 key = `${this.name}.${key}`;
-                _conn.lrange(key, (err, list) => {
+                conn.lrange(key, (err, list) => {
                     if (!err) { 
                         resolve(list); 
                     } else {

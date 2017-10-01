@@ -13,7 +13,8 @@
         "Automapper": "app.core.data.Automapper",
         "RabbitMQClient": "app.core.mq.RabbitMQClient",
         "RedisCacheClient": "app.core.cache.RedisCacheClient",
-        "DiskDB": "app.core.db.DiskDB"
+        "DiskDBClient": "app.core.db.DiskDBClient",
+        "MongoDBClient": "app.core.db.MongoDBClient"
     },
     "container": {
     },

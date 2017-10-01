@@ -24,8 +24,7 @@
 		"start": "NODE_ENV=production && forever start -p ./ -a -l logs/server.log sys/loader.js",
 		"plainstart": "NODE_ENV=production && node sys/loader.js",
 		"stop": "forever stopall",
-		"poststop": "redis-cli shutdown && rabbitmqctl shutdown && mongo admin --eval 'db.shutdownServer()' > logs/temp.log",
-		"list": "forever list"
+		"poststop": "redis-cli shutdown && rabbitmqctl shutdown && mongo admin --eval 'db.shutdownServer()' > logs/temp.log"
 	},
 	"devDependencies": {
 		"babel-eslint": "^7.2.3",
@@ -72,6 +71,7 @@
 		"fs-extra": "^4.0.0",
 		"jsonwebtoken": "^7.4.1",
 		"localtunnel": "^1.8.3",
+		"mongodb": "^2.2.31",
 		"node-fetch": "^1.7.1",
 		"nodemon": "^1.11.0",
 		"redis": "^2.8.0",

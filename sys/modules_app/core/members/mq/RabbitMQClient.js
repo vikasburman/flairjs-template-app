@@ -63,11 +63,11 @@ define([
                         autoDelete: true,
                         noDeclare: false
                     });
-                    resolve();
+                    resolve({conn: _conn, exch: _exch});
                 });
                 _conn.connect(); // initiate connection
             } else {
-                resolve();
+                resolve({conn: _conn, exch: _exch});
             }
         });
 
@@ -100,9 +100,9 @@ define([
 
         attr('async');
         this.func('publish', (resolve, reject, topic, msg) => {
-            this.conn().then(() => {
+            this.conn().then((obj) => {
                 topic = this.name + (topic ? '.' + topic : '');
-                _exch.publish(topic, msg.data, msg.options, (success) => {
+                obj.exch.publish(topic, msg.data, msg.options, (success) => {
                     if (success) {
                         resolve();
                     } else {
@@ -114,11 +114,11 @@ define([
 
         attr('async');
         this.func('subscribe', (resolve, reject, topic, topicPattern, asyncFn) => {
-            this.conn().then(() => {
-                _conn.queue(topic, (mq) => {
+            this.conn().then((obj) => {
+                obj.conn.queue(topic, (mq) => {
                     let fn = asyncFn;
                     topicPattern = this.name + (topicPattern ? '.' + topicPattern : '');
-                    mq.bind(_exch, topicPattern);
+                    mq.bind(obj.exch, topicPattern);
                     mq.subscribe({ ack: true }, (message, headers, deliveryInfo, messageObject) => {
                         fn(message.data).then(() => {
                             mq.shift();
@@ -131,8 +131,8 @@ define([
         });
 
         this.func('unsubscribe', (qName, handle) => {
-            this.conn().then(() => {
-                _conn.queue(qName, (mq) => {
+            this.conn().then((obj) => {
+                obj.conn.queue(qName, (mq) => {
                     mq.unsubscribe(handle);
                 });
             }).catch(reject);
