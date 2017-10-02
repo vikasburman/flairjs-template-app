@@ -19,7 +19,6 @@
             { "src": "sys/modules/core" },
             { "src": "sys/modules_app/core" },
             { "src": "sys/modules_web/core" },
-            { "src": "sys/node_modules" },
             { "src": "build" }
         ],
         "files": [
