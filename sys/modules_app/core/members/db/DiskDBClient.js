@@ -1,8 +1,9 @@
 define([
     use('[Base]'),
     use('fs-extra'),
-    use('diskdb')
-], (Base, fs, diskdb) => {
+    use('diskdb'),
+    use('app.core.db.DiskDBCollection')
+], (Base, fs, diskdb, DiskDBCollection) => {
     /**
      * @class app.core.db.DiskDBClient
      * @classdesc app.core.db.DiskDBClient
@@ -21,6 +22,7 @@ define([
             this.options = options;
 
             // create db path, if does not exists
+            if (!options.dbPath.endsWith('/')) { options.dbPath += '/'; }
             if (!fs.existsSync(options.dbPath)) { fs.ensureDirSync(options.dbPath); }
         });
 
@@ -37,142 +39,25 @@ define([
         let _db = null;
         attr('private');
         attr('async');
-        this.func('conn', (resolve, reject) => {
-            if (_db === null) {
+        this.func('conn', (resolve, reject, isReconnect) => {
+            if (_db === null || isReconnect) {
+                this.disconnect();
                 _db = diskdb.connect(this.options.dbPath);
             }
             resolve(_db);
         });
-
+        
         attr('async');
         this.func('collection', (resolve, reject, collectionName) => {
             this.conn().then((db) => {
                 if (!db[collectionName]) {
                     db.loadCollections([collectionName]);
                 }
-
-                // collection class
-                // https://www.npmjs.com/package/diskdb
-                let Collection = function(dbName, collectionName, dbCollection) {
-                    this.name = () => { return `${dbName}.${collectionName}`; }
-                    this.count = () => { return dbCollection.count(); }
-
-                    this.insertOne = (document) => {
-                        return new Promise((resolve, reject) => {
-                            let items = dbCollection.save(document),
-                                result = {
-                                    insertedCount: items.length
-                                };
-                            resolve(result);
-                        });
-                    };
-                    this.insertMany = (documents) => {
-                        return new Promise((resolve, reject) => {
-                            let items = dbCollection.save(documents),
-                                result = {
-                                    insertedCount: items.length
-                                };
-                            resolve(result);
-                        });
-                    };
-                    this.updateOne = (query, document, isUpsert = false) => {
-                        let options = {
-                            multi: false,
-                            upsert: isUpsert
-                        };
-                        return new Promise((resolve, reject) => {
-                            let r = dbCollection.update(query, document, options),
-                                result = {
-                                    matchedCount: r.updated,
-                                    modifiedCount: r.updated,
-                                    upsertedCount: r.inserted
-                                };
-                            resolve(result);
-                        });
-                    };
-                    this.updateMany = (query, documents, isUpsert = false) => {
-                        let options = {
-                            multi: true,
-                            upsert: isUpsert
-                        };
-                        return new Promise((resolve, reject) => {
-                            let r = dbCollection.update(query, documents, options);
-                                result = {
-                                    matchedCount: r.updated,
-                                    modifiedCount: r.updated,
-                                    upsertedCount: r.inserted
-                                };
-                            resolve(result);
-                        });
-                    };
-                    this.deleteOne = (query) => {
-                        return new Promise((resolve, reject) => {
-                            let count = dbCollection.count();
-                            dbCollection.remove(query, false);
-                            let result = {
-                                deletedCount: dbCollection.count() - count
-                            };
-                            resolve(result);
-                        });
-                    };
-                    this.deleteMany = (query) => {
-                        return new Promise((resolve, reject) => {
-                            let count = dbCollection.count();
-                            dbCollection.remove(query, true);
-                            let result = {
-                                deletedCount: dbCollection.count() - count
-                            };
-                            resolve(result);
-                        });
-                    };
-                    this.findOne = (query, skip = 0) => {
-                        return new Promise((resolve, reject) => {
-                            let items = dbCollection.find(query),
-                                document = items.slice(skip, skip + 1);
-                            resolve(document);
-                        });
-                    };                       
-                    this.findMany = (query, limit = -1, skip = 0) => {
-                        return new Promise((resolve, reject) => {
-                            // get documents
-                            let items = dbCollection.find(query),
-                                uptoIndex = (limit === -1 ? a.length : (skip + limit)),
-                                filteredItems = items.slice(skip, uptoIndex);
-
-                            // stream class
-                            let DocumentStream = function(documents) {
-                                this.each = (fn) => {
-                                    forAsync(documents, (_resolve, _reject, document) => {
-                                        fn(document).then(_resolve).catch(_reject);
-                                    }).then(() => {
-                                        // nothing specific
-                                    }).catch(() => {
-                                        // nothing specific
-                                    });
-                                };
-                                this.toArray = () => {
-                                    return documents.slice(0);
-                                };
-                            };
-
-                            // stream
-                            let stream = new DocumentStream(filteredItems);
-
-                            // done
-                            resolve(stream);
-                        });
-                    };
-                    this.replaceOne = (query, document) => {
-                        return new Promise((resolve, reject) => {
-                            this.deleteOne(query).then((result) => {
-                                this.insertOne(document).then(resolve).catch(reject);
-                            }).catch(reject);
-                        });
-                    };
-                };
-
-                // collection object
-                resolve(new Collection(this.name, collectionName, db[collectionName]));
+                try {
+                    resolve(new DiskDBCollection(this.name, collectionName, db[collectionName]));
+                } catch (err) {
+                    reject(err);
+                }
             }).catch(reject);
         });
 
@@ -188,14 +73,25 @@ define([
                 if (!db[metaCollectionName]) {
                     db.loadCollections([metaCollectionName]); // this will create if not exists
                 }
-
-                // store meta
                 if (meta) {
                     db[metaCollectionName].save(meta);
                 }
 
-                resolve();
+                // send collection back
+                this.collection(collectionName).then(resolve).catch(reject);
             }).catch(reject);
+        });
+
+        attr('async');
+        this.func('exists', (resolve, reject, collectionName) => {
+            this.conn().then((db) => {
+                let collectionFileName = options.dbPath + collectionName + '.json';
+                if (fs.existsSync(collectionFileName)) { 
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            }).catch(reject);             
         });
 
         attr('async');
@@ -213,8 +109,8 @@ define([
                 }
                 db[metaCollectionName].remove();
 
-                // done
-                resolve();
+                // check and return
+                this.exists(collectionName).then(resolve).catch(reject);
             }).catch(reject);
         });
 

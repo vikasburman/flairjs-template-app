@@ -34,8 +34,9 @@ define([
         let _conn = null;
         attr('private');
         attr('async');
-        this.func('conn', (resolve, reject) => {
-            if (_conn === null) {
+        this.func('conn', (resolve, reject, isReconnect) => {
+            if (_conn === null || isReconnect) {
+                this.disconnect();
                 _conn = redis.createClient(this.options);
 
                 // setup

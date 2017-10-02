@@ -42,8 +42,9 @@ define([
             _exch = null;
         attr('private');
         attr('async');
-        this.func('conn', (resolve, reject) => {
-            if (_exch === null) {
+        this.func('conn', (resolve, reject, isReconnect) => {
+            if (_exch === null || isReconnect) {
+                this.disconnect();
                 if (this.implOptions) {
                     _conn = amqp.createConnection(this.options, this.implOptions);
                 } else {
