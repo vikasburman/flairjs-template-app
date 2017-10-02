@@ -7,7 +7,7 @@ Global environmnet setup for development:
 3) Node JS w NPM (will get installed via #2)
 4) gulp-cli: npm install --global gulp-cli
 5) mongodb install: brew install mongodb
-6) Install Mongo Management Studio from: http://mms.litixsoft.de/
+6) Robo 3t mongodb gui: https://robomongo.org/download
 7) rabbitmq install: brew install rabbitmq
 7.1) in <userfolder>/.bash_profile file add:
      PATH=$PATH:/usr/local/sbin
