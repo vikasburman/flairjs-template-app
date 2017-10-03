@@ -15,12 +15,5 @@ define([
 
         attr('readonly');
         this.prop('db');
-
-        attr('readonly');
-        this.prop('tran', {
-            begin: () => { this.db.beginTran(); },
-            commit: () => { this.db.commitTran(); },
-            rollback: () => { this.db.rollbackTran(); }
-        });
     });
 });

@@ -2,14 +2,15 @@ define([
     use('[Base]'),
     use('fs-extra'),
     use('diskdb'),
-    use('app.core.db.DiskDBCollection')
-], (Base, fs, diskdb, DiskDBCollection) => {
+    use('app.core.db.DiskDBCollection'),
+    use('[IDbClient]')
+], (Base, fs, diskdb, DiskDBCollection, IDbClient) => {
     /**
      * @class app.core.db.DiskDBClient
      * @classdesc app.core.db.DiskDBClient
      * @desc File system based database implementation that wraps the most common usage patterns of DiskDB.
      */    
-    return Class('app.core.db.DiskDBClient', Base, function(attr) {
+    return Class('app.core.db.DiskDBClient', Base, [IDbClient], function(attr) {
         attr('override');
         attr('sealed');
         this.func('constructor', (base, dbName, options) => {
@@ -37,7 +38,6 @@ define([
         this.prop('name');   
 
         let _db = null;
-        attr('private');
         attr('async');
         this.func('conn', (resolve, reject, isReconnect) => {
             if (_db === null || isReconnect) {
@@ -116,6 +116,29 @@ define([
 
         this.func('disconnect', () => {
             _db = null;
+        });
+
+        let _tranHandle = null;
+        this.func('beginTran', () => {
+            if (_tranHandle === null) {
+                // start transaction
+                // not supported by diskDB
+                _tranHandle = -1;
+            }
+        });
+        this.func('commitTran', () => {
+            if (_tranHandle !== null) {
+                // commit transaction
+                // not supported by diskDB
+                _tranHandle = null;
+            }
+        });
+        this.func('rollbackTran', () => {
+            if (_tranHandle !== null) {
+                // rollback transaction
+                // not supported by diskDB
+                _tranHandle = null;
+            }
         });
     });
 });

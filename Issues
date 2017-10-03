@@ -29,7 +29,7 @@ this will get change in loader as well
 check how to let attribute define if multiple instances of that attribute are allowed and now to throw error when more than once instance is applied
 
 
-At Client: 
+At Client:
 - a handler called a local function with Data 
 - which has service attribute to call a service
 - interceptor in this service attribute converted data to Dto
@@ -44,3 +44,7 @@ At Server:
 - then controller called repository to persist data 
 - or to take some other action 
 - Controllers may also call ServiceAdapters which call an external service
+
+To understand entity, dto, controller, uow, and repository:
+http://www.c-sharpcorner.com/UploadFile/b1df45/unit-of-work-in-repository-pattern/
+https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application

@@ -4,7 +4,6 @@
         "TokenManager": "app.core.security.TokenManager",
         "Crypt": "app.core.security.Crypt",
         "Service": "app.core.comm.Service",
-        "Context": "app.core.comm.Context",
         "Controller": "app.core.domain.Controller",
         "Entity": "app.core.domain.Entity",
         "DbContext": "app.core.data.DbContext",
@@ -13,6 +12,7 @@
         "Automapper": "app.core.data.Automapper",
         "RabbitMQClient": "app.core.mq.RabbitMQClient",
         "RedisCacheClient": "app.core.cache.RedisCacheClient",
+        "IDbClient": "app.core.db.IDbClient",
         "DiskDBClient": "app.core.db.DiskDBClient",
         "MongoDBClient": "app.core.db.MongoDBClient"
     },

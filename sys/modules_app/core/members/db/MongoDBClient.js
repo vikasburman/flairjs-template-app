@@ -32,7 +32,6 @@ define([
         this.prop('name');   
 
         let _db = null;
-        attr('private');
         attr('async');
         this.func('conn', (resolve, reject, isReconnect) => {
             if (_db === null || isReconnect) {
@@ -99,5 +98,28 @@ define([
         this.func('disconnect', () => {
             _db = null;
         });
+
+        let _tranHandle = null;
+        this.func('beginTran', () => {
+            if (_tranHandle === null) {
+                // start transaction
+                // not supported by mongoDB
+                _tranHandle = -1;
+            }
+        });
+        this.func('commitTran', () => {
+            if (_tranHandle !== null) {
+                // commit transaction
+                // not supported by mongoDB
+                _tranHandle = null;
+            }
+        });
+        this.func('rollbackTran', () => {
+            if (_tranHandle !== null) {
+                // rollback transaction
+                // not supported by mongoDB
+                _tranHandle = null;
+            }
+        });        
     });
 });
