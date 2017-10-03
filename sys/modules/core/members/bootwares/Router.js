@@ -24,7 +24,7 @@ define([
 
             const getHandler = (fullUrl, route, params) => {
                 return function(req, res) { // router here is express app.
-                    xLog('debug', `route hit: ${fullUrl}`);
+                    xLog('debug', `route hit: ${route.verb}->${fullUrl}`);
                     try {
                         let handler = new Handler(route.class, route.func, params),
                             request = new Request(handler, route.verb, req, res);
@@ -101,7 +101,7 @@ define([
                 window.onhashchange = () => {
                     let url = window.location.hash;
                     if (url.substr(0, 1) === '#') { url = url.substr(1); }
-                    xLog('debug', `route hit: ${url}`);
+                    xLog('debug', `route hit: navigate->${url}`);
                     router.run(url);
                 };
             }
