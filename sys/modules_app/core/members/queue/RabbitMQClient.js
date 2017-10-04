@@ -114,7 +114,7 @@ define([
         });
 
         attr('async');
-        this.func('push', (resolve, reject, topic, data) => {
+        this.func('enqueue', (resolve, reject, topic, data) => {
             let msg = this.message(data);
             this.publish(msg).then(resolve).catch(reject);
         });
