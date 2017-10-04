@@ -3,11 +3,11 @@ define([
     use('amqp')
 ], (Base, amqp) => {
     /**
-     * @class app.core.mq.RabbitMQClient
-     * @classdesc app.core.mq.RabbitMQClient
+     * @class app.core.queue.RabbitMQClient
+     * @classdesc app.core.queue.RabbitMQClient
      * @desc Message queue implementation that wraps the most common usage patterns of RabbitMQ.
      */
-    return Class('app.core.mq.RabbitMQClient', Base, function(attr) {
+    return Class('app.core.queue.RabbitMQClient', Base, function(attr) {
         attr('override');
         attr('sealed');
         this.func('constructor', (base, exchangeName, options) => {
@@ -114,6 +114,12 @@ define([
         });
 
         attr('async');
+        this.func('push', (resolve, reject, topic, data) => {
+            let msg = this.message(data);
+            this.publish(msg).then(resolve).catch(reject);
+        });
+
+        attr('async');
         this.func('subscribe', (resolve, reject, topic, topicPattern, asyncFn) => {
             this.conn().then((obj) => {
                 obj.conn.queue(topic, (mq) => {
@@ -125,7 +131,7 @@ define([
                             mq.shift();
                         }).catch(() => {
                             mq.shift(true, true);
-                        });                    
+                        });          
                     }).addCallback((e) => { resolve(e.consumerTag); });
                 });
             }).catch(reject);

@@ -10,7 +10,7 @@
         "Repository": "app.core.data.Repository",
         "UnitOfWork": "app.core.data.UnitOfWork",
         "Automapper": "app.core.data.Automapper",
-        "RabbitMQClient": "app.core.mq.RabbitMQClient",
+        "RabbitMQClient": "app.core.queue.RabbitMQClient",
         "RedisCacheClient": "app.core.cache.RedisCacheClient",
         "IDbClient": "app.core.db.IDbClient",
         "DiskDBClient": "app.core.db.DiskDBClient",
