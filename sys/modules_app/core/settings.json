@@ -1,0 +1,99 @@
+{
+    "catalog": {
+        "CredentialsChecker": "app.core.security.CredentialsChecker",
+        "TokenManager": "app.core.security.TokenManager",
+        "Crypt": "app.core.security.Crypt",
+        "Service": "app.core.comm.Service",
+        "Controller": "app.core.domain.Controller",
+        "Entity": "app.core.domain.Entity",
+        "DbContext": "app.core.data.DbContext",
+        "Repository": "app.core.data.Repository",
+        "UnitOfWork": "app.core.data.UnitOfWork",
+        "Automapper": "app.core.data.Automapper",
+        "RabbitMQClient": "app.core.queue.RabbitMQClient",
+        "RedisCacheClient": "app.core.cache.RedisCacheClient",
+        "IDbClient": "app.core.db.IDbClient",
+        "DiskDBClient": "app.core.db.DiskDBClient",
+        "MongoDBClient": "app.core.db.MongoDBClient"
+    },
+    "container": {
+    },
+    "routes": {
+        "server": [
+            { "ver": "1", "root": "/", "url": "/auth", "verb": "post", "class": "app.core.security.Auth", "func": "login" }
+        ]
+    },
+    "express": {
+        "case sensitive routing": false,
+        "strict routing": false
+    },
+    "server": {
+        "http": {
+            "enable": true,
+            "port": 8080,
+            "timeout": -1
+        },
+        "https": {
+            "enable": false,
+            "port": 8443,
+            "timeout": -1,
+            "ssl": {
+                "public": "./cert.pem",
+                "private": "./key.pem"
+            }
+        }
+    },
+    "response": {
+        "headers": [
+            { "name": "Access-Control-Allow-Credentials", "value": true },
+            { "name": "Access-Control-Allow-Origin", "value": "*" },
+            { "name": "Access-Control-Allow-Methods", "value": "GET, PUT, POST, DELETE" },
+            { "name": "Access-Control-Allow-Headers", "value": "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Request" }
+        ]
+    },
+    "bootwares": [
+        "sys.core.bootwares.Attributes",
+        "app.core.bootwares.Middlewares",
+        "sys.core.bootwares.Router",
+        "app.core.bootwares.StaticServer",
+        "app.core.bootwares.LocalTunnel",
+        "sys.core.bootwares.ErrorHandler",
+        "sys.core.bootwares.Locales"
+    ],
+    "middlewares": [
+        { "name": "compression" },
+        { "name": "cookie-parser" },
+        { "name": "express-bearer-token" },
+        { "name": "body-parser", "func": "urlencoded", "args": [{"extended": true}] },
+        { "name": "body-parser", "func": "json" }
+    ],
+    "more": {
+        "response": {
+            "headers": []
+        },
+        "bootwares": [],
+        "middlewares": []
+    },
+    "localtunnel": {
+        "enable": false,
+        "subdomain": "appgears",
+        "localhost": "localhost",
+        "port": 8080
+    },
+    "static": {
+        "favIcon": "",
+        "caching": {  
+            "enable": true,
+            "age": 86400000
+        }  
+    },
+    "security": {
+        "crypt": {
+            "secretKey": "adfdef1d-ce1a-470d-a652-f466292acf85"
+        },
+        "jwt": {
+            "secretKey": "adfdef1d-ce1a-470d-a652-f466292acf85",
+            "expiresInMinutes": 30
+        }
+    }
+}

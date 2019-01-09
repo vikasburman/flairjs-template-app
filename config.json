@@ -1,0 +1,41 @@
+{
+    "settings": {
+        "app": {
+            "id": "myapp",
+            "title": "My Application",
+            "version": "1.0.0",
+            "edition": "alpha",
+            "copyright": "Ⓒ xxxx, ...",
+            "tagline": "...",
+            "desc": "...",
+            "url": "...",
+            "org": "..."
+        },
+        "routes": {
+            "server": [
+                "app.core",
+                "app.sample"
+            ],
+            "client": [
+                "web.core",
+                "web.sample"
+            ]
+        },
+        "static": [
+            "web.core",
+            "web.sample"
+        ],
+        "locales": ["en-us"],
+
+        "xLog": "silly",
+        "minify": false,
+        "docs": false
+    },
+
+    "app.core": {
+        "static": {
+            "favIcon": "web/sample/static/favicon.ico"
+        }
+    }
+
+}

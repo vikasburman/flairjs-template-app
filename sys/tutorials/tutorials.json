@@ -1,0 +1,12 @@
+{
+     "getting-started": {
+         "title": "Getting Started",
+         "children": ["child-a", "child-b"]
+     },
+     "child-a": {
+         "title": "Child A"
+     },
+     "child-b": {
+         "title": "Child B"
+     }
+ }

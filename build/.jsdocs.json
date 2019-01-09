@@ -1,0 +1,30 @@
+{
+    "docs": [],
+
+    "config": {
+        "tags": {
+            "allowUnknownTags": true,
+            "dictionaries": ["jsdoc"]
+        },
+        "opts": {
+            "destination": "docs",
+                "tutorials": "",
+                "template": "node_modules/minami",
+                "encoding": "utf8",
+                "private": true,
+                "recurse": true            
+        },
+        "plugins": [
+            "plugins/markdown"
+        ],
+        "templates": {
+            "cleverLinks": false,
+            "monospaceLinks": true,
+            "useLongnameInNav": true,
+            "showInheritedInNav": true,
+            "default": {
+                "outputSourceFiles": false
+            }
+        }
+    }
+}

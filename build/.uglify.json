@@ -1,0 +1,15 @@
+{
+    "js": {
+        "mangle": false,
+        "preserveComments": "license",
+        "output": {
+        },
+        "compress": {
+            "dead_code": true,
+            "drop_debugger": true,
+            "global_defs": {
+                "use": true
+            }
+        }
+    }
+}
