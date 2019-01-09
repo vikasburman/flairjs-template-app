@@ -1,0 +1,50 @@
+{
+	"name": "gearsjs",
+	"title": "GearsJS",
+	"description": "Unified JavaScript Application Framework",
+	"copyright": "(c) 2017-2019 Vikas Burman",
+	"version": "0.1.0",
+	"author": "Vikas Burman <vikasburman@gmail.com>",
+	"keywords": [
+        "javascript",
+        "oops",
+        "js",
+        "object oriented",
+        "es6",
+        "es5",
+		"es7",
+		"app framework",
+		"framework",
+		"isomorphic"
+    ],
+	"license": "MIT",
+	"link": "https://gearsjs.com",
+	"repository": {
+        "type": "git",
+        "url": "https://github.com/vikasburman/gearsjs.git"
+	},
+	"main": "./dist/gears.min.js",
+	"scripts": {
+        "build": "gulp build",
+        "test": "gulp test",
+        "bump": "gulp bump",
+        "release": "gulp release"		
+	},
+	"devDependencies": {
+		"babel-eslint": "^10.0.1",
+		"eslint": "^3.19.0",
+		"download-github-repo": "^0.1.3",
+		"express": "^4.15.2",
+		"gitlab-download": "^1.0.2",
+		"gulp": "^3.9.1",
+		"gulp-eslint": "^3.0.1",
+		"gulp-inject-file": "^0.0.19",
+		"gulp-jasmine": "^2.4.2",
+		"gulp-rename": "^1.2.2",
+		"gulp-string-replace": "^1.1.2",
+		"gulp-uglify": "^2.1.2",
+		"jasmine": "^2.6.0",
+		"uglify-js-harmony": "^2.7.7"
+	},
+	"dependencies": {}
+}
