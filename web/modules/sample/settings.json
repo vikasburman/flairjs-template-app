@@ -1,9 +1,0 @@
-{
-    "routes": {
-        "client": [
-            { "url": "/", "class": "web.sample.views.Home"},
-            { "url": "/view1", "class": "web.sample.views.View1"},
-            { "url": "/view2", "class": "web.sample.views.View2"}
-        ]
-    }
-}
