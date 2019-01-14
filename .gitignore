@@ -1,7 +1,4 @@
 /node_modules/
-logs/
-data/db/
-data/cache/
-data/queue/
-docs2
+yarn.lock
+.yarnclean
 old
