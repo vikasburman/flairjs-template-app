@@ -1,29 +1,19 @@
 const gulp = require('gulp');
-
-// task: bump
-gulp.task('bump', (done) => {
-    require('./build/tasks/bump.js').bump(done);
-});
-
-// task: deps
-gulp.task('deps', (done) => {
-    require('./build/tasks/deps.js').deps(done);
-});
+const gulpOptions = require('./config/gulp.json');
 
 // task: build
 gulp.task('build', (done) => {
-    require('./build/tasks/build.js').build(done);
+    require(gulpOptions.build).build(done);
+});
+gulp.task('build-full', (done) => {
+    require(gulpOptions.build).build(done);
 });
 
 // task: test
 gulp.task('test', (done) => {
-    require('./build/tasks/test.js').test(done);
+    require(gulpOptions.test).test(done);
+});
+gulp.task('test-client', (done) => {
+    require(gulpOptions.test).test(done);
 });
 
-// task: release
-gulp.task('release', ['bump', 'build', 'test'], () => {
-});
-
-// task: default
-gulp.task('default', ['build', 'test'], () => {
-});

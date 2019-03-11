@@ -1,0 +1,37 @@
+{
+    "engine": "./src/flair.cli/(bundle)/flairBuild.js",
+    "package": "./package.json",
+
+    "dest": "./dist",
+    "src": "./src",
+    "processAsGroups": false,
+
+    "fullBuild": false,
+    "skipBumpVersion": false,
+    "suppressLogging": false,
+
+    "lint": true,
+    "lintConfig": "./config/lint.json",
+    "lintTypes": ["js", "css", "html"],
+
+    "minify": true,
+    "minifyConfig": "./config/minify.json",
+    "minifyTypes": ["js", "css", "html"],
+    "generateJSSourceMap": true,
+
+    "gzip": true,
+    "gzipConfig": "./config/gzip.json",
+    "gzipTypes": ["js", "css", "html", "txt", "xml", "md", "json", "svg", "jpg", "jpeg", "gif", "png"],
+
+    "lintAssets": true,
+    "minifyAssets": true,
+    "gzipAssets": true,
+    
+    "lintResources": true,
+    "minifyResources": true,
+    "utf8EncodeResourceTypes": ["txt", "xml", "js", "md", "json", "css", "html", "svg"],
+
+    "depsConfig": "./config/deps.json",
+    "preBuildDeps": false,
+    "postBuildDeps": true
+}

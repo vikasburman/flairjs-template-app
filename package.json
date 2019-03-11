@@ -1,9 +1,9 @@
 {
     "name": "flairapp",
     "title": "Flair App",
-    "description": "Unified JavaScript Application Framework",
+    "description": "Isomorphic Javascript Application",
     "copyright": "(c) 2017-2019 Vikas Burman",
-    "version": "0.1.2",
+    "version": "0.1.0",
     "author": "Vikas Burman <vikasburman@gmail.com>",
     "keywords": [
         "javascript",
@@ -12,40 +12,42 @@
         "object oriented",
         "es6",
         "es5",
-        "es7",
-        "app framework",
-        "framework",
-        "isomorphic"
+        "es7"
     ],
+    "engines": {
+        "node": ">=11.0.0"
+    },
     "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/vikasburman/flairapp.git"
     },
-    "main": "./dist/server/app.min.js",
+    "main": "./app.min.js",
     "scripts": {
-        "build": "gulp build",
-        "test": "gulp test",
-        "release": "gulp release"
+        "build": "gulp build --options ./config/build.json",
+        "build-full": "gulp build --full --options ./config/build.json",
+        "test": "gulp test --TEST --options ./config/test.json",
+        "test-client": "gulp test --TEST --client --options ./config/test.json",
+        "start": "http-server ./dist/app/ | open http://127.0.0.1:8282/ &",
+        "stop": "pkill -f http-server"
     },
     "devDependencies": {
-        "babel-eslint": "^10.0.1",
+        "clean-css": "^4.2.1",
         "copy-dir": "^0.4.0",
-        "del": "^3.0.0",
-        "eslint": "^3.19.0",
-        "express": "^4.15.2",
+        "del": "^4.0.0",
+        "eslint": "^5.15.0",
+        "fast-glob": "^2.2.6",
         "fs-extra": "^7.0.1",
-        "gulp": "^3.9.1",
-        "gulp-eslint": "^3.0.1",
-        "gulp-jasmine": "^2.4.2",
-        "gulp-rename": "^1.2.2",
-        "gulp-string-replace": "^1.1.2",
-        "gulp-uglify": "^2.1.2",
-        "jasmine": "^2.6.0",
+        "gulp": "^4.0.0",
+        "html-minifier": "^3.5.21",
+        "htmllint": "^0.7.3",
+        "http-server": "^0.11.1",
+        "jasmine": "^3.3.1",
+        "minimist": "^1.2.0",
+        "open": "^0.0.5",
         "recursive-readdir-sync": "^1.0.6",
-        "uglify-js-harmony": "^2.7.7"
+        "stylelint": "^9.10.1",
+        "uglify-es": "^3.3.9"
     },
-    "dependencies": {
-        "request": "^2.88.0"
-    }
+    "dependencies": {}
 }
