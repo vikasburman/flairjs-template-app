@@ -1,6 +1,6 @@
 {
-    "name": "gears",
-    "title": "GearsJS",
+    "name": "flairapp",
+    "title": "Flair App",
     "description": "Unified JavaScript Application Framework",
     "copyright": "(c) 2017-2019 Vikas Burman",
     "version": "0.1.2",
@@ -18,17 +18,14 @@
         "isomorphic"
     ],
     "license": "MIT",
-    "link": "https://gearsjs.com",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vikasburman/gearsjs.git"
+        "url": "https://github.com/vikasburman/flairapp.git"
     },
-    "main": "./dist/gears.min.js",
+    "main": "./dist/server/app.min.js",
     "scripts": {
         "build": "gulp build",
         "test": "gulp test",
-        "bump": "gulp bump",
-        "deps": "gulp deps",
         "release": "gulp release"
     },
     "devDependencies": {
