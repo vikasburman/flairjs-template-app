@@ -1,0 +1,26 @@
+{
+    "copy": [
+        "www/assets",
+        "www/bin",
+        "www/favicon.png",
+        "www/index.html"
+    ],
+    "build": [
+        "server/app/core",
+        "server/app/group1",
+        "server/app/group2",
+        "www/app/core/",
+        "www/app/group1/"
+    ],
+    "skipMinify": [
+        "server/app/"
+    ],
+    "resolveRoot": {
+        "server/app/": "./app/",
+        "www/app/": "./app/"
+    },
+    "preambleRoot": {
+        "server/app/": "server/app/",
+        "www/app/": "www/app/"
+    }
+}

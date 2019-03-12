@@ -1,7 +1,7 @@
 {
     "pre": [
+        { "src": "./node_modules/flairjs/", "dest": "./src/www/bin/flairjs/" }
     ],
     "post": [
-        { "src": "./dist/flair.js", "dest": "./docs/edge/examples/js/flair.js" }
     ]
 }

@@ -17,3 +17,8 @@ gulp.task('test-client', (done) => {
     require(gulpOptions.test).test(done);
 });
 
+// task: flairjs
+gulp.task('flairjs', (done) => {
+    console.log('setup flair');
+    done();
+});

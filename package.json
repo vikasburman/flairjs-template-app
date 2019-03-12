@@ -3,7 +3,7 @@
     "title": "Flair App",
     "description": "Isomorphic Javascript Application",
     "copyright": "(c) 2017-2019 Vikas Burman",
-    "version": "0.1.0",
+    "version": "0.1.32",
     "author": "Vikas Burman <vikasburman@gmail.com>",
     "keywords": [
         "javascript",
@@ -28,8 +28,10 @@
         "build-full": "gulp build --full --options ./config/build.json",
         "test": "gulp test --TEST --options ./config/test.json",
         "test-client": "gulp test --TEST --client --options ./config/test.json",
-        "start": "http-server ./dist/app/ | open http://127.0.0.1:8282/ &",
-        "stop": "pkill -f http-server"
+        "start": "http-server ./dist/app/ &",
+        "poststart": "open http://127.0.0.1:8282/ &",
+        "stop": "pkill -f http-server",
+        "postinstall": "gulp flairjs"
     },
     "devDependencies": {
         "clean-css": "^4.2.1",
@@ -49,5 +51,7 @@
         "stylelint": "^9.10.1",
         "uglify-es": "^3.3.9"
     },
-    "dependencies": {}
+    "dependencies": {
+        "flairjs": "^0.15.27"
+    }
 }
