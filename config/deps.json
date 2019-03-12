@@ -1,6 +1,15 @@
 {
     "pre": [
-        { "src": "./node_modules/flairjs/", "dest": "./src/www/bin/flairjs/" }
+        { "src": "./node_modules/flairjs/", 
+          "dest": "./src/www/bin/flairjs/", 
+          "exclude": {
+              "patterns": [
+                "flair.cli*"
+              ],
+              "maps": true,
+              "un-min": true
+          }
+        }
     ],
     "post": [
     ]

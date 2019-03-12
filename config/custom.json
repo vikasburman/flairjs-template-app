@@ -3,21 +3,25 @@
         "www/assets",
         "www/bin",
         "www/favicon.png",
-        "www/index.html"
+        "www/index.html",
+        "www/index.js",
+        "server/main.js"
     ],
     "build": [
-        "server/app/core",
-        "server/app/group1",
-        "server/app/group2",
+        "server/app/core/",
+        "server/app/group1/",
+        "server/app/group2/",
         "www/app/core/",
-        "www/app/group1/"
+        "www/app/group1/",
+        "www/app/group2/",
+        "www/app/group3/"
     ],
-    "skipMinify": [
+    "skipMinifyRoot": [
         "server/app/"
     ],
     "resolveRoot": {
-        "server/app/": "./app/",
-        "www/app/": "./app/"
+        "server/app/": "server/",
+        "www/app/": "www/"
     },
     "preambleRoot": {
         "server/app/": "server/app/",
