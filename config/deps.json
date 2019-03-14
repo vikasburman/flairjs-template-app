@@ -1,10 +1,11 @@
 {
     "pre": [
         { "src": "./node_modules/flairjs/", 
-          "dest": "./src/www/bin/flairjs/", 
+          "dest": "./src/www/lib/flairjs/", 
           "exclude": {
               "patterns": [
-                "flair.cli*"
+                "flair.cli*",
+                "flair.server*"
               ],
               "maps": true,
               "un-min": true

@@ -1,0 +1,23 @@
+{
+    "flair.app": {
+        "preambles": [
+            "flairjs/",
+            "./app/",
+            "./api/"
+        ],
+        "bootwares": [
+        ],
+    },
+
+    "worker:flair.app": {
+        "preambles": [
+            "flairjs/",
+            "./app/"
+        ],
+        "bootwares": [
+        ],
+    },
+
+    "yourapp.assembly1": {
+    }
+}

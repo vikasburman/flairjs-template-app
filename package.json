@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.0.28",
+    "version": "0.0.29",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -19,16 +19,15 @@
         "type": "git",
         "url": "yourapp giturl"
     },
-    "main": "./server/main.js",
     "scripts": {
         "build": "gulp build --options ./config/build.json",
         "build-full": "gulp build --full --options ./config/build.json",
         "test": "gulp test --TEST --options ./config/test.json",
         "test-client": "gulp test --TEST --client --options ./config/test.json",
-        "start": "http-server ./dist/app/ &",
-        "poststart": "open http://127.0.0.1:8282/ &",
-        "stop": "pkill -f http-server",
-        "postinstall": "gulp build --full --options ./config/build.json"
+        "start-dev": "NODE_ENV='development' node ./dist/server/main.js & open http://127.0.0.1:8282/ &",
+        "stop-dev": "pkill -f node",
+        "start": "pm2 start ./dist/server/main.js",
+        "stop": "pm2 stop main"
     },
     "devDependencies": {
         "clean-css": "^4.2.1",
@@ -40,10 +39,10 @@
         "gulp": "^4.0.0",
         "html-minifier": "^3.5.21",
         "htmllint": "^0.7.3",
-        "http-server": "^0.11.1",
         "jasmine": "^3.3.1",
         "minimist": "^1.2.0",
         "open": "^0.0.5",
+        "pm2": "^3.4.0",
         "recursive-readdir-sync": "^1.0.6",
         "stylelint": "^9.10.1",
         "uglify-es": "^3.3.9"
