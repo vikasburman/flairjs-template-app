@@ -1,21 +1,43 @@
 {
     "flair.app": {
-        "preambles": [
-            "flairjs/",
-            "./app/",
-            "./api/"
-        ],
-        "bootwares": [
-        ],
+        "load": [
+            "flairjs/preamble.js",
+            "./app/preamble.js",
+            "./api/preamble.js",
+            "flair.bw.server.NodeEnv",
+            "flair.bw.server.Middlewares",
+            "flair.bw.server.ResHeaders",
+            "flair.bw.DIContainer",
+            "flair.bw.server.Sniff",
+            "flair.bw.server.Router",
+            "flair.bw.server.Catch"
+        ]
     },
 
     "worker:flair.app": {
-        "preambles": [
-            "flairjs/",
-            "./app/"
+        "load": [
+            "flairjs/preamble.js",
+            "./app/preamble.js",
+            "flair.bw.server.NodeEnv",
+            "flair.bw.DIContainer"
+        ]
+    },
+
+    "flair.server": {
+        "envVars": [
+            "./private/.env"
         ],
-        "bootwares": [
+        "mounts": {
+            "main": "/"
+        },
+        "main-appSettings": [
         ],
+        "main-middlewares": [
+            { "name": "compression", "func": "", "args": [] }
+        ],    
+        "main-resHeaders": [
+            { "name": "X-Powered-By", "value": "flairApp" }
+        ]
     },
 
     "yourapp.assembly1": {

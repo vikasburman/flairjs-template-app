@@ -1,7 +1,7 @@
 {
     "copy": [
         "www/assets",
-        "www/bin",
+        "www/lib",
         "www/favicon.png",
         "www/index.html",
         "www/index.js",

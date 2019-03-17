@@ -16,21 +16,21 @@
     "lintConfig": "./config/lint.json",
     "lintTypes": ["js", "css", "html"],
 
-    "minify": true,
+    "minify": false,
     "minifyConfig": "./config/minify.json",
     "minifyTypes": ["js", "css", "html"],
-    "generateJSSourceMap": true,
+    "generateJSSourceMap": false,
 
-    "gzip": true,
+    "gzip": false,
     "gzipConfig": "./config/gzip.json",
     "gzipTypes": ["js", "css", "html", "txt", "xml", "md", "json", "svg", "jpg", "jpeg", "gif", "png"],
 
-    "lintAssets": true,
-    "minifyAssets": true,
-    "gzipAssets": true,
+    "lintAssets": false,
+    "minifyAssets": false,
+    "gzipAssets": false,
     
-    "lintResources": true,
-    "minifyResources": true,
+    "lintResources": false,
+    "minifyResources": false,
     "utf8EncodeResourceTypes": ["txt", "xml", "js", "md", "json", "css", "html", "svg"],
 
     "depsConfig": "./config/deps.json",

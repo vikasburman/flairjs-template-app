@@ -6,13 +6,13 @@
 
 (async () => {
     const flair = require('flairjs');
-    const { AppDomain, include } = flair;
+    const { AppDomain, include, env } = flair;
+    const { BootEngine } = await include('BootEngine');
 
-    // set config 
-    let config = await AppDomain.config('./appConfig.json');
+    // load config 
+    await AppDomain.config('./appConfig.json');
 
     // boot
-    const BootEngine = await include(config.bootEngine);
-    BootEngine.start(config.entryPoint);
+    BootEngine.start(env.isWorker ? '' : __filename);
  })();
  

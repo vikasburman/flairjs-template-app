@@ -1,17 +1,28 @@
 {
     "flair.app": {
-        "preambles": [
-            "./lib/flairjs/",
-            "./app/"
+        "load": [
+            "./lib/flairjs/preamble.js",
+            "./app/preamble.js",
+            "flair.bw.DIContainer",
+            "flair.bw.client.Router"
         ],
-
-        "bootwares": [
-        ],
+        "container": {
+            "Page": "./lib/page/page.js"
+        }        
     },
     
     "worker:flair.app": {
-        "bootwares": [
-        ],        
+    },
+
+    "flair.client": {
+        "mounts": {
+            "main": "/"
+        },
+        "main-appSettings": [
+            { "name": "strict", "value": true }
+        ],
+        "main-middlewares": [
+        ]
     },
 
     "yourapp.assembly1": {

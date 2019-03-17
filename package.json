@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.0.29",
+    "version": "0.0.30",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -48,6 +48,9 @@
         "uglify-es": "^3.3.9"
     },
     "dependencies": {
-        "flairjs": "^0.15.27"
+        "express": "^4.16.4",
+        "flairjs": "^0.15.27",
+        "node-env-file": "^0.1.8",
+        "page": "^1.11.4"
     }
 }
