@@ -1862,10 +1862,10 @@ flagged-respawn@^1.0.0:
   resolved "https://registry.yarnpkg.com/flagged-respawn/-/flagged-respawn-1.0.1.tgz#e7de6f1279ddd9ca9aac8a5971d618606b3aab41"
   integrity sha512-lNaHNVymajmk0OJMBn8fVUAU1BtDeKIqKoVhk4xAALB57aALg6b4W0MfJ/cUE0g9YBXy5XhSlPIpYIJ7HaY/3Q==
 
-flairjs@^0.15.27:
-  version "0.15.27"
-  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.15.27.tgz#76764d5ca3d2f0e8cd7eafe908f5c481b9cc50df"
-  integrity sha512-+02ILshtdjuEMTGO+6hZ5DNil6gXhtpXI3tOky1UFNiEBgNYAMspalX8IZ6S3mnRgGkBRn73h7i8YTBE/Yq1ug==
+flairjs@^0.25.53:
+  version "0.25.53"
+  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.25.53.tgz#8df536f027dcc795492ddc7c97b550b8a05bde7a"
+  integrity sha512-vEw7HswMJ9fb/DgTkGgMrtNBeauMX5FiBWN98wXsLT+DRUVVSdlfUuWzO1n6j1Iyi2QSI/5mVbOAqaRiND8xGg==
 
 flat-cache@^2.0.1:
   version "2.0.1"
@@ -2346,6 +2346,11 @@ http-proxy-agent@^2.1.0:
   dependencies:
     agent-base "4"
     debug "3.1.0"
+
+http-shutdown@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/http-shutdown/-/http-shutdown-1.2.0.tgz#df2d8067a8856e99d11e9dceb21609591e1df514"
+  integrity sha1-3y2AZ6iFbpnRHp3OshYJWR4d9RQ=
 
 https-proxy-agent@^2.2.1:
   version "2.2.1"

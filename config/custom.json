@@ -1,34 +1,59 @@
 {
-    "copy": [
-        "www/assets",
-        "www/lib",
-        "www/favicon.png",
-        "www/index.html",
-        "www/index.js",
-        "server/main.js"
-    ],
     "build": [
-        "server/app/core/",
-        "server/app/group1/",
-        "server/app/group2/",
-        "server/api/",
-        "www/app/core/",
-        "www/app/group1/",
-        "www/app/group2/",
-        "www/app/group3/"
+        { "profile": "server" },
+        { "profile": "client" }
     ],
-    "skipMinifyRoot": [
-        "server/app/",
-        "server/api/"
-    ],
-    "resolveRoot": {
-        "server/app/": "server/",
-        "server/api/": "server/",
-        "www/app/": "www/"
-    },
-    "preambleRoot": {
-        "server/app/": "server/app/",
-        "server/api/": "server/api/",
-        "www/app/": "www/app/"
+    "profiles": {
+        "server": {
+            "root": "server",
+            "copy": [
+                "server/appConfig.json",
+                "server/main.js",
+                "server/private"
+            ],
+            "build": [
+                "server/app/core/",
+                "server/app/group1/",
+                "server/app/group2/",
+                "server/api/"
+            ],
+            "skipMinifyRoot": [
+                "server/app/",
+                "server/api/"
+            ],
+            "resolveRoot": {
+                "server/app/": "server/",
+                "server/api/": "server/"
+            },
+            "preambleRoot": {
+                "server/app/": "server/app/",
+                "server/api/": "server/api/"
+            }
+        },
+        "client": {
+            "root": "www",
+            "copy": [
+                "www/assets",
+                "www/lib",
+                "www/favicon.png",
+                "www/webConfig.json",
+                "www/index.html",
+                "www/index.js"
+            ],
+            "build": [
+                "www/app/core/",
+                "www/app/group1/",
+                "www/app/group2/",
+                "www/app/group3/"
+            ],
+            "skipMinifyRoot": [
+            ],
+            "resolveRoot": {
+                "www/app/": "www/"
+            },
+            "preambleRoot": {
+                "www/app/": "www/app/"
+            }
+        }
     }
 }

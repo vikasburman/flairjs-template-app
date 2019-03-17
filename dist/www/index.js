@@ -3,7 +3,6 @@
  * Your App Description
  * Copyright Message
  */
-
 (async () => {
     const flair = await include('./lib/flairjs/flair.min.js', 'flair');
     const { AppDomain, include, env } = flair;

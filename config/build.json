@@ -9,6 +9,7 @@
     "customBuildConfig": "./config/custom.json",
 
     "fullBuild": false,
+    "clean": true,
     "skipBumpVersion": false,
     "suppressLogging": false,
 
