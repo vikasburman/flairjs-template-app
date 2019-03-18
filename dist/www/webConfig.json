@@ -1,13 +1,13 @@
 {
     "flair.app": {
         "load": [
-            "./lib/flairjs/preamble.js",
+            "flairjs/preamble.js",
             "./app/preamble.js",
             "flair.bw.DIContainer",
             "flair.bw.Router"
         ],
         "container": {
-            "Page": "./lib/page/page.js"
+            "Page": "page/page.js"
         },
         "mounts": {
             "main": "/"

@@ -1,19 +1,5 @@
 {
     "pre": [
-        { "src": "./node_modules/flairjs/", 
-          "dest": "./src/www/lib/flairjs/", 
-          "exclude": {
-              "patterns": [
-                "flair.cli",
-                "flair.cli.*",
-                "flair.server*"
-              ],
-              "maps": true,
-              "un-min": true
-          }
-        },
-        { "src": "./node_modules/page/page.js", "dest": "./src/www/lib/page/page.js" }, 
-        { "src": "./node_modules/page/readme.md", "dest": "./src/www/lib/page/readme.md" }
     ],
     "post": [
     ]

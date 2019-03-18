@@ -5,8 +5,8 @@
  * 
  * Assembly: yourapp.feature1
  *     File: ./app/group1/yourapp.feature1.js
- *  Version: 0.0.60
- *  Sun, 17 Mar 2019 22:39:38 GMT
+ *  Version: 0.0.89
+ *  Mon, 18 Mar 2019 23:07:56 GMT
  * 
  * yourapp copyright
  * Licensed under MIT
@@ -47,6 +47,6 @@ let settings = {}; // eslint-disable-line no-unused-vars
         }
         settings = Object.freeze(settings);
         
-flair.AppDomain.registerAdo('{"name":"yourapp.feature1","file":"./app/group1/yourapp.feature1{.min}.js","desc":"yourapp description","title":"yourapp name","version":"0.0.60","lupdate":"Sun, 17 Mar 2019 22:39:38 GMT","builder":{"name":"flair.cli","version":"0.25.53","format":"fasm","formatVersion":"1","contains":["initializer","types","enclosureVars","enclosedTypes","resources","assets","routes","selfreg"]},"copyright":"yourapp copyright","license":"MIT","types":[],"resources":[],"assets":[],"routes":[]}');
+flair.AppDomain.registerAdo('{"name":"yourapp.feature1","file":"./app/group1/yourapp.feature1{.min}.js","desc":"yourapp description","title":"yourapp name","version":"0.0.89","lupdate":"Mon, 18 Mar 2019 23:07:56 GMT","builder":{"name":"flair.cli","version":"0.25.76","format":"fasm","formatVersion":"1","contains":["initializer","types","enclosureVars","enclosedTypes","resources","assets","routes","selfreg"]},"copyright":"yourapp copyright","license":"MIT","types":[],"resources":[],"assets":[],"routes":[]}');
 
 })();

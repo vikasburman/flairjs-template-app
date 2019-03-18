@@ -4,14 +4,14 @@
  * Copyright Message
  */
 (async () => {
-    const flair = await include('./lib/flairjs/flair.min.js', 'flair');
     const { AppDomain, include, env } = flair;
-    const { BootEngine } = await include('BootEngine');
+    const page = await include('page/page.js', 'page');
+    const { BootEngine } = await include('flair.app.BootEngine');
 
     // load config 
     await AppDomain.config('./webConfig.json');
 
     // boot
-    BootEngine.start(env.isWorker ? '' : document.currentScript);
+    BootEngine.start(env.isWorker ? '' : env.global.document.currentScript);
  })();
  

@@ -4,9 +4,9 @@
  * Copyright Message
  */
 (async () => {
-    const flair = require('flairjs');
+    const flair = require('flairjs'); 
     const { AppDomain, include, env } = flair;
-    const { BootEngine } = await include('BootEngine');
+    const { BootEngine } = await include('flair.app.BootEngine');
 
     // load config 
     await AppDomain.config('./appConfig.json');

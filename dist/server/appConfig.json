@@ -3,7 +3,6 @@
         "load": [
             "flairjs/preamble.js",
             "./app/preamble.js",
-            "./api/preamble.js",
             "flair.bw.NodeEnv",
             "flair.bw.Middlewares",
             "flair.bw.ResHeaders",

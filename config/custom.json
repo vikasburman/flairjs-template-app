@@ -6,6 +6,8 @@
     "profiles": {
         "server": {
             "root": "server",
+            "modules": [
+            ],
             "copy": [
                 "server/appConfig.json",
                 "server/main.js",
@@ -26,15 +28,18 @@
                 "server/api/": "server/"
             },
             "preambleRoot": {
-                "server/app/": "server/app/",
-                "server/api/": "server/api/"
+                "server/app/": "server/app",
+                "server/api/": "server/app"
             }
         },
         "client": {
             "root": "www",
+            "modules": [
+                "flairjs",
+                "page"
+            ],
             "copy": [
                 "www/assets",
-                "www/lib",
                 "www/favicon.png",
                 "www/webConfig.json",
                 "www/index.html",
@@ -49,7 +54,7 @@
             "skipMinifyRoot": [
             ],
             "resolveRoot": {
-                "www/app/": "www/"
+                "www/app/": "www/app"
             },
             "preambleRoot": {
                 "www/app/": "www/app/"
