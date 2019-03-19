@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.0.89",
+    "version": "0.0.91",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -55,7 +55,6 @@
         "express": "^4.16.4",
         "flairjs": "^0.25.53",
         "http-shutdown": "^1.2.0",
-        "node-env-file": "^0.1.8",
-        "page": "^1.11.4"
+        "node-env-file": "^0.1.8"
     }
 }

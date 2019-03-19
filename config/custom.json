@@ -35,8 +35,7 @@
         "client": {
             "root": "www",
             "modules": [
-                "flairjs",
-                "page"
+                "flairjs"
             ],
             "copy": [
                 "www/assets",

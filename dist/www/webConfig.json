@@ -7,7 +7,6 @@
             "flair.bw.Router"
         ],
         "container": {
-            "Page": "page/page.js"
         },
         "mounts": {
             "main": "/"

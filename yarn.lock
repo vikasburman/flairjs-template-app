@@ -3714,13 +3714,6 @@ pac-resolver@^3.0.0:
     netmask "^1.0.6"
     thunkify "^2.1.2"
 
-page@^1.11.4:
-  version "1.11.4"
-  resolved "https://registry.yarnpkg.com/page/-/page-1.11.4.tgz#db4d9c4d4bd92c49ad3dc5bd3c1a1201df992bd8"
-  integrity sha512-8JMZzcE5W4qk+/DtmogN57cI+Yscy7xTYCpfSO7s3Tx6LjZuAfHFQY1+cKIAy60NaXdzVD6nOc3objaVbE0HJg==
-  dependencies:
-    path-to-regexp "~1.2.1"
-
 pako@^0.2.5:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/pako/-/pako-0.2.9.tgz#f3f7522f4ef782348da8161bad9ecfd51bf83a75"
@@ -3849,13 +3842,6 @@ path-to-regexp@0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=
-
-path-to-regexp@~1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-1.2.1.tgz#b33705c140234d873c8721c7b9fd8b541ed3aff9"
-  integrity sha1-szcFwUAjTYc8hyHHuf2LVB7Tr/k=
-  dependencies:
-    isarray "0.0.1"
 
 path-type@^1.0.0:
   version "1.1.0"
