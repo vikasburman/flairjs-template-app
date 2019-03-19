@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.0.91",
+    "version": "0.0.92",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",

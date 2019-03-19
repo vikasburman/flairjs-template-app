@@ -5,7 +5,6 @@
  */
 (async () => {
     const { AppDomain, include, env } = flair;
-    const page = await include('page/page.js', 'page');
     const { BootEngine } = await include('flair.app.BootEngine');
 
     // load config 
