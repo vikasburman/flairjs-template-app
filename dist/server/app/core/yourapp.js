@@ -5,8 +5,8 @@
  * 
  * Assembly: yourapp
  *     File: ./app/core/yourapp.js
- *  Version: 0.0.92
- *  Tue, 19 Mar 2019 00:21:28 GMT
+ *  Version: 0.1.7
+ *  Mon, 01 Apr 2019 00:00:56 GMT
  * 
  * yourapp copyright
  * Licensed under MIT
@@ -16,37 +16,37 @@
 
 /* eslint-disable no-unused-vars */
 const flair = (typeof global !== 'undefined' ? require('flairjs') : (typeof WorkerGlobalScope !== 'undefined' ? WorkerGlobalScope.flair : window.flair));
-const { Class, Struct, Enum, Interface, Mixin } = flair;
-const { Aspects } = flair;
-const { AppDomain } = flair;
-const __currentContextName = flair.AppDomain.context.current().name;
-const { $$, attr } = flair;
-const { bring, Container, include } = flair;
-const { Port } = flair;
-const { on, post, telemetry } = flair;
-const { Reflector } = flair;
-const { Serializer } = flair;
-const { Tasks } = flair;
+const { Class, Struct, Enum, Interface, Mixin, Aspects, AppDomain, $$, attr, bring, Container, include, Port, on, post, telemetry,
+				Reflector, Serializer, Tasks, as, is, isComplies, isDerivedFrom, isAbstract, isSealed, isStatic, isSingleton, isDeprecated,
+				isImplements, isInstanceOf, isMixed, getAssembly, getAttr, getContext, getResource, getRoute, getType, ns, getTypeOf,
+				getTypeName, typeOf, dispose, using, Args, Exception, noop, nip, nim, nie, event } = flair;
 const { TaskInfo } = flair.Tasks;
-const { as, is, isComplies, isDerivedFrom, isImplements, isInstanceOf, isMixed } = flair;
-const { getAssembly, getAttr, getContext, getResource, getRoute, getType, ns, getTypeOf, typeOf } = flair;
-const { dispose, using } = flair;
-const { Args, Exception, noop, nip, nim, nie, event } = flair;
 const { env } = flair.options;
-const { forEachAsync, replaceAll, splitAndTrim, findIndexByProp, findItemByProp, which, isArrowFunc, isASyncFunc, sieve, b64EncodeUnicode, b64DecodeUnicode } = flair.utils;
-const { $static, $abstract, $virtual, $override, $sealed, $private, $privateSet, $protected, $protectedSet, $readonly, $async } = $$;
-const { $enumerate, $dispose, $post, $on, $timer, $type, $args, $inject, $resource, $asset, $singleton, $serialize, $deprecate, $session, $state, $conditional, $noserialize, $ns } = $$;
+const { forEachAsync, replaceAll, splitAndTrim, findIndexByProp, findItemByProp, which, isArrowFunc, isASyncFunc, sieve,
+				b64EncodeUnicode, b64DecodeUnicode } = flair.utils;
+const { $$static, $$abstract, $$virtual, $$override, $$sealed, $$private, $$privateSet, $$protected, $$protectedSet, $$readonly, $$async,
+				$$overload, $$enumerate, $$dispose, $$post, $$on, $$timer, $$type, $$args, $$inject, $$resource, $$asset, $$singleton, $$serialize,
+				$$deprecate, $$session, $$state, $$conditional, $$noserialize, $$ns } = $$;
+
+// define current context name
+const __currentContextName = AppDomain.context.current().name;
+
+// define loadPathOf this assembly
+let __currentFile = (env.isServer ? __filename : window.document.currentScript.src.replace(window.document.location.href, './'));
+let __currentPath = __currentFile.substr(0, __currentFile.lastIndexOf('/') + 1);
+AppDomain.loadPathOf('yourapp', __currentPath)
+
+// assembly level error handler
+const __asmError = (err) => { AppDomain.onError(err); };
 /* eslint-enable no-unused-vars */
 
 let settings = {}; // eslint-disable-line no-unused-vars
+let settingsReader = flair.Port('settingsReader');
+if (typeof settingsReader === 'function') {
+let externalSettings = settingsReader('yourapp');
+if (externalSettings) { settings = Object.assign(settings, externalSettings); }}
+settings = Object.freeze(settings);
 
-        let settingsReader = flair.Port('settingsReader');
-        if (typeof settingsReader === 'function') {
-            let externalSettings = settingsReader('yourapp');
-            if (externalSettings) { settings = Object.assign(settings, externalSettings); }
-        }
-        settings = Object.freeze(settings);
-        
-flair.AppDomain.registerAdo('{"name":"yourapp","file":"./app/core/yourapp{.min}.js","desc":"yourapp description","title":"yourapp name","version":"0.0.92","lupdate":"Tue, 19 Mar 2019 00:21:28 GMT","builder":{"name":"flair.cli","version":"0.25.91","format":"fasm","formatVersion":"1","contains":["initializer","types","enclosureVars","enclosedTypes","resources","assets","routes","selfreg"]},"copyright":"yourapp copyright","license":"MIT","types":[],"resources":[],"assets":[],"routes":[]}');
+AppDomain.registerAdo('{"name":"yourapp","file":"./app/core/yourapp{.min}.js","mainAssembly":"","desc":"yourapp description","title":"yourapp name","version":"0.1.7","lupdate":"Mon, 01 Apr 2019 00:00:56 GMT","builder":{"name":"flair.cli","version":"0.30.10","format":"fasm","formatVersion":"1","contains":["initializer","types","enclosureVars","enclosedTypes","resources","assets","routes","selfreg"]},"copyright":"yourapp copyright","license":"MIT","types":[],"resources":[],"assets":[],"routes":[]}');
 
 })();

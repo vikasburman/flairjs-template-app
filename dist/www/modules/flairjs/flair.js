@@ -5,8 +5,8 @@
  * 
  * Assembly: flair
  *     File: ./flair.js
- *  Version: 0.25.91
- *  Tue, 19 Mar 2019 00:19:30 GMT
+ *  Version: 0.30.10
+ *  Sun, 31 Mar 2019 23:55:44 GMT
  * 
  * (c) 2017-2019 Vikas Burman
  * Licensed under MIT
@@ -34,9 +34,7 @@
     // locals
     let isServer = new Function("try {return this===global;}catch(e){return false;}")(),
         isWorker = isServer ? (!require('worker_threads').isMainThread) : (typeof WorkerGlobalScope !== 'undefined' ? true : false),
-        _global = (isServer ? global : (isWorker ? WorkerGlobalScope : window)),
-        flair = {},
-        currentFile = (isServer ? __filename : _global.document.currentScript.src),
+        currentFile = (isServer ? __filename : window.document.currentScript.src),
         sym = [],
         meta = Symbol('[meta]'),
         modulesRootFolder = 'modules',
@@ -44,7 +42,35 @@
         options = {},
         flairTypes = ['class', 'enum', 'interface', 'mixin', 'struct'],
         flairInstances = ['instance', 'sinstance'],
-        argsString = '';
+        argsString = '',
+        isAppStarted = false;
+
+    // flairapp bootstrapper
+    let flair = async (configFile, entryPoint) => {
+        if (!isAppStarted) {
+            isAppStarted = true;
+
+            // settings
+            const { AppDomain, include, env } = flair;
+            let __currentScript = (env.isServer ? '' : window.document.scripts[window.document.scripts.length - 1].src),
+                __entryPoint = (env.isServer ? (env.isWorker ? '' : entryPoint) : (env.isWorker ? '' : __currentScript)),
+                __rootPath = (env.isServer ? (__entryPoint.substr(0, __entryPoint.lastIndexOf('/') + 1)) : './'),
+                __preamble = 'flairjs/preamble.js',
+                __config = configFile,
+                __BootEngine = 'flair.app.BootEngine',
+                be = null;
+
+            // initialize
+            AppDomain.root(__rootPath);
+            AppDomain.entryPoint(__entryPoint);
+            await AppDomain.config(__config);
+            await include(__preamble);
+            be = await include(__BootEngine);
+
+            // start boot engine
+            be.start();
+        }
+    };
 
     // read symbols from environment
     if (isServer) {
@@ -55,21 +81,24 @@
         let idx = argv.findIndex((item) => { return (item.startsWith('--flairSymbols') ? true : false); });
         if (idx !== -1) { argsString = argv[idx].substr(2).split('=')[1]; }
     } else {
-        argsString = (typeof _global.flairSymbols !== 'undefined') ? _global.flairSymbols : '';
+        if (isWorker) {
+            argsString = WorkerGlobalScope.flairSymbols || '';
+        } else {
+            argsString = window.flairSymbols || '';
+        }
     }
     if (argsString) { sym = argsString.split(',').map(item => item.trim()); }
 
     options.symbols = Object.freeze(sym);
     options.env = Object.freeze({
         type: (isServer ? 'server' : 'client'),
-        global: _global,
         isTesting: (sym.indexOf('TEST') !== -1),
         isServer: isServer,
         isClient: !isServer,
         isWorker : isWorker,
         isMain: !isWorker,
-        cores: ((isServer ? (require('os').cpus().length) : _global.navigator.hardwareConcurrency) || 4),
-        isCordova: (!isServer && !!_global.cordova),
+        cores: ((isServer ? (require('os').cpus().length) : window.navigator.hardwareConcurrency) || 4),
+        isCordova: (!isServer && !!window.cordova),
         isNodeWebkit: (isServer && process.versions['node-webkit']),
         isProd: (sym.indexOf('DEBUG') === -1 && sym.indexOf('PROD') !== -1),
         isDebug: (sym.indexOf('DEBUG') !== -1)
@@ -78,16 +107,17 @@
     // flair
     flair.info = Object.freeze({
         name: 'flair',
+        title: 'Flair.js',
         file: currentFile,
-        version: '0.25.91',
+        version: '0.30.10',
         copyright: '(c) 2017-2019 Vikas Burman',
         license: 'MIT',
-        lupdate: new Date('Tue, 19 Mar 2019 00:19:30 GMT')
+        lupdate: new Date('Sun, 31 Mar 2019 23:55:44 GMT')
     });  
     
     flair.members = [];
     flair.options = Object.freeze(options);
-    flair.env = Object.env; // direct env access as well
+    flair.env = flair.options.env; // direct env access as well
     const a2f = (name, obj, disposer) => {
         flair[name] = Object.freeze(obj);
         flair.members.push(name);
@@ -207,6 +237,11 @@
             Error.captureStackTrace(_this, stStart);
         }
     
+        // add hint of error
+        if (_this.error) {
+            _this.message += '[' + _this.error + ']';
+        }
+    
         // return
         return Object.freeze(_this);
     };
@@ -234,7 +269,7 @@
         if (isFile) { // debug/prod specific decision
             // pick minified or dev version
             if (def.indexOf('{.min}') !== -1) {
-                if (flair.options.env.isProd) {
+                if (options.env.isProd) {
                     return def.replace('{.min}', '.min'); // a{.min}.js => a.min.js
                 } else {
                     return def.replace('{.min}', ''); // a{.min}.js => a.js
@@ -268,7 +303,7 @@
         return def; // as is
     };
     const isArrow = (fn) => {
-        return (!(fn).hasOwnProperty('prototype'));
+        return (!(fn).hasOwnProperty('prototype') && fn.constructor.name === 'Function');
     };
     const isASync = (fn) => {
         return (fn.constructor.name === 'AsyncFunction');
@@ -285,8 +320,9 @@
         if (idx !== -1) { return arr[idx]; }
         return null;
     };
-    const splitAndTrim = (str) => {
-        return str.split(',').map((item) => { return item.trim(); });
+    const splitAndTrim = (str, splitChar) => {
+        if (!splitChar) { splitChar = ','; }
+        return str.split(splitChar).map((item) => { return item.trim(); });
     };
     const escapeRegExp = (string) => {
         return string.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1'); // eslint-disable-line no-useless-escape
@@ -370,7 +406,7 @@
         }
     };
     const forEachAsync = (items, asyncFn) => {
-        return Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const processItems = (items) => {
                 if (!items || items.length === 0) { resolve(); return; }
                 Promise((_resolve, _reject) => {
@@ -454,55 +490,59 @@
         if (type[meta]) { type = type[meta].name; } // since it can be a type as well
         if (_typeOf(type) !== 'string') { throw _Exception.InvalidArgument('type', _is); }
         
-        let isMatched = false, 
-            _typ = '';
+        let isMatched = false;
     
-        // undefined
-        if (type === 'undefined') { isMatched = (typeof obj === 'undefined'); }
-    
-        // null
-        if (!isMatched && type === 'null') { isMatched = (obj === null); }
-    
-        // NaN
-        if (!isMatched && type === 'NaN') { isMatched = isNaN(obj); }
-    
-        // infinity
-        if (!isMatched && type === 'infinity') { isMatched = (typeof obj === 'number' && isFinite(obj) === false); }
-    
-        // array
-        if (!isMatched && (type === 'array' || type === 'Array')) { isMatched = Array.isArray(obj); }
-    
-        // date
-        if (!isMatched && (type === 'date' || type === 'Date')) { isMatched = (obj instanceof Date); }
-    
-        // flair
-        if (!isMatched && (type === 'flairtype' && obj[meta] && flairTypes.indexOf(obj[meta].type) !== -1)) { isMatched = true; }
-        if (!isMatched && (type === 'flairinstance' && obj[meta] && flairInstances.indexOf(obj[meta].type) !== -1)) { isMatched = true; }
-        if (!isMatched && (type === 'flair' && obj[meta])) { isMatched = true; } // presence ot meta symbol means it is flair type/instance
-    
-        // special function types
-        if (!isMatched && (type === 'cfunction')) { isMatched = (typeof obj === 'function' && !isArrow(obj)); }
-        if (!isMatched && (type === 'afunction')) { isMatched = (typeof obj === 'function' && isArrow(obj)); }
-    
-        // native javascript types (including simple 'function')
-        if (!isMatched) { isMatched = (typeof obj === type); }
-    
-        // flair types
-        if (!isMatched) {
-            if (obj[meta]) { 
-                _typ = obj[meta].type;
-                isMatched = _typ === type; 
+        if (obj) {
+            switch(type) {
+                case 'NaN': 
+                    isMatched = isNaN(obj); break;
+                case 'infinity': 
+                    isMatched = (typeof obj === 'number' && isFinite(obj) === false); break;
+                case 'array':
+                case 'Array':
+                    isMatched = Array.isArray(obj); break;
+                case 'date':
+                case 'Date':
+                    isMatched = (obj instanceof Date); break;
+                case 'flairtype':
+                    isMatched = (obj[meta] && flairTypes.indexOf(obj[meta].type) !== -1); break;
+                case 'flairinstance':
+                    isMatched = (obj[meta] && flairInstances.indexOf(obj[meta].type) !== -1); break;
+                case 'flair':
+                    // presence ot meta symbol means it is flair type/instance
+                    isMatched = typeof obj[meta] !== 'undefined'; break;
+                case 'cfunction':
+                    isMatched = (typeof obj === 'function' && !isArrow(obj)); break;
+                case 'afunction':
+                    isMatched = (typeof obj === 'function' && isArrow(obj)); break;
+                default:
+                    // native javascript types (including simple 'function')
+                    if (!isMatched) { isMatched = (typeof obj === type); }
+        
+                    if (!isMatched && obj[meta]) {
+                        // flair types
+                        if (!isMatched) { isMatched = (type === obj[meta].type); }
+        
+                        // flair instance check (instance)
+                        if (!isMatched && flairInstances.indexOf(obj[meta].type) !== -1) { isMatched = _isInstanceOf(obj, type); }
+        
+                        // flair type check (derived from)
+                        if (!isMatched && obj[meta].type === 'class') { isMatched = _isDerivedFrom(obj, type); }
+                        
+                        // flair type check (direct name)
+                        if (!isMatched && flairTypes.indexOf(obj[meta].type) !== -1) { isMatched = (obj[meta].name === type); }
+                    }
+            }
+        } else {
+            switch(type) {
+                case 'undefined': 
+                    isMatched = (typeof obj === 'undefined'); break;
+                case 'null': 
+                    isMatched = (obj === null); break;
+                case 'NaN': 
+                    isMatched = isNaN(obj); break;
             }
         }
-        
-        // flair flair types - instance check (i.e., class or struct type names)
-        if (!isMatched && _typ && flairInstances.indexOf(_typ) !== -1) { isMatched = _isInstanceOf(obj, type); }
-    
-        // flair flair types - type check (i.e., class or names)
-        if (!isMatched && _typ && _typ === 'class') { isMatched = _isDerivedFrom(obj, type); }
-    
-        // flair flair types - type check (i.e., direct name)
-        if (!isMatched && _typ && flairTypes.indexOf(_typ) !== -1) { isMatched = (obj[meta].name === type); }
     
         // return
         return isMatched;
@@ -521,6 +561,7 @@
      *                        each pattern set can take following forms:
      *                        'type, type, type, ...' OR 'name: type, name: type, name: type, ...'
      *                          type: can be following:
+     *                              > special types: 'undefined' - for absence of a passed value
      *                              > expected native javascript data types like 'string', 'number', 'function', 'array', etc.
      *                              > 'function' - any function, cfunction' - constructor function and 'afunction - arrow function
      *                              > inbuilt flair object types like 'class', 'struct', 'enum', etc.
@@ -547,6 +588,8 @@
          *  raw: (array) - original arguments as passed
          *  index: (number) - index of pattern-set that matches for given arguments, -1 if no match found
          *                    if more than one patterns may match, it will stop at first match
+         *  types: (string) - types which matched - e.g., string_string
+         *                    this is the '_' joint string of all type definition part from the matching pattern-set
          *  isInvalid: (boolean) - to check if any match could not be achieved
          *  <name(s)>: <value(s)> - argument name as given in pattern having corresponding argument value
          *                          if a name was not given in pattern, a default unique name will be created
@@ -701,7 +744,7 @@
      *              as per usage requirements
      * @example
      *  Port(name)                     // @returns handler/null - if connected returns handler else null
-     *  Port.define(name, type, intf)  // @returns void
+     *  Port.define(name, members, intf)  // @returns void
      *  Port.connect(name, handler)    // @returns void
      *  Port.disconnect(name)          // @returns void
      *  Port.disconnect.all()          // @returns void
@@ -724,10 +767,10 @@
         return null;
     };
     _Port.define = (name, members, inbuilt) => {
-        let args = _Args('name: string',
+        let args = _Args('name: string, members: array, inbuilt: afunction',
+                         'name: string, inbuilt: afunction',
                          'name: string, members: array',
-                         'name: string, members: array, inbuilt: afunction',
-                         'name: string, inbuilt: afunction')(name, members, inbuilt); args.throwOnError(_Port.define);
+                         'name: string')(name, members, inbuilt); args.throwOnError(_Port.define);
     
         if (ports_registry[name]) { throw _Exception.Duplicate(name, _Port.define); }
         ports_registry[name] = {
@@ -1042,13 +1085,21 @@
                     // uncache module, so it's types get to register again with this new context
                     uncacheModule(file);
     
+                    // get resolved file name of this assembly, in relation to mainAssembly
+                    let asmADO = this.domain.getAdo(file),
+                        file2 = file;
+                    if (asmADO && asmADO.mainAssembly) {
+                        if (file2.startsWith('./')) { file2 = file2.substr(2); }
+                        file2 = this.domain.loadPathOf(asmADO.mainAssembly) + file2;
+                    }
+    
                     // load module
-                    loadModule(file).then(() => {
+                    loadModule(file2).then(() => {
                         // remove this from current context list
                         currentContexts.pop();
     
                         // add to list
-                        asmFiles[file] = Object.freeze(new Assembly(this.domain.getADO(file), this));
+                        asmFiles[file] = Object.freeze(new Assembly(asmADO, this));
     
                         // resolve
                         resolve();
@@ -1071,7 +1122,14 @@
         };
         this.allAssemblies = (isRaw) => { 
             if (this.isUnloaded()) { throw _Exception.InvalidOperation(`Context is already unloaded. (${this.name})`, this.allAssemblies); }
-            return (isRaw ? Object.assign({}, asmFiles) : Object.keys(asmFiles));
+            if (isRaw) {
+                let all = [],
+                    keys = Object.keys(asmFiles);
+                for(let r in keys) { all.push(asmFiles[r]); }
+                return all;
+            } else {
+                return Object.keys(asmFiles);
+            }
         };
     
         // resources
@@ -1116,7 +1174,14 @@
         };     
         this.allResources = (isRaw) => { 
             if (this.isUnloaded()) { throw _Exception.InvalidOperation(`Context is already unloaded. (${this.name})`, this.allResources); }
-            return (isRaw ? Object.assign({}, alcResources) : Object.keys(alcResources));
+            if (isRaw) {
+                let all = [],
+                    keys = Object.keys(alcResources);
+                for(let r in keys) { all.push(alcResources[r]); }
+                return all;
+            } else {
+                return Object.keys(alcResources);
+            }
         };
     
         // routes
@@ -1163,7 +1228,14 @@
         };     
         this.allRoutes = (isRaw) => { 
             if (this.isUnloaded()) { throw _Exception.InvalidOperation(`Context is already unloaded. (${this.name})`, this.allRoutes); }
-            return (isRaw ? Object.assign({}, alcRoutes) : Object.keys(alcRoutes));
+            if (isRaw) {
+                let all = [],
+                    keys = Object.keys(alcRoutes);
+                for(let r in keys) { all.push(alcRoutes[r]); }
+                return all;
+            } else {
+                return Object.keys(alcRoutes);
+            }
         };
         
         // state (just to be in sync with proxy)
@@ -1180,7 +1252,9 @@
     
         this.name = ado.name;
         this.file = ado.file;
+        this.mainAssembly = ado.mainAssembly;
         this.desc = ado.desc;
+        this.title = ado.title;
         this.version = ado.version;
         this.copyright = ado.copyright;
         this.license = ado.license;
@@ -1405,8 +1479,8 @@
                 });
             } else {
                 // load entry point
-                _global.importScripts('<<entryPoint>>');
-                flair = _global.flair;
+                importScripts('<<entryPoint>>');
+                flair = WorkerGlobalScope.flair;
     
                 // plumb to private port 
                 port = this;
@@ -1496,10 +1570,10 @@
             subChannel.port2.on('message', onMessageFromWorker);
         } else { // client
             let blob = new Blob([remoteMessageHandlerScript]),
-                blobURL = _global.URL.createObjectURL(blob, {
+                blobURL = window.URL.createObjectURL(blob, {
                     type: 'application/javascript; charset=utf-8'
                 });
-            wk = new _global.Worker(blobURL);
+            wk = new window.Worker(blobURL);
             wk.onmessage = onMessageFromWorker;
             wk.onerror = onError;
         }
@@ -1645,7 +1719,9 @@
             contexts = {},
             currentContexts = [],
             allADOs = [],
+            loadPaths = {},
             entryPoint = '',
+            rootPath = '',
             configFileJSON = null,
             app = null,
             host = null,
@@ -1698,6 +1774,9 @@
                 asmTypes = {};
                 contexts = {};
                 domains = {};
+                loadPaths = {};
+                entryPoint = '';
+                rootPath = '';
                 allADOs = [];
             }
         };
@@ -1729,7 +1808,11 @@
             let isThrowOnDuplicate = true;
             if (ados.length === 1 && typeof ados[0] === 'string') { 
                 let ado = JSON.parse(ados[0]);
-                ados = [ado];
+                if (Array.isArray(ado)) {
+                    ados = ado;
+                } else {
+                    ados = [ado];
+                }
                 isThrowOnDuplicate = false;   
             }
     
@@ -1791,8 +1874,8 @@
         // set onces, read many times
         this.config = (configFile) => {
             if (!configFileJSON && configFile) { // load only when not already loaded
-                return Promise((resolve, reject) => {
-                    loadFile(configFile).then((json) => {
+                return new Promise((resolve, reject) => {
+                    _include(configFile).then((json) => {
                         configFileJSON = json;
                         resolve(Object.assign({}, configFileJSON)); // return a copy
                     }).catch(reject);
@@ -1806,7 +1889,7 @@
         };
         this.entryPoint = (file) => {
             if (!entryPoint) {
-                if (typeof file !== 'string') { throw _Exception.InvalidArgument('file'); }
+                if (typeof file !== 'string') { throw _Exception.InvalidArgument('file', this.entryPoint); }
                 if (!isWorker) { // when running in context of worker, this will not be needed to set, as a new appdomain cannot be created from inside worker, so it will never be read
                     entryPoint = which(file || ''); // main entry point file
                 }
@@ -1821,6 +1904,27 @@
             if (hostObj) { host = hostObj; }
             return host;
         };
+        this.loadPathOf = (file, path) => {
+            if (typeof file !== 'string') { throw _Exception.InvalidArgument('file', this.loadPath); }
+            if (path) { // set
+                if (!loadPaths[file]) {
+                    loadPaths[file] = path;
+                }
+            }
+            return loadPaths[file] || '';
+        };
+        this.root = (path) => {
+            if (!rootPath) {
+                if (typeof path !== 'string') { throw _Exception.InvalidArgument('path', this.root); }
+                rootPath = path;
+                if (!rootPath.endsWith('/')) { rootPath += '/'; }
+            }
+            return rootPath;
+        };
+        this.resolvePath = (path) => {
+            if (typeof path !== 'string') { throw _Exception.InvalidArgument('path', this.resolvePath); }
+            return path.replace('./', this.root());
+        };
     
         // scripts
         this.loadScripts = (...scripts) => {
@@ -1833,6 +1937,15 @@
                     reject(err);
                 }
             });
+        };
+    
+        // error router
+        this.onError = (err) => {
+            if (app) {
+                app.onError(err);
+            } else {
+                throw err;
+            }
         };
     };
     
@@ -1938,17 +2051,14 @@
      * @example
      *  _getAssemblyOf(Type)
      * @params
-     *  Type: type/instance/string - flair type or instance whose assembly file is required
-     *                               qualified type name, if it is needed to know in which assembly file this exists
+     *  Type: string - qualified type name, if it is needed to know in which assembly file this exists
+     *                               
      * @returns string - assembly file name which contains this type
      */ 
     const _getAssemblyOf = (Type) => { 
-        let args = _Args('Type: flairtype',
-                         'Type: flairinstance',
-                         'Type: string')(Type); args.throwOnError(_getAssemblyOf);
+        let args = _Args('Type: string')(Type); args.throwOnError(_getAssemblyOf);
     
-        let asm = _getAssembly(Type);
-        return (asm ? asm.file : '');
+        return _AppDomain.resolve(Type);
     };
     
     // attach to flair
@@ -2045,6 +2155,25 @@
     a2f('getTypeOf', _getTypeOf);
         
     /**
+     * @name getTypeName
+     * @description Gets the name of the underlying type which was used to construct this object
+     * @example
+     *  getTypeName(obj)
+     * @params
+     *  obj: object - object that needs to be checked
+     * @returns string - name of the type of given object
+     */ 
+    const _getTypeName = (obj) => {
+        let args = _Args('obj: flair')(obj); args.throwOnError(_getTypeName);
+    
+        let typeMeta = obj[meta].Type ? obj[meta].Type[meta] : obj[meta];
+        return (typeMeta ? (typeMeta.name || '') : '');
+    };
+    
+    // attach to flair
+    a2f('getTypeName', _getTypeName);
+        
+    /**
      * @name ns
      * @description Gets the registered namespace from default assembly load context of default appdomain
      * @example
@@ -2085,6 +2214,101 @@
     
     // attach to flair
     a2f('isDerivedFrom', _isDerivedFrom);
+     
+    /**
+     * @name isAbstract
+     * @description Checks if given flair class type is abstract.
+     * @example
+     *  isAbstract(type)
+     * @params
+     *  Type: class - flair class type that needs to be checked
+     * @returns boolean - true/false
+     */ 
+    const _isAbstract = (Type) => {
+        // NOTE: in all 'check' type functions, Args() is not to be used, as Args use them itself
+        if (_typeOf(Type) !== 'class') { throw _Exception.InvalidArgument('Type', _isAbstract); }
+    
+        return Type[meta].isAbstract();
+    }; 
+    
+    // attach to flair
+    a2f('isAbstract', _isAbstract);
+     
+    /**
+     * @name isSealed
+     * @description Checks if given flair class type is sealed.
+     * @example
+     *  isSealed(type)
+     * @params
+     *  Type: class - flair class type that needs to be checked
+     * @returns boolean - true/false
+     */ 
+    const _isSealed = (Type) => {
+        // NOTE: in all 'check' type functions, Args() is not to be used, as Args use them itself
+        if (_typeOf(Type) !== 'class') { throw _Exception.InvalidArgument('Type', _isSealed); }
+    
+        return Type[meta].isSealed();
+    }; 
+    
+    // attach to flair
+    a2f('isSealed', _isSealed);
+     
+    /**
+     * @name isStatic
+     * @description Checks if given flair class type is static.
+     * @example
+     *  isStatic(type)
+     * @params
+     *  Type: class - flair class type that needs to be checked
+     * @returns boolean - true/false
+     */ 
+    const _isStatic = (Type) => {
+        // NOTE: in all 'check' type functions, Args() is not to be used, as Args use them itself
+        if (_typeOf(Type) !== 'class') { throw _Exception.InvalidArgument('Type', _isStatic); }
+    
+        return Type[meta].isStatic();
+    }; 
+    
+    // attach to flair
+    a2f('isStatic', _isStatic);
+     
+    /**
+     * @name isSingleton
+     * @description Checks if given flair class type is singleton.
+     * @example
+     *  isSingleton(type)
+     * @params
+     *  Type: class - flair class type that needs to be checked
+     * @returns boolean - true/false
+     */ 
+    const _isSingleton = (Type) => {
+        // NOTE: in all 'check' type functions, Args() is not to be used, as Args use them itself
+        if (_typeOf(Type) !== 'class') { throw _Exception.InvalidArgument('Type', _isSingleton); }
+    
+        return Type[meta].isSingleton();
+    }; 
+    
+    // attach to flair
+    a2f('isSingleton', _isSingleton);
+     
+    /**
+     * @name isDeprecated
+     * @description Checks if given flair class type is deprecated.
+     * @example
+     *  isDeprecated(type)
+     * @params
+     *  Type: class - flair class type that needs to be checked
+     * @returns boolean - true/false
+     */ 
+    const _isDeprecated = (Type) => {
+        // NOTE: in all 'check' type functions, Args() is not to be used, as Args use them itself
+        if (_typeOf(Type) !== 'class') { throw _Exception.InvalidArgument('Type', _isDeprecated); }
+    
+        return Type[meta].isDeprecated();
+    }; 
+    
+    // attach to flair
+    a2f('isDeprecated', _isDeprecated);
      
     /**
      * @name isInstanceOf
@@ -2298,6 +2522,7 @@
      *      
      *          NOTE: <path> for a file MUST start with './' to represent this is a file path from root
      *                if ./ is not used in path - it will be assumed to be a path inside a module and on client ./modules/ will be prefixed to reach to the file inside module
+     *                on server if file started with './', it will be replaced with '' instead of './' to represents root
      * 
      *          NOTE: Each dep definition can also be defined for contextual consideration as:
      *          '<depA> | <depB>'
@@ -2365,6 +2590,7 @@
                                 if (!_resolved) { // check as resource
                                     _resolved = _getResource(_dep); 
                                 }
+                                done();
                             }).catch((err) => {
                                 throw _Exception.OperationFailed(`Assembly could not be loaded. (${asmFile})`, err, _bring);
                             });
@@ -2380,6 +2606,7 @@
                 let option4 = (done) => {
                     if (_dep.startsWith('./')) { // all files must start with ./
                         let ext = _dep.substr(_dep.lastIndexOf('.') + 1).toLowerCase();
+                        _dep = _AppDomain.resolvePath(_dep);
                         if (ext) {
                             if (ext === 'js' || ext === 'mjs') {
                                 // pick contextual file for DEBUG/PROD
@@ -2387,16 +2614,34 @@
     
                                 // load as module, since this is a js file and we need is executed and not the content as such
                                 loadModule(_dep).then((content) => { 
-                                    _resolved = content; done(); // it may or may not give a content
+                                    _resolved = content || true; done(); // it may or may not give a content
                                 }).catch((err) => {
-                                    throw _Exception.OperationFailed(`Module could not be loaded. (${_dep})`, err, _bring);
+                                    throw _Exception.OperationFailed(`Module/File could not be loaded. (${_dep})`, err, _bring);
                                 });
                             } else { // some other file (could be json, css, html, etc.)
-                                loadFile(_dep).then((content) => {
-                                    _resolved = content; done();
-                                }).catch((err) => {
-                                    throw _Exception.OperationFailed(`File could not be loaded. (${_dep})`, err, _bring);
-                                });
+                                if (isServer) {
+                                    if (ext === 'json') {
+                                        loadModule(_dep).then((content) => { 
+                                            _resolved = content || true; done(); // it may or may not give a content
+                                        }).catch((err) => {
+                                            throw _Exception.OperationFailed(`Local Module/File could not be loaded. (${_dep})`, err, _bring);
+                                        });
+                                    } else { // read it as file
+                                        let fs = require('fs');
+                                        try {
+                                            _resolved = fs.readFileSync(_dep);
+                                            done();
+                                        } catch (err) {
+                                            throw _Exception.OperationFailed(`Local File could not be read. (${_dep})`, err, _bring);
+                                        }
+                                    }
+                                } else {
+                                    loadFile(_dep).then((content) => {
+                                        _resolved = content; done();
+                                    }).catch((err) => {
+                                        throw _Exception.OperationFailed(`File could not be loaded. (${_dep})`, err, _bring);
+                                    });
+                                }
                             }
                         } else { // not a file
                             done();
@@ -2408,12 +2653,12 @@
     
                 // check if this is a module
                 let option5 = (done) => {
-                    if (!_dep.startsWith('./')) { // all modules (or a file inside a module) must start with ./
+                    if (!_dep.startsWith('./')) { // all modules (or a file inside a module) must not start with ./
                         // on server require() finds modules automatically
                         // on client modules are supposed to be inside ./modules/ folder, therefore prefix it
                         if (!isServer) { _dep = `./${modulesRootFolder}/${_dep}`; }
                         loadModule(_dep).then((content) => { 
-                            _resolved = content; done();
+                            _resolved = content || true; done();
                         }).catch((err) => {
                             throw _Exception.OperationFailed(`Module could not be loaded. (${_dep})`, err, _bring);
                         });
@@ -2431,6 +2676,7 @@
     
                 // process
                 if (_dep === '') { // nothing is defined to process
+                    _resolved = true;
                     resolved(true); return;
                 } else {
                     // cycle break check
@@ -2475,11 +2721,9 @@
      * @params
      *  dep: string - dependency to be included
      *                NOTE: Dep can be of any type as defined for 'bring'
-     *  globalVar: string/boolean - globally added variable name by the dependency
+     *  globalVar: string - globally added variable name by the dependency
      *             NOTE: if dependency is a file and it emits a global variable, this should be name
      *                   of that variable and it will return that variable itself
-     *                   if dependency is a file and does not emit any variable and it is still ok to
-     *                   assume it a valid scenario, pass true value and it will assume a successfull loading if there is no error occured
      * @returns promise - that gets resolved with given dependency
      */ 
     const _include = (dep, globalVar) => { 
@@ -2487,18 +2731,19 @@
             if (typeof dep !== 'string') { reject(_Exception.InvalidArgument('dep')); return; }
             try {
                 _bring([dep], (obj) => {
-                    if (obj) {
-                        resolve(obj);
-                    } else if (globalVar) { // if global var is given to look at
-                        if (typeof globalVar === 'boolean') {
-                            resolve(); // since a true is passed, resolve as is
-                        } else {
-                            if (options.global[globalVar]) {
-                                resolve(options.global[globalVar]);
+                    if (!obj) {
+                        reject(_Exception.OperationFailed(`Dependency could not be resolved. (${dep})`)); 
+                        return;
+                    } else {
+                        if (typeof obj === 'boolean' && typeof globalVar === 'string') { // was resolved w true, but not an object AND if global var is given to look at
+                            obj = (isServer ? global[globalVar] : (isWorker ? WorkerGlobalScope[globalVar] : window[globalVar]));
+                            if (!obj) {
+                                reject(_Exception.OperationFailed(`Dependency object could not be located. (${dep})`)); 
+                                return;
                             }
                         }
                     }
-                    reject(_Exception.OperationFailed(`Dependency could not be resolved. (${dep})`));
+                    resolve(obj); // this may be resolved object OR object picked from global scope OR TRUE value
                 });
             } catch (err) {
                 reject(err);
@@ -2704,7 +2949,7 @@
         
             abstract: new _attrConfig(true, '(class && !$sealed && !$static) || ((class && (prop || func || event)) && !($override || $sealed || $static))'),
             virtual: new _attrConfig(true, 'class && (prop || func || construct || dispose || event) && !($abstract || $override || $sealed || $static)'),
-            override: new _attrConfig(true, '(class && (prop || func || construct || dispose || event) && ((@virtual || @abstract) && !(virtual || abstract)) && !($sealed || $static))'),
+            override: new _attrConfig(true, '(class && (prop || func || construct || dispose || event) && ((@virtual || @abstract || @override) && !(virtual || abstract)) && !(@sealed || $static))'),
             sealed: new _attrConfig(true, '(class || ((class && (prop || func || event)) && override))'), 
         
             private: new _attrConfig(true, '(class || struct) && (prop || func || event) && !($protected || @private || $static)'),
@@ -2714,13 +2959,14 @@
             privateSet: new _attrConfig(true, '(class || struct) && prop && !($private || $static)'),
             protectedSet: new _attrConfig(true, '(class) && prop && !($protected || $private || $static)'),
         
+            overload: new _attrConfig('((class || struct) && (func || construct) && !($virtual || $abstract || $override || $args))'),
             enumerate: new _attrConfig('(class || struct) && prop || func || event'),
             dispose: new _attrConfig('class && prop'),
             post: new _attrConfig('(class || struct) && event'),
-            on: new _attrConfig('class && func && !(event || $async || $args || $inject || $static)'),
+            on: new _attrConfig('class && func && !(event || $async || $args || $overload || $inject || $static)'),
             timer: new _attrConfig('class && func && !(event || $async || $args || $inject || @timer || $static)'),
             type: new _attrConfig('(class || struct) && prop'),
-            args: new _attrConfig('(class || struct) && (func || construct) && !$on'),
+            args: new _attrConfig('(class || struct) && (func || construct) && !$on && !$overload'),
             inject: new _attrConfig('class && (prop || func || construct) && !(static || session || state)'),
             resource: new _attrConfig('class && prop && !(session || state || inject || asset)'),
             asset: new _attrConfig('class && prop && !(session || state || inject || resource)'),
@@ -2741,7 +2987,7 @@
     // define easy-syntax methods to be made available in assembly closure
     for(let inbuilt_attr in _attrMeta.inbuilt) {
         if (_attrMeta.inbuilt.hasOwnProperty(inbuilt_attr)) {
-            _$$[`$${inbuilt_attr}`] = (...args) => { _$$(inbuilt_attr, ...args); };
+            _$$[`$$${inbuilt_attr}`] = (...args) => { _$$(inbuilt_attr, ...args); };
         }
     }
     
@@ -2760,6 +3006,9 @@
         let idx = _attrMeta.bucket.findIndex(item => item.name === name);
         if (idx !== -1) { return _attrMeta.bucket[idx]; }
         return null;
+    };
+    _attr.count = () => {
+        return _attrMeta.bucket.length;
     };
     _attr.clear = () => {
         _attrMeta.bucket.length = 0; // remove all
@@ -2935,7 +3184,7 @@
             result = (new Function("try {return (" + constraintsLex + ");}catch(e){return false;}")());
             if (!result) {
                 // TODO: send telemetry of _list, so it can be debugged
-                throw _Exception.InvalidOperation(`${appliedAttr.cfg.isModifier ? 'Modifier' : 'Attribute'} ${appliedAttr.name} could not be applied. (${memberName})`, builder);
+                throw _Exception.InvalidOperation(`${appliedAttr.cfg.isModifier ? 'Modifier' : 'Attribute'} ${appliedAttr.name} could not be applied. (${def.name}::${memberName} --> [${constraintsLex}])`, builder);
             }
     
             // return
@@ -3125,11 +3374,11 @@
                     case 'static': 
                         return _probe.anywhere(); 
                     case 'abstract':
-                        return _probe.anywhere() && !(members_probe.anywhere('virtual', memberName) || members_probe.anywhere('override', memberName)); 
+                        return _probe.anywhere() && !(members_probe('virtual', memberName).anywhere() || members_probe('override', memberName).anywhere()); 
                     case 'virtual':
-                        return _probe.anywhere() && !members_probe.anywhere('override', memberName); 
+                        return _probe.anywhere() && !members_probe('override', memberName).anywhere(); 
                     case 'override':
-                        return _probe.anywhere() && !members_probe.anywhere('sealed', memberName); 
+                        return _probe.anywhere() && !members_probe('sealed', memberName).anywhere(); 
                     case 'sealed':
                         return _probe.anywhere(); 
                     case 'private':
@@ -3292,6 +3541,7 @@
             _constructName = '_construct',
             _disposeName = '_dispose',
             _props = {}, // plain property values storage inside this closure
+            _overloads = {}, // each named (funcName_type_type_...) overload of any function will be added here
             _previousDef = null,
             def = { 
                 name: cfg.params.typeName,
@@ -3325,20 +3575,20 @@
                             newSet.set = newSet.set.bind(bindingHost);
                             member = newSet; // update for next attribute application
                         } else {
-                            throw _Exception.OperationFailed(`${appliedAttr.name} decoration result is unexpected. (${memberName})`, builder);
+                            throw _Exception.OperationFailed(`${appliedAttr.name} decoration result is unexpected. (${def.name}::${memberName})`, builder);
                         }
                     } else { // func or event
                         let newFn = null;
                         if (memberType === 'func') { // func
                             newFn = appliedAttr.attr.decorateFunction(def.name, memberName, member);
-                            if (isASync(member) !== isASync(newFn)) { throw _Exception.OperationFailed(`${appliedAttr.name} decoration result is unexpected. (${memberName})`, builder); }
+                            if (isASync(member) !== isASync(newFn)) { throw _Exception.OperationFailed(`${appliedAttr.name} decoration result is unexpected. (${def.name}::${memberName})`, builder); }
                         } else { // event
                             newFn = appliedAttr.attr.decorateEvent(def.name, memberName, member);
                         }
                         if (newFn) {
                             member = newFn.bind(bindingHost); // update for next attribute application
                         } else {
-                            throw _Exception.OperationFailed(`${appliedAttr.name} decoration result is unexpected. (${memberName})`, builder);
+                            throw _Exception.OperationFailed(`${appliedAttr.name} decoration result is unexpected. (${def.name}::${memberName})`, builder);
                         }
                     }
     
@@ -3406,9 +3656,16 @@
                         }
                     }
     
-                    // any abstract member should not left unimplemented now
+                    // any abstract member should not left unimplemented now on top level instance
+                    // and if present at lower levels, those types must be marked as abstract
                     if (isCopy && modifiers.members.is('abstract', memberName)) {
-                        throw _Exception.NotImplemented(`Abstract member is not implemented. (${memberName})`, builder);
+                        if (!params.isNeedProtected) {
+                            throw _Exception.NotImplemented(`Abstract member is not implemented. (${def.name}::${memberName})`, builder);
+                        } else {
+                            if (!modifiers.type.probe('abstract').current()) {
+                                throw _Exception.InvalidDefinition(`Abstract member can exists only in abstract type. (${def.name}::${memberName})`, builder);
+                            }
+                        }
                     }
     
                     // apply enumerate attribute now
@@ -3446,7 +3703,7 @@
         };
         const validateMember = (memberName, interface_being_validated) => {
             // member must exists check + member type must match
-            if (typeof exposed_obj[memberName] === 'undefined' || modifiers.members.type(memberName) !== interface_being_validated[meta].modifiers.members.type(memberName)) {
+            if (Object.keys(exposed_obj).indexOf(memberName) === -1 || modifiers.members.type(memberName) !== interface_being_validated[meta].modifiers.members.type(memberName)) {
                 if (memberName === 'dispose' && (typeof exposed_obj[_disposeName] === 'function' || 
                                                  typeof exposed_objMeta.dispose === 'function')) {
                     // its ok, continue below
@@ -3480,7 +3737,7 @@
             }
         };
         const validatePreMemberDefinitionFeasibility = (memberName, memberType, memberDef) => { // eslint-disable-line no-unused-vars
-            if (['func', 'prop', 'event'].indexOf(memberType) !== -1 && memberName.startsWith('_')) { new _Exception('InvalidName', `Name is not valid. (${memberName})`); } // this is for some future usage, where internal names can be added starting with '_'
+            if (['func', 'prop', 'event'].indexOf(memberType) !== -1 && memberName.startsWith('_')) { new _Exception('InvalidName', `Name is not valid. (${def.name}::${memberName})`); } // this is for some future usage, where internal names can be added starting with '_'
             switch(memberType) {
                 case 'func':
                     if (!cfg.func) { throw _Exception.InvalidOperation(`Function cannot be defined on this type. (${def.name})`, builder); }
@@ -3526,7 +3783,7 @@
             
             // abstract check
             if (cfg.inheritance && modifiers.members.probe('abstract', memberName).current() && memberDef.ni !== true) {
-                throw _Exception.InvalidDefinition(`Abstract member must point to nip, nim or nie values. (${memberName})`, builder);
+                throw _Exception.InvalidDefinition(`Abstract member must not be implemented. (${def.name}::${memberName})`, builder);
             }
     
             // for a static type, constructor arguments check and dispose check
@@ -3534,38 +3791,40 @@
             if (the_attr && cfg.static) {
                 if (TypeMeta.isStatic()) {
                     if (cfg.construct && memberName === _constructName && memberDef.length !== 0) {
-                        throw _Exception.InvalidDefinition(`Static constructors cannot have arguments. (construct)`, builder);
+                        throw _Exception.InvalidDefinition(`Static constructors cannot have arguments. (${def.name}::construct)`, builder);
                     }
                     if (cfg.dispose && memberName === _disposeName) {
-                        throw _Exception.InvalidDefinition(`Static types cannot have destructors. (dispose)`, builder);
+                        throw _Exception.InvalidDefinition(`Static types cannot have destructors. (${def.name}::dispose)`, builder);
                     }        
                 } else {
                     if (cfg.construct && memberName === _constructName) {
-                        throw _Exception.InvalidDefinition(`Non-static types cannot have static constructors. (construct)`, builder);
+                        throw _Exception.InvalidDefinition(`Non-static types cannot have static constructors. (${def.name}::construct)`, builder);
                     }
                     if (cfg.dispose && memberName === _disposeName) {
-                        throw _Exception.InvalidDefinition(`Static destructors cannot be defined. (dispose)`, builder);
+                        throw _Exception.InvalidDefinition(`Static destructors cannot be defined. (${def.name}::dispose)`, builder);
                     }        
                 }
             }
     
             // dispose arguments check always
             if (cfg.dispose && memberName === _disposeName && memberDef.length !== 0) {
-                throw _Exception.InvalidDefinition(`Destructor method cannot have arguments. (dispose)`, builder);
+                if (memberDef.length > 1 || (memberDef.length === 1 && !modifiers.members.probe('override', memberName).current())) { // in case of override (base will be passed as param
+                    throw _Exception.InvalidDefinition(`Destructor method cannot have arguments. (${def.name}::dispose)`, builder);
+                }
             }
             
-            // duplicate check, if not overriding 
-            if (typeof obj[memberName] !== 'undefined' && 
+            // duplicate check, if not overriding
+            if (Object.keys(obj).indexOf(memberName) !== -1 && 
                 (!cfg.inheritance || (cfg.inheritance && !modifiers.members.probe('override', memberName).current()))) {
-                    throw _Exception.Duplicate(memberName, builder); 
+                    throw _Exception.Duplicate(def.name + '::' + memberName, builder); 
             }
     
             // overriding member must be present and of the same type
             if (cfg.inheritance && modifiers.members.probe('override', memberName).current()) {
-                if (typeof obj[memberName] === 'undefined') {
-                    throw _Exception.InvalidDefinition(`Member not found to override. (${memberName})`, builder); 
+                if (Object.keys(obj).indexOf(memberName) === -1) {
+                    throw _Exception.InvalidDefinition(`Member not found to override. (${def.name}::${memberName})`, builder); 
                 } else if (modifiers.members.type(memberName) !== memberType) {
-                    throw _Exception.InvalidDefinition(`Overriding member type is invalid. (${memberName})`, builder); 
+                    throw _Exception.InvalidDefinition(`Overriding member type is invalid. (${def.name}::${memberName})`, builder); 
                 }
             }
     
@@ -3573,17 +3832,17 @@
             if (cfg.static && (modifiers.members.probe('static', memberName).current() || TypeMeta.isStatic())) {
                 if (memberType === 'func') {
                     if (isArrow(memberDef)) { 
-                        throw _Exception.InvalidDefinition(`Static functions cannot be defined as an arrow function. (${memberName})`, builder); 
+                        throw _Exception.InvalidDefinition(`Static functions cannot be defined as an arrow function. (${def.name}::${memberName})`, builder); 
                     }
                 } else if (memberType === 'prop') {
                     if (memberDef.get && typeof memberDef.get === 'function') {
                         if (isArrow(memberDef)) { 
-                            throw _Exception.InvalidDefinition(`Static property getters cannot be defined as an arrow function. (${memberName})`, builder); 
+                            throw _Exception.InvalidDefinition(`Static property getters cannot be defined as an arrow function. (${def.name}::${memberName})`, builder); 
                         }
                     }
                     if (memberDef.set && typeof memberDef.set === 'function') {
                         if (isArrow(memberDef)) { 
-                            throw _Exception.InvalidDefinition(`Static property setters cannot be defined as an arrow function. (${memberName})`, builder); 
+                            throw _Exception.InvalidDefinition(`Static property setters cannot be defined as an arrow function. (${def.name}::${memberName})`, builder); 
                         }
                     }
                 }
@@ -3592,12 +3851,12 @@
             // session/state properties cannot have custom getter/setter and also relevant port must be configured
             if (cfg.storage && attrs.members.probe('session', memberName).current()) {
                 if (memberDef.get && typeof memberDef.get === 'function') {
-                    throw _Exception.InvalidDefinition(`Session properties cannot be defined with a custom getter/setter. (${memberName})`, builder); 
+                    throw _Exception.InvalidDefinition(`Session properties cannot be defined with a custom getter/setter. (${def.name}::${memberName})`, builder); 
                 }
             }
             if (cfg.storage && attrs.members.probe('state', memberName).current()) {
                 if (memberDef.get && typeof memberDef.get === 'function') {
-                    throw _Exception.InvalidDefinition(`State properties cannot be defined with a custom getter/setter. (${memberName})`, builder); 
+                    throw _Exception.InvalidDefinition(`State properties cannot be defined with a custom getter/setter. (${def.name}::${memberName})`, builder); 
                 }
                 if (!_localStorage) { throw _Exception.InvalidOperation('Port is not configured. (localStorage)', builder); }
             }
@@ -3622,7 +3881,7 @@
             resource_attr = attrs.members.probe('resource', memberName).current(),
             type_attr = attrs.members.probe('type', memberName).current(),
             _isDeprecate = (_deprecate_attr !== null),
-            _deprecate_message = (_isDeprecate ? (_deprecate_attr.args[0] || `Event is marked as deprecate. (${memberName})`) : ''),
+            _deprecate_message = (_isDeprecate ? (_deprecate_attr.args[0] || `Event is marked as deprecate. (${def.name}::${memberName})`) : ''),
             propHost = _props, // default place to store property values inside closure
             bindingHost = obj,
             uniqueName = def.name + '_' + memberName,
@@ -3635,7 +3894,7 @@
             // define or redefine
             if (memberDef && (memberDef.get || memberDef.set)) { // normal property, cannot be static because static cannot have custom getter/setter
                 if (!cfg.propGetterSetter) {
-                    throw _Exception.InvalidDefinition(`Getter/Setter are not allowed. (${memberName})`, builder);
+                    throw _Exception.InvalidDefinition(`Getter/Setter are not allowed. (${def.name}::${memberName})`, builder);
                 }
                 if (memberDef.get && typeof memberDef.get === 'function') {
                     _getter = memberDef.get;
@@ -3652,7 +3911,7 @@
                 }.bind(bindingHost);
                 _member.set = function(value) {
                     if (_isDeprecate) { console.log(_deprecate_message); } // eslint-disable-line no-console
-                    if (_isReadOnly && !bindingHost[meta].constructing) { throw _Exception.InvalidOperation(`Property is readonly. (${memberName})`, builder); } // readonly props can be set only when object is being constructed 
+                    if (_isReadOnly && !bindingHost[meta].constructing) { throw _Exception.InvalidOperation(`Property is readonly. (${def.name}::${memberName})`, builder); } // readonly props can be set only when object is being constructed 
                     if (type_attr && type_attr.args[0] && !_is(value, type_attr.args[0])) { throw _Exception.InvalidArgument('value', builder); } // type attribute is defined
                     return _setter.apply(bindingHost, [value]);
                 }.bind(bindingHost);
@@ -3688,7 +3947,7 @@
                 }.bind(bindingHost);
                 _member.set = function(value) {
                     if (_isDeprecate) { console.log(_deprecate_message); } // eslint-disable-line no-console
-                    if (_isReadOnly && !bindingHost[meta].constructing) { throw _Exception.InvalidOperation(`Property is readonly. (${memberName})`, builder); } // readonly props can be set only when object is being constructed 
+                    if (_isReadOnly && !bindingHost[meta].constructing) { throw _Exception.InvalidOperation(`Property is readonly. (${def.name}::${memberName})`, builder); } // readonly props can be set only when object is being constructed 
                     if (type_attr && type_attr.args[0] && !_is(value, type_attr.args[0])) { throw _Exception.InvalidArgument('value', builder); } // type attribute is defined
                     if (isStorageHost) {
                         propHost.setItem(uniqueName, JSON.stringify({value: value}));
@@ -3758,7 +4017,7 @@
                         if (astPath.startsWith('../')) { astPath = astPath.substr(3); }
                         if (astPath.startsWith('./')) { astPath = astPath.substr(2); }
                         if (astPath.startsWith('/')) { astPath = astPath.substr(1); }
-                        resOrAssetData= _getAssemblyOf(def.name) + '/' + astPath;
+                        resOrAssetData = _getAssemblyOf(def.name) + '/' + astPath;
                     }
                 }
                 if (resOrAssetData) {
@@ -3775,6 +4034,43 @@
             // return
             return _member;
         };
+        const handleOverload = (memberName, memberType, memberDef) => {
+            if (memberType === 'func') {
+                let overload_attr = _attr.get('overload'); // peek
+                if (overload_attr) {
+                    let _isStatic = (cfg.static && modifiers.members.probe('static', memberName).current()),
+                    bindingHost = (_isStatic ? params.staticInterface : obj);
+                    setOverloadFunc(memberName, memberDef, overload_attr); // define overload at central place
+    
+                    // 2nd overload onwards, don't go via normal definition route,
+                    if (bindingHost[memberName]) { 
+                        // throw, if any other attribute is defined other than overload
+                        if (_attr.count() > 1) { throw _Exception.InvalidDefinition(`Overloaded function cannot define additional modifiers or attributes. (${def.name}::${memberName})`, builder); }
+                        return true; // handled, don't go normal definition route
+                    }
+                }
+            }
+            return false;
+        };
+        const setOverloadFunc = (memberName, memberDef, overload_attr) => {
+            let _isStatic = (cfg.static && modifiers.members.probe('static', memberName).current()),
+                bindingHost = (_isStatic ? params.staticInterface : obj),
+                func_overloads = (_isStatic ? bindingHost[meta].overloads : _overloads),
+                type_def_items = splitAndTrim(overload_attr.args[0]), // type, type, type, type, ...
+                func_def = memberName + '_' + type_def_items.join('_');
+            func_overloads[func_def] = memberDef; // store member for calling later
+        };
+        const getOverloadFunc = (memberName, ...args) => {
+            let _isStatic = (cfg.static && modifiers.members.probe('static', memberName).current()),
+                bindingHost = (_isStatic ? params.staticInterface : obj),
+                func_overloads = (_isStatic ? bindingHost[meta].overloads : _overloads),
+                type_def_items = '',
+                func_def = '';
+            for(let arg of args) { type_def_items += '_' + typeof(arg); }
+            if (type_def_items.startsWith('_')) { type_def_items = type_def_items.substr(1); }
+            func_def = memberName + '_' + type_def_items;
+            return func_overloads[func_def] || null;
+        };
         const buildFunc = (memberName, memberType, memberDef) => {
             let _member = null,
                 bindingHost = obj,
@@ -3784,10 +4080,11 @@
                 _deprecate_attr = attrs.members.probe('deprecate', memberName).current(),
                 inject_attr = attrs.members.probe('inject', memberName).current(),
                 on_attr = attrs.members.probe('on', memberName).current(),              // always look for current on, inherited case would already be baked in
-                timer_attr = attrs.members.probe('timer', memberName).current(),          // always look for current auto
+                timer_attr = attrs.members.probe('timer', memberName).current(),          // always look for current timer
                 args_attr = attrs.members.probe('args', memberName).current(),
+                overload_attr = attrs.members.probe('overload', memberName).current(),
                 _isDeprecate = (_deprecate_attr !== null),
-                _deprecate_message = (_isDeprecate ? (_deprecate_attr.args[0] || `Function is marked as deprecate. (${memberName})`) : ''),
+                _deprecate_message = (_isDeprecate ? (_deprecate_attr.args[0] || `Function is marked as deprecate. (${def.name}::${memberName})`) : ''),
                 base = null,
                 _injections = [];
     
@@ -3818,7 +4115,7 @@
             _isASync = _isASync || isASync(memberDef); // if memberDef is an async function, mark it as async automatically
             if (_isASync) {
                 _member = async function(...args) {
-                    let wrappedMemberDef = new Promise(function(resolve, reject) {
+                    return new Promise(function(resolve, reject) {
                         if (_isDeprecate) { console.log(_deprecate_message); } // eslint-disable-line no-console
                         let fnArgs = [];
                         if (base) { fnArgs.push(base); }                                // base is always first, if overriding
@@ -3830,9 +4127,13 @@
                         } else {
                             fnArgs = fnArgs.concat(args);                               // add args as is
                         }
+                        // get correct overload memberDef
+                        if (overload_attr) {
+                            memberDef = getOverloadFunc(memberName, ...fnArgs); // this may return null also, in that case it will throw below
+                        }
                         try {
                             let memberDefResult = memberDef.apply(bindingHost, fnArgs);
-                            if (typeof memberDefResult.then === 'function') { // send result when it comes
+                            if (memberDefResult && typeof memberDefResult.then === 'function') { // send result when it comes
                                 memberDefResult.then(resolve).catch((err) => { reject(err, memberDef); });
                             } else {
                                 resolve(memberDefResult); // send result as is
@@ -3841,11 +4142,10 @@
                             reject(err, memberDef);
                         }
                     }.bind(bindingHost));
-                    return await wrappedMemberDef();
-                }.bind(bindingHost);    
+                }.bind(bindingHost);
             } else {
                 _member = function(...args) {
-                    if (_isDeprecate) { console.log(_deprecate_message); } // eslint-disable-line no-console
+                    if (_isDeprecate) { console.log(_deprecate_message); }          // eslint-disable-line no-console
                     let fnArgs = [];
                     if (base) { fnArgs.push(base); }                                // base is always first, if overriding
                     if (_injections.length > 0) { fnArgs.push(_injections); }       // injections comes after base or as first, if injected
@@ -3855,6 +4155,10 @@
                     } else {
                         fnArgs = fnArgs.concat(args);                               // add args as is
                     }
+                    // get correct overload memberDef
+                    if (overload_attr) {
+                        memberDef = getOverloadFunc(memberName, ...fnArgs); // this may return null also, in that case it will throw below
+                    }                   
                     return memberDef.apply(bindingHost, fnArgs);
                 }.bind(bindingHost);                  
             }
@@ -3901,7 +4205,7 @@
                 _deprecate_attr = attrs.members.probe('deprecate', memberName).current(),
                 _post_attr = attrs.members.probe('post', memberName).current(), // always post as per what is defined here, in case of overriding
                 _isDeprecate = (_deprecate_attr !== null),
-                _deprecate_message = (_isDeprecate ? (_deprecate_attr.args[0] || `Event is marked as deprecate. (${memberName})`) : ''),
+                _deprecate_message = (_isDeprecate ? (_deprecate_attr.args[0] || `Event is marked as deprecate. (${def.name}::${memberName})`) : ''),
                 bindingHost = obj;
     
             // create dispatcher, if not already created
@@ -3976,6 +4280,10 @@
         const addMember = (memberName, memberType, memberDef) => {
             // validate pre-definition feasibility of member definition - throw when failed - else return updated or same memberType
             memberType = validatePreMemberDefinitionFeasibility(memberName, memberType, memberDef); 
+    
+            // overload is defined only once, rest all times, it is just configured for the overload state
+            // any attributes or modifiers are ignored the second time - and settings with first definition are taken
+            if (handleOverload(memberName, memberType, memberDef)) { return; } // skip defining this member
     
             // set/update member meta
             // NOTE: This also means, when a mixed member is being overwritten either
@@ -4120,9 +4428,6 @@
             }
         }
     
-        // building started
-        isBuildingObj = true; 
-    
         // define proxy for clean syntax inside factory
         proxy = new Proxy({}, {
             get: (_obj, name) => { 
@@ -4166,6 +4471,9 @@
             }
         });
     
+        // building started
+        isBuildingObj = true; 
+    
         // apply mixins
         if (cfg.mixins && def.mixins && !typeDef.staticConstructionCycle) { 
             for(let mixin of def.mixins) {
@@ -4183,6 +4491,9 @@
     
         // clear any (by user's error left out) attributes, so that are not added by mistake elsewhere
         _attr.clear();
+    
+        // building ends
+        isBuildingObj = false;    
     
         // move constructor and dispose out of main object
         if (params.isTopLevelInstance) { // so that till now, a normal override behavior can be applied to these functions as well
@@ -4266,9 +4577,6 @@
             exposed_objMeta = Object.freeze(exposed_objMeta); // freeze meta information
             exposed_obj = Object.seal(exposed_obj);
         }
-    
-        // building ends
-        isBuildingObj = false;     
     
         // return
         return exposed_obj;
@@ -4388,6 +4696,11 @@
             _ObjectMeta = null;
         if (cfg.new) { // class, struct
             if (cfg.inheritance) { // class
+                if (cfg.params.inherits) {
+                    if (_isStatic(cfg.params.inherits) || _isSingleton(cfg.params.inherits) || _isSealed(cfg.params.inherits)) {
+                        throw _Exception.InvalidDefinition(`Cannot inherit from a sealed, static or singleton type. (${cfg.params.inherits[meta].name})`, builder); 
+                    }
+                }
                 _Object = function(_flag, _static, ...args) {
                     return buildTypeInstance(cfg, _Object, {}, _flag, _static, ...args);
                 };
@@ -4470,6 +4783,7 @@
         if (cfg.static) {
             _ObjectMeta.isStatic = () => { return modifiers.type.probe('static').current() ? true : false; };
             _ObjectMeta.props = {}; // static property values host
+            _ObjectMeta.overloads = {}; // static overload functions host
         }
         if (cfg.singleton) {
             _ObjectMeta.isSingleton = () => { return attrs.type.probe('singleton').current() ? true : false; };
@@ -4571,7 +4885,6 @@
     
         // return 
         return _finalObject;
-    
     };
       
     /**
@@ -5673,10 +5986,10 @@
     // sessionStorage factory
     const __sessionStorage = (env) => {
         if (env.isServer) {
-            if (!env.global.sessionStorage) { 
+            if (!global.sessionStorage) { 
                 // the way, on browser sessionStorage is different for each tab, 
                 // here 'sessionStorage' property on global is different for each node instance in a cluster
-                let nodeSessionStorage = function() {
+                const nodeSessionStorage = function() {
                     let keys = {};
                     this.key = (key) => { 
                         if (!key) { throw _Exception.InvalidArgument('key', this.key); }
@@ -5699,11 +6012,11 @@
                         keys = {};
                     };                        
                 };
-                env.global.sessionStorage = new nodeSessionStorage();
+                global.sessionStorage = new nodeSessionStorage();
             }
-            return env.global.sessionStorage;
+            return global.sessionStorage;
         } else { // client
-            return env.global.sessionStorage;
+            return window.sessionStorage;
         }
     };
     _Port.define('sessionStorage', ['key', 'getItem', 'setItem', 'removeItem', 'clear'], __sessionStorage);
@@ -5711,10 +6024,9 @@
     // localStorage factory
     const __localStorage = (env) => {
         if (env.isServer) {
-            console.warn("Use of 'state' is not support on server. Using 'session' instead."); // eslint-disable-line no-console
             return __sessionStorage(env);
         } else { // client
-            return env.global.localStorage;
+            return window.localStorage;
         }
     };
     _Port.define('localStorage', ['key', 'getItem', 'setItem', 'removeItem', 'clear'], __localStorage);
@@ -5756,18 +6068,18 @@
     
                     let ext = module.substr(module.lastIndexOf('.') + 1).toLowerCase();
                     try {
-                        if (typeof env.global.require !== 'undefined') { // if requirejs is available
-                            env.global.require([module], resolve, reject);
+                        if (typeof require !== 'undefined') { // if requirejs is available
+                            require([module], resolve, reject);
                         } else { // load it as file on browser or in web worker
                             if (env.isWorker) {
                                 try {
-                                    env.global.importScripts(module); // sync call
+                                    importScripts(module); // sync call
                                     resolve(); // TODO: Check how we can pass the loaded 'exported' object of module to this resolve.
                                 } catch (err) {
                                     reject(new _Exception(err));
                                 }
                             } else { // browser
-                                let js = env.global.document.createElement('script');
+                                let js = window.document.createElement('script');
                                 if (ext === 'mjs') {
                                     js.type = 'module';
                                 } else {
@@ -5781,7 +6093,7 @@
                                 js.onerror = (err) => {
                                     reject(new _Exception(err));
                                 };
-                                env.global.document.head.appendChild(js);
+                                window.document.head.appendChild(js);
                             }
                         }
                     } catch(err) {
@@ -5791,13 +6103,20 @@
             },
             undef: (module) => {
                 if (typeof module !== 'string') { throw _Exception.InvalidArgument('module', funcs.undef); }
-                if (typeof env.global.requirejs !== 'undefined') { // if requirejs library is available
-                    env.global.requirejs.undef(module);
+                let _requireJs = null;
+                if (isWorker) {
+                    _requireJs = WorkerGlobalScope.requirejs || null;
                 } else {
-                    console.warn("No approach is available to undef a loaded module. Connect clientModule port to an external handler."); // eslint-disable-line no-console
+                    _requireJs = window.requirejs || null;
+                }
+                if (_requireJs) { // if requirejs library is available
+                    _requireJs.undef(module);
+                } else {
+                    // console.warn("No approach is available to undef a loaded module. Connect clientModule port to an external handler."); // eslint-disable-line no-console
                 }
             }
         };
+        return funcs;
     };
     _Port.define('clientModule', ['require', 'undef'], __clientModule);
     
@@ -5840,7 +6159,7 @@
             });
         };
     };
-    _Port.define('serverFile', null, __serverFile);
+    _Port.define('serverFile', __serverFile);
     
     // clientFile factory
     const __clientFile = (env) => { // eslint-disable-line no-unused-vars
@@ -5870,7 +6189,7 @@
             });
         };
     };
-    _Port.define('clientFile', null, __clientFile);
+    _Port.define('clientFile', __clientFile);
     
     // settingsReader factory
     const __settingsReader = (env) => {
@@ -5922,7 +6241,7 @@
             return settings;
         };
     };
-    _Port.define('settingsReader', null, __settingsReader);
+    _Port.define('settingsReader', __settingsReader);
      
     /**
      * @name Reflector
@@ -6388,6 +6707,7 @@
     _utils.splitAndTrim = splitAndTrim;
     _utils.findIndexByProp = findIndexByProp;
     _utils.findItemByProp = findItemByProp;
+    _utils.which = which;
     _utils.isArrowFunc = isArrow;
     _utils.isASyncFunc = isASync;
     _utils.sieve = sieve;
@@ -6409,40 +6729,40 @@
 
 /* eslint-disable no-unused-vars */
 const flair = (typeof global !== 'undefined' ? require('flairjs') : (typeof WorkerGlobalScope !== 'undefined' ? WorkerGlobalScope.flair : window.flair));
-const { Class, Struct, Enum, Interface, Mixin } = flair;
-const { Aspects } = flair;
-const { AppDomain } = flair;
-const __currentContextName = flair.AppDomain.context.current().name;
-const { $$, attr } = flair;
-const { bring, Container, include } = flair;
-const { Port } = flair;
-const { on, post, telemetry } = flair;
-const { Reflector } = flair;
-const { Serializer } = flair;
-const { Tasks } = flair;
+const { Class, Struct, Enum, Interface, Mixin, Aspects, AppDomain, $$, attr, bring, Container, include, Port, on, post, telemetry,
+				Reflector, Serializer, Tasks, as, is, isComplies, isDerivedFrom, isAbstract, isSealed, isStatic, isSingleton, isDeprecated,
+				isImplements, isInstanceOf, isMixed, getAssembly, getAttr, getContext, getResource, getRoute, getType, ns, getTypeOf,
+				getTypeName, typeOf, dispose, using, Args, Exception, noop, nip, nim, nie, event } = flair;
 const { TaskInfo } = flair.Tasks;
-const { as, is, isComplies, isDerivedFrom, isImplements, isInstanceOf, isMixed } = flair;
-const { getAssembly, getAttr, getContext, getResource, getRoute, getType, ns, getTypeOf, typeOf } = flair;
-const { dispose, using } = flair;
-const { Args, Exception, noop, nip, nim, nie, event } = flair;
 const { env } = flair.options;
-const { forEachAsync, replaceAll, splitAndTrim, findIndexByProp, findItemByProp, which, isArrowFunc, isASyncFunc, sieve, b64EncodeUnicode, b64DecodeUnicode } = flair.utils;
-const { $static, $abstract, $virtual, $override, $sealed, $private, $privateSet, $protected, $protectedSet, $readonly, $async } = $$;
-const { $enumerate, $dispose, $post, $on, $timer, $type, $args, $inject, $resource, $asset, $singleton, $serialize, $deprecate, $session, $state, $conditional, $noserialize, $ns } = $$;
+const { forEachAsync, replaceAll, splitAndTrim, findIndexByProp, findItemByProp, which, isArrowFunc, isASyncFunc, sieve,
+				b64EncodeUnicode, b64DecodeUnicode } = flair.utils;
+const { $$static, $$abstract, $$virtual, $$override, $$sealed, $$private, $$privateSet, $$protected, $$protectedSet, $$readonly, $$async,
+				$$overload, $$enumerate, $$dispose, $$post, $$on, $$timer, $$type, $$args, $$inject, $$resource, $$asset, $$singleton, $$serialize,
+				$$deprecate, $$session, $$state, $$conditional, $$noserialize, $$ns } = $$;
+
+// define current context name
+const __currentContextName = AppDomain.context.current().name;
+
+// define loadPathOf this assembly
+let __currentFile = (env.isServer ? __filename : window.document.currentScript.src.replace(window.document.location.href, './'));
+let __currentPath = __currentFile.substr(0, __currentFile.lastIndexOf('/') + 1);
+AppDomain.loadPathOf('flair', __currentPath)
+
+// assembly level error handler
+const __asmError = (err) => { AppDomain.onError(err); };
 /* eslint-enable no-unused-vars */
 
 let settings = {}; // eslint-disable-line no-unused-vars
-
-        let settingsReader = flair.Port('settingsReader');
-        if (typeof settingsReader === 'function') {
-            let externalSettings = settingsReader('flair');
-            if (externalSettings) { settings = Object.assign(settings, externalSettings); }
-        }
-        settings = Object.freeze(settings);
-        flair.AppDomain.context.current().currentAssemblyBeingLoaded('./flair{.min}.js');
+let settingsReader = flair.Port('settingsReader');
+if (typeof settingsReader === 'function') {
+let externalSettings = settingsReader('flair');
+if (externalSettings) { settings = Object.assign(settings, externalSettings); }}
+settings = Object.freeze(settings);
+AppDomain.context.current().currentAssemblyBeingLoaded('./flair{.min}.js');
 
 (async () => { // ./src/flair/(root)/@1-IDisposable.js
-'use strict';
+try{
 /**
  * @name IDisposable
  * @description IDisposable interface
@@ -6451,150 +6771,13 @@ $$('ns', '(root)');
 Interface('IDisposable', function() {
     this.dispose = nim;
 });
-
-})();
-
-(async () => { // ./src/flair/flair.app/@2-Bootware.js
-'use strict';
-/**
- * @name Bootware
- * @description Bootware base class
- */
-$$('abstract');
-$$('ns', 'flair.app');
-Class('Bootware', function() {
-    /**  
-     * @name construct
-     * @arguments
-     *  name: string - name of the bootware
-     *  version: string - version number of the bootware
-    */
-    $$('virtual');
-    this.construct = (name, version, isMountSpecific) => {
-        let args = Args('name: string, version: string',
-                        'name: string, version: string, isMountSpecific: boolean',
-                        'name: string, isMountSpecific: boolean',
-                        'name: string')(name, version, isMountSpecific); args.throwOnError(this.construct);
-
-        // set info
-        this.info = Object.freeze({
-            name: args.name || '',
-            version: args.version || '',
-            isMountSpecific: args.isMountSpecific || false
-        });
-    };
-
-    /**  
-     * @name boot
-     * @arguments
-     *  mount: object - mount object
-    */
-    $$('virtual');
-    $$('async');
-    this.boot = noop;
-
-    $$('readonly');
-    this.info = null;
-
-    /**  
-     * @name ready
-     * @arguments
-     *  mount: object - mount object
-    */
-    $$('virtual');
-    $$('async');
-    this.ready = noop;
-});
-
-})();
-
-(async () => { // ./src/flair/flair.app/@3-Host.js
-'use strict';
-const { IDisposable } = ns();
-const { Bootware } = ns('flair.app');
-
-/**
- * @name App
- * @description App base class
- */
-$$('ns', 'flair.app');
-Class('Host', Bootware, [IDisposable], function() {
-    $$('privateSet');
-    this.isStarted = false;
-
-    $$('virtual');
-    this.start = async () => {
-        this.isStarted = true;
-    };
-
-    $$('virtual');
-    this.stop = async () => {
-        this.isStarted = false;
-    };
-
-    this.restart = async () => {
-        await this.stop();
-        await this.start();
-    };
-
-    this.error = event((err) => {
-        return { error: err };
-    });
-    
-    this.raiseError = (err) => {
-        this.error(err);
-    };
-});
-
-})();
-
-(async () => { // ./src/flair/flair.app/@4-App.js
-'use strict';
-const { IDisposable } = ns();
-const { Bootware } = ns('flair.app');
-
-/**
- * @name App
- * @description App base class
- */
-$$('ns', 'flair.app');
-Class('App', Bootware, [IDisposable], function() {
-    $$('override');
-    this.construct = (base) => {
-        // set info
-        let asm = getAssembly(this);
-        base(asm.title, asm.version);
-    };
-    
-    $$('override');
-    this.boot = async (base) => {
-        base();
-        AppDomain.host().error.add(this.onError); // host's errors are handled here
-    };
-
-    $$('virtual');
-    $$('async');
-    this.start = noop;
-
-    $$('virtual');
-    $$('async');
-    this.stop = noop;
-
-    $$('virtual');
-    this.onError = (e) => {
-        throw Exception.OperationFailed(e.error, this.onError);
-    };
-
-    $$('virtual');
-    this.dispose = () => {
-        AppDomain.host().error.remove(this.onError); // remove error handler
-    };
-});
-
+} catch(err) {
+	__asmError(err);
+}
 })();
 
 (async () => { // ./src/flair/(root)/Aspect.js
-'use strict';
+try{
 /**
  * @name Aspect
  * @description Aspect base class.
@@ -6654,11 +6837,13 @@ Class('Aspect', function() {
     $$('virtual');
     this.after = nim;
 });
-
+} catch(err) {
+	__asmError(err);
+}
 })();
 
 (async () => { // ./src/flair/(root)/Attribute.js
-'use strict';
+try{
 /**
  * @name Attribute
  * @description Attribute base class.
@@ -6766,11 +6951,13 @@ Class('Attribute', function() {
     this.decorateEvent = nim;
 });
 
-
+} catch(err) {
+	__asmError(err);
+}
 })();
 
 (async () => { // ./src/flair/(root)/IProgressReporter.js
-'use strict';
+try{
 /**
  * @name IProgressReporter
  * @description IProgressReporter interface
@@ -6780,11 +6967,13 @@ Interface('IProgressReporter', function() {
     // progress report
     this.progress = nie;
 });
-
+} catch(err) {
+	__asmError(err);
+}
 })();
 
 (async () => { // ./src/flair/(root)/Task.js
-'use strict';
+try{
 const { IProgressReporter, IDisposable } = ns();
 
 /**
@@ -6912,148 +7101,13 @@ Class('Task', [IProgressReporter, IDisposable], function() {
     this.onRun = nim;
 });
 
-
+} catch(err) {
+	__asmError(err);
+}
 })();
 
-(async () => { // ./src/flair/flair.app/BootEngine.js
-'use strict';
-const { Bootware } = ns('flair.app');
+AppDomain.context.current().currentAssemblyBeingLoaded('');
 
-/**
- * @name BootEngine
- * @description Bootstrapper functionality
- */
-$$('static');
-$$('ns', 'flair.app');
-Class('BootEngine', function() {
-    this.start = async function (entryPoint) {
-        let allBootwares = [],
-            mountSpecificBootwares = [];
-        const setEntryPoint = () => {
-            // set entry point for workers
-            AppDomain.entryPoint(entryPoint);
-        };
-        const loadFilesAndBootwares = async () => {
-            // load bootwares, scripts and preambles
-            let Item = null,
-                Bootware = null,
-                bw = null;
-            for(let item of settings.load) {
-                // get bootware (it could be a bootware, a simple script or a preamble)
-                item = which(item); // server/client specific version
-                if (item) { // in case no item is set for either server/client
-                    Item = await include(item);
-                    if (Item) {
-                        Bootware = as(Item, Bootware);
-                        if (Bootware) { // if boot
-                            bw = new Bootware(); 
-                            allBootwares.push(bw); // push in array, so boot and ready would be called for them
-                            if (bw.info.isMountSpecific) { // if bootware is mount specific bootware - means can run once for each mount
-                                mountSpecificBootwares.push(bw);
-                            }
-                        } // else ignore, this was something else, like a module which was just loaded
-                    } // else ignore, as it could just be a file loaded which does not return anything
-                }
-            }
-        };
-        const runBootwares = async (method) => {
-            if (!env.isWorker) { // main env
-                let mounts = AppDomain.host().mounts,
-                    mountNames = Object.keys(mounts),
-                    mountName = '',
-                    mount = null;
-            
-                // run all bootwares for main
-                mountName = 'main';
-                mount = mounts[mountName];
-                for(let bw of allBootwares) {
-                    await bw[method](mountName, mount);
-                }
-
-                // run all bootwares which are mount specific for all other mounts (except main)
-                for(let mountName of mountNames) {
-                    if (mountName === 'main') { continue; }
-                    mount = mounts[mountName];
-                    for(let bw of mountSpecificBootwares) {
-                        await bw[method](mountName, mount);
-                    }
-                }
-            } else { // worker env
-                // in this case as per load[] setting, no nountspecific bootwares should be present
-                if (mountSpecificBootwares.length !== 0) { 
-                    console.warn('Mount specific bootwares are not supported for worker environment. Revisit worker:flair.app->load setting.'); // eslint-disable-line no-console
-                }
-
-                // run all for once (ignoring the mountspecific ones)
-                for(let bw of allBootwares) {
-                    if (!bw.info.isMountSpecific) {
-                        await bw[method]();
-                    }
-                }
-            }
-        };
-        const boot = async () => {
-            if (!env.isWorker) {
-                let host = which(settings.host), // pick server/client specific host
-                    Host = as(await include(host), Bootware),
-                    hostObj = null;
-                if (!Host) { throw Exception.InvalidDefinition(host, this.start); }
-                hostObj = new Host();
-                await hostObj.boot();
-                AppDomain.host(hostObj); // set host
-            }
-            
-            await runBootwares('boot');   
-            
-            let app = which(settings.app), // pick server/client specific host
-            App = as(await include(app), Bootware),
-            appObj = null;
-            if (!App) { throw Exception.InvalidDefinition(app, this.start); }
-            appObj = new App();
-            await appObj.boot();
-            AppDomain.app(appObj); // set app
-        };        
-        const start = async () => {
-            if (!env.isWorker) {
-                await AppDomain.host().start();
-            }
-            await AppDomain.app().start();
-        };
-        const DOMReady = () => {
-            return new Promise((resolve, reject) => { // eslint-disable-line no-unused-vars
-                env.global.document.addEventListener("DOMContentLoaded", resolve);
-            });
-        };
-        const DeviceReady = () => {
-            return new Promise((resolve, reject) => { // eslint-disable-line no-unused-vars
-                document.addEventListener('deviceready', resolve, false);
-            });
-        };
-        const ready = async () => {
-            if (env.isClient && !env.isWorker) {
-                await DOMReady();
-                if (env.isCordova) { await DeviceReady(); }
-            }
-
-            if (!env.isWorker) {
-                await AppDomain.host().ready();
-            }
-            await runBootwares('ready');
-            await AppDomain.app().ready();
-        };
-          
-        setEntryPoint();
-        await loadFilesAndBootwares();
-        await boot();
-        await start();
-        await ready();
-    };
-});
-
-})();
-
-flair.AppDomain.context.current().currentAssemblyBeingLoaded('');
-
-flair.AppDomain.registerAdo('{"name":"flair","file":"./flair{.min}.js","desc":"True Object Oriented JavaScript","title":"Flair.js","version":"0.25.91","lupdate":"Tue, 19 Mar 2019 00:19:30 GMT","builder":{"name":"<<name>>","version":"<<version>>","format":"fasm","formatVersion":"1","contains":["initializer","types","enclosureVars","enclosedTypes","resources","assets","routes","selfreg"]},"copyright":"(c) 2017-2019 Vikas Burman","license":"MIT","types":["IDisposable","flair.app.Bootware","flair.app.Host","flair.app.App","Aspect","Attribute","IProgressReporter","Task","flair.app.BootEngine"],"resources":[],"assets":[],"routes":[]}');
+AppDomain.registerAdo('{"name":"flair","file":"./flair{.min}.js","mainAssembly":"flair","desc":"True Object Oriented JavaScript","title":"Flair.js","version":"0.30.10","lupdate":"Sun, 31 Mar 2019 23:55:44 GMT","builder":{"name":"<<name>>","version":"<<version>>","format":"fasm","formatVersion":"1","contains":["initializer","types","enclosureVars","enclosedTypes","resources","assets","routes","selfreg"]},"copyright":"(c) 2017-2019 Vikas Burman","license":"MIT","types":["IDisposable","Aspect","Attribute","IProgressReporter","Task"],"resources":[],"assets":[],"routes":[]}');
 
 })();

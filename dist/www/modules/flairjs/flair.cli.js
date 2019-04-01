@@ -5,8 +5,8 @@
  * 
  * Assembly: flair.cli
  *     File: ./flair.cli.js
- *  Version: 0.25.91
- *  Tue, 19 Mar 2019 00:19:34 GMT
+ *  Version: 0.30.10
+ *  Sun, 31 Mar 2019 23:55:47 GMT
  * 
  * (c) 2017-2019 Vikas Burman
  * Licensed under MIT
@@ -23,7 +23,7 @@ const fsx = require('fs-extra');
 const del = require('del');
 const buildInfo = {
     name: 'flair.cli',
-    version: '0.25.91',
+    version: '0.30.10',
     format: 'fasm',
     formatVersion: '1',
     contains: [
@@ -234,6 +234,11 @@ const build = (options, buildDone) => {
         }
         return path.join(options.dest, preambleRoot);
     };
+    const resolveRootNS = (isAddDot) => {
+        let rootNS = ''; // root namespace is always without any name, no matter which assembly
+        if (rootNS && isAddDot) { rootNS += '.'; }
+        return rootNS;
+    };
     const resolveSkipMinify = (buildPath) => {
         let skip = false;
         for(let partialBuildPath of options.profiles.current.skipMinifyRoot) {
@@ -334,6 +339,7 @@ const build = (options, buildDone) => {
         // each ADO object has:
         //      "name": "", 
         //      "file": "",
+        //      "mainAssembly": "",
         //      "desc": "",
         //      "title": "",
         //      "version": "",
@@ -348,6 +354,7 @@ const build = (options, buildDone) => {
         options.current.ado = {
             name: options.current.asmName,
             file: options.current.asmFileName.replace('.js', '{.min}.js'),
+            mainAssembly: options.mainAssembly,
             desc: options.packageJSON.description,
             title: options.packageJSON.title,
             version: options.packageJSON.version,
@@ -361,7 +368,7 @@ const build = (options, buildDone) => {
             routes: []
         };
 
-        if (options.skipRegistrationsFor.indexOf(options.current.asmName) === -1) { // if not to be skipped for preamble
+        if (options.skipPreambleFor.indexOf(options.current.asmName) === -1) { // if not to be skipped for preamble
             options.current.adosJSON.push(options.current.ado);
         }
     };
@@ -618,26 +625,28 @@ const build = (options, buildDone) => {
         `'use strict';\n\n` +
         `/* eslint-disable no-unused-vars */\n` +
         `const flair = (typeof global !== 'undefined' ? require('flairjs') : (typeof WorkerGlobalScope !== 'undefined' ? WorkerGlobalScope.flair : window.flair));\n` +
-        `const { Class, Struct, Enum, Interface, Mixin } = flair;\n` +
-        `const { Aspects } = flair;\n` +
-        `const { AppDomain } = flair;\n` +
-        `const __currentContextName = flair.AppDomain.context.current().name;\n` +
-        `const { $$, attr } = flair;\n` +
-        `const { bring, Container, include } = flair;\n` +
-        `const { Port } = flair;\n` +
-        `const { on, post, telemetry } = flair;\n` +
-        `const { Reflector } = flair;\n` +
-        `const { Serializer } = flair;\n` +
-        `const { Tasks } = flair;\n` +
+        `const { Class, Struct, Enum, Interface, Mixin, Aspects, AppDomain, $$, attr, bring, Container, include, Port, on, post, telemetry,\n` +
+        `\t\t\t\tReflector, Serializer, Tasks, as, is, isComplies, isDerivedFrom, isAbstract, isSealed, isStatic, isSingleton, isDeprecated,\n` +
+        `\t\t\t\tisImplements, isInstanceOf, isMixed, getAssembly, getAttr, getContext, getResource, getRoute, getType, ns, getTypeOf,\n` +
+        `\t\t\t\tgetTypeName, typeOf, dispose, using, Args, Exception, noop, nip, nim, nie, event } = flair;\n` +
         `const { TaskInfo } = flair.Tasks;\n` +
-        `const { as, is, isComplies, isDerivedFrom, isImplements, isInstanceOf, isMixed } = flair;\n` +
-        `const { getAssembly, getAttr, getContext, getResource, getRoute, getType, ns, getTypeOf, typeOf } = flair;\n` +
-        `const { dispose, using } = flair;\n` +
-        `const { Args, Exception, noop, nip, nim, nie, event } = flair;\n` +
         `const { env } = flair.options;\n` +
-        `const { forEachAsync, replaceAll, splitAndTrim, findIndexByProp, findItemByProp, which, isArrowFunc, isASyncFunc, sieve, b64EncodeUnicode, b64DecodeUnicode } = flair.utils;\n` +
-        `const { $static, $abstract, $virtual, $override, $sealed, $private, $privateSet, $protected, $protectedSet, $readonly, $async } = $$;\n` +
-        `const { $enumerate, $dispose, $post, $on, $timer, $type, $args, $inject, $resource, $asset, $singleton, $serialize, $deprecate, $session, $state, $conditional, $noserialize, $ns } = $$;\n` +
+        `const { forEachAsync, replaceAll, splitAndTrim, findIndexByProp, findItemByProp, which, isArrowFunc, isASyncFunc, sieve,\n` +
+        `\t\t\t\tb64EncodeUnicode, b64DecodeUnicode } = flair.utils;\n` +
+        `const { $$static, $$abstract, $$virtual, $$override, $$sealed, $$private, $$privateSet, $$protected, $$protectedSet, $$readonly, $$async,\n` +
+        `\t\t\t\t$$overload, $$enumerate, $$dispose, $$post, $$on, $$timer, $$type, $$args, $$inject, $$resource, $$asset, $$singleton, $$serialize,\n` +
+        `\t\t\t\t$$deprecate, $$session, $$state, $$conditional, $$noserialize, $$ns } = $$;\n` +
+        `\n` +
+        `// define current context name\n` +
+        `const __currentContextName = AppDomain.context.current().name;\n` +
+        `\n` +
+        `// define loadPathOf this assembly\n` +
+        `let __currentFile = (env.isServer ? __filename : window.document.currentScript.src.replace(window.document.location.href, './'));\n` +
+        `let __currentPath = __currentFile.substr(0, __currentFile.lastIndexOf('/') + 1);\n` +
+        `AppDomain.loadPathOf('${options.current.asmName}', __currentPath)\n` +
+        `\n` +
+        `// assembly level error handler\n` +
+        `const __asmError = (err) => { AppDomain.onError(err); };\n` +
         `/* eslint-enable no-unused-vars */\n` +
         `\n`; 
         appendToFile(closureHeader);        
@@ -662,20 +671,17 @@ const build = (options, buildDone) => {
         }
         // settings is a closure variable of each assembly separately
         if (settings) { 
-            settingsContent = `let settings = JSON.parse('${settings}'); // eslint-disable-line no-unused-vars\n`;
+            settingsContent = `//load assembly settings from config file\nlet settings = JSON.parse('${settings}'); // eslint-disable-line no-unused-vars\n`;
         } else {
             settingsContent = `let settings = {}; // eslint-disable-line no-unused-vars\n`;
         }
         // settings can be defined outside as well, new also
         // default values given in these settings will be overwritten by what is defined in external config file
-        settingsContent += `
-        let settingsReader = flair.Port('settingsReader');
-        if (typeof settingsReader === 'function') {
-            let externalSettings = settingsReader('${options.current.asmName}');
-            if (externalSettings) { settings = Object.assign(settings, externalSettings); }
-        }
-        settings = Object.freeze(settings);
-        `;
+        settingsContent += `let settingsReader = flair.Port('settingsReader');\n`;
+        settingsContent += `if (typeof settingsReader === 'function') {\n`;
+        settingsContent += `let externalSettings = settingsReader('${options.current.asmName}');\n`;
+        settingsContent += `if (externalSettings) { settings = Object.assign(settings, externalSettings); }}\n`;
+        settingsContent += `settings = Object.freeze(settings);\n`;
         appendToFile(settingsContent);
     };
     const appendTypes = (done) => {
@@ -684,7 +690,7 @@ const build = (options, buildDone) => {
         logger(0, 'types', '');
 
         // activate current file name
-        let dump = `flair.AppDomain.context.current().currentAssemblyBeingLoaded('${options.current.ado.file}');\n`;
+        let dump = `AppDomain.context.current().currentAssemblyBeingLoaded('${options.current.ado.file}');\n`;
         appendToFile(dump);
 
         // append types
@@ -723,7 +729,8 @@ const build = (options, buildDone) => {
 
             // wrap type in its own closure, so it's own constants etc defind on top of file
             // does not conflict with some other type's constants
-            content = `\n(async () => { // ${thisFile}\n'use strict';\n${content}\n})();\n`;
+            //content = `\n(async () => { // ${thisFile}\n${content}\n})();\n`;
+            content = `\n(async () => { // ${thisFile}\ntry{\n${content}} catch(err) {\n\t__asmError(err);\n}\n})();\n`;
 
             // append content to file
             appendToFile(content);
@@ -731,7 +738,7 @@ const build = (options, buildDone) => {
         options.current.ado.types = justNames; // update types list
 
         // deactivate current file name
-        dump = `\nflair.AppDomain.context.current().currentAssemblyBeingLoaded('');\n`;
+        dump = `\nAppDomain.context.current().currentAssemblyBeingLoaded('');\n`;
         appendToFile(dump);
 
         // done
@@ -776,7 +783,7 @@ const build = (options, buildDone) => {
             };
 
             // eslint-disable-next-line no-useless-escape
-            let dump = `\n(() => { \/\/ ${rdo.file}\n\tlet rdo = JSON.parse('${JSON.stringify(rdo)}'); \n\tflair.AppDomain.context.current().registerResource(rdo);}\n)();\n`;
+            let dump = `\n(() => { \/\/ ${rdo.file}\n\tlet rdo = JSON.parse('${JSON.stringify(rdo)}'); \n\tAppDomain.context.current().registerResource(rdo);}\n)();\n`;
             appendToFile(dump);
 
             appendResources(done, justNames2); // pick next
@@ -830,7 +837,7 @@ const build = (options, buildDone) => {
 
         logger(1, '', './' + nsRoute.file); 
         // eslint-disable-next-line no-useless-escape
-        let dump = `\n(() => { \/\/ ${nsRoute.file}\n\tlet routes = JSON.parse('${JSON.stringify(nsRoute.data)}'); \n\tflair.AppDomain.context.current().registerRoutes(...routes);}\n)();\n`;
+        let dump = `\n(() => { \/\/ ${nsRoute.file}\n\tlet routes = JSON.parse('${JSON.stringify(nsRoute.data)}'); \n\tAppDomain.context.current().registerRoutes(...routes);}\n)();\n`;
         appendToFile(dump);
 
         appendRoutes(done, justNames3); // pick next
@@ -839,7 +846,7 @@ const build = (options, buildDone) => {
         if (options.skipRegistrationsFor.indexOf(options.current.asmName) !== -1) { return; } // skip for special cases
 
         logger(0, 'self-reg', 'yes'); 
-        let dump = `\nflair.AppDomain.registerAdo('${JSON.stringify(options.current.ado)}');\n`;
+        let dump = `\nAppDomain.registerAdo('${JSON.stringify(options.current.ado)}');\n`;
         appendToFile(dump);
     };
     const pack = (done) => {
@@ -891,7 +898,10 @@ const build = (options, buildDone) => {
 
         logger(0, 'preamble', options.current.preamble.replace(options.dest, '.'), true);
         let ados = JSON.stringify(options.current.adosJSON);
-        let dump = `(() => { let ados = JSON.parse('${ados}');flair.AppDomain.registerAdo(ados);})();\n`;
+        let dump = `(() => { let ados = JSON.parse('${ados}');\n`;
+        dump += `const flair = (typeof global !== 'undefined' ? require('flairjs') : (typeof WorkerGlobalScope !== 'undefined' ? WorkerGlobalScope.flair : window.flair));\n`;
+        dump += `flair.AppDomain.registerAdo(...ados);}\n`;
+        dump += `)();\n`;
         fsx.writeFileSync(options.current.preamble, dump, {flag: 'a'}); // append if already exists
     };
     const collectTypesAndResourcesAndRoutes = () => {
@@ -937,7 +947,8 @@ const build = (options, buildDone) => {
             } 
             if (nsFile.type !== 'routes') {
                 if (nsFile.typeName.indexOf('.') !== -1) { throw `Type/Resource names cannot contain dots. (${nsFile.typeName})`; }
-                nsFile.qualifiedName = (options.current.nsName !== '(root)' ? options.current.nsName + '.' : '')  + nsFile.typeName;
+                nsFile.qualifiedName = (options.current.nsName !== '(root)' ? options.current.nsName + '.' : resolveRootNS(true))  + nsFile.typeName;
+
                 if (nsFile.type === 'res') {
                     options.current.ado.resources.push(nsFile);
                 } else {
@@ -950,7 +961,7 @@ const build = (options, buildDone) => {
                     if (route.name.indexOf('.') !== -1) { throw `Route name cannot contain dots. (${route.name})`; }
                     if (!route.path) { throw `Route path must be defined. (${route.name}`; }
                     if (!route.handler) { throw `Route handler must be defined. (${route.name}`; }
-                    route.qualifiedName = (options.current.nsName !== '(root)' ? options.current.nsName + '.' : '')  + route.name;
+                    route.qualifiedName = (options.current.nsName !== '(root)' ? options.current.nsName + '.' : resolveRootNS(true))  + route.name;
                     routes.push({ 
                         name: route.qualifiedName,
                         asmFile: options.current.ado.file,
@@ -1271,6 +1282,8 @@ const build = (options, buildDone) => {
  *                      }
  *                  }
  *              }
+ *              mainAssembly: string - name of the mainAssembly, whose load location will be dynamically used as reference to load other assemblies
+ *                            This is ignored in custom build, where resolveRoot setting is statically used for resolving assembly paths
  *              fullBuild: true/false   - is full build to be done
  *              skipBumpVersion: true/false - if skip bump version with build
  *              suppressLogging: true/false  - if build time log is to be shown on terminal
@@ -1378,8 +1391,8 @@ const build = (options, buildDone) => {
  *                              > the reason former approach is chosen, is because it shows up all namespaces neatly under
  *                                <assembly folder>
  *                          (root)     - root namespace folder, is a special folder, that contains special members
- *                                       which are placed on root only. Should be avoided, as this is for flair's own
- *                                       system types
+ *                                       which are placed on root of the assembly namespace - i.e., assembly name itself is used as namespace
+ *                                       (except in case of flair - where namespace is omitted altogether) 
  *                          (assets)   - assets folder
  *                                  > this special folder can be used to place all external assets like images, css, js, fonts, etc.
  *                                  > it can have any structure underneath
@@ -1474,6 +1487,8 @@ exports.flairBuild = function(options, cb) {
     options.customBuild = options.customBuild || false; 
     options.customBuildConfig = options.customBuildConfig || '';
 
+    options.mainAssembly = options.customBuild ? '' : (options.mainAssembly || '');
+    
     options.fullBuild = options.fullBuild || false;
     options.quickBuild = (!options.fullBuild && options.quickBuild) || false;
     options.clean = options.clean !== undefined ? options.clean : true;
@@ -1534,6 +1549,11 @@ exports.flairBuild = function(options, cb) {
     options.skipRegistrationsFor = [
         'flair.cli'
     ];
+    // exclude files from being added to preamble
+    options.skipPreambleFor = [
+        'flair',
+        'flair.cli'
+    ];    
 
     // define logger
     const logger = (level, msg, data, prlf, polf) => {

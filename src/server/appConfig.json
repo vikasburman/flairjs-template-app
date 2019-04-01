@@ -1,7 +1,6 @@
 {
     "flair.app": {
         "load": [
-            "flairjs/preamble.js",
             "./app/preamble.js",
             "flair.bw.NodeEnv",
             "flair.bw.Middlewares",

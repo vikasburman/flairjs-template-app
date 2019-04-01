@@ -1,36 +1,39 @@
 {
-    "name": "yourapp",
-    "title": "yourapp name",
-    "description": "yourapp description",
-    "copyright": "yourapp copyright",
-    "version": "0.1.7",
-    "author": "yourapp author <yourapp@yourhost.domain>",
+    "name": "flairjs",
+    "title": "Flair.js",
+    "description": "True Object Oriented JavaScript",
+    "copyright": "(c) 2017-2019 Vikas Burman",
+    "version": "0.30.10",
+    "author": "Vikas Burman <vikasburman@gmail.com>",
     "keywords": [
-        "flairjs",
         "javascript",
-        "yourapp keyword1",
-        "yourapp keyword2"
+        "oops",
+        "js",
+        "object oriented",
+        "es6",
+        "es5",
+        "es7"
     ],
     "engines": {
         "node": ">=11.0.0"
     },
     "license": "MIT",
+    "link": "https://flairjs.com",
+    "homepage": "https://flairjs.com",
     "repository": {
         "type": "git",
-        "url": "yourapp giturl"
+        "url": "https://github.com/vikasburman/flairjs.git"
     },
+    "main": "./flair.min.js",
     "scripts": {
         "build": "gulp build --options ./config/build.json",
         "build-full": "gulp build --full --options ./config/build.json",
         "build-quick": "gulp build --quick --options ./config/build.json",
         "test": "gulp test --TEST --options ./config/test.json",
         "test-client": "gulp test --TEST --client --options ./config/test.json",
-        "start-dev": "NODE_ENV='development' node --inspect ./dist/server/main.js",
-        "stop-dev": "pkill -f node",
-        "start-dev-client": "http-server ./dist/www/ & open http://127.0.0.1:8080/ &",
-        "stop-dev-client": "pkill -f http-server",
-        "start": "pm2 start ./dist/server/main.js",
-        "stop": "pm2 stop main"
+        "package": "gulp package --options ./publish/pack.json && npm pack ./publish/package/npm",
+        "start": "http-server ./docs/ & open http://127.0.0.1:8080/ &",
+        "stop": "pkill -f http-server"
     },
     "devDependencies": {
         "clean-css": "^4.2.1",
@@ -46,15 +49,10 @@
         "jasmine": "^3.3.1",
         "minimist": "^1.2.0",
         "open": "^0.0.5",
-        "pm2": "^3.4.0",
+        "page": "^1.11.4",
         "recursive-readdir-sync": "^1.0.6",
         "stylelint": "^9.10.1",
         "uglify-es": "^3.3.9"
     },
-    "dependencies": {
-        "express": "^4.16.4",
-        "flairjs": "^0.30.10",
-        "http-shutdown": "^1.2.0",
-        "node-env-file": "^0.1.8"
-    }
+    "dependencies": {}
 }

@@ -1,7 +1,6 @@
 {
     "flair.app": {
         "load": [
-            "flairjs/preamble.js",
             "./app/preamble.js",
             "flair.bw.DIContainer",
             "flair.bw.Router"
@@ -12,7 +11,7 @@
             "main": "/"
         },
         "main-appSettings": [
-            { "name": "strict", "value": false },
+            { "name": "strict", "value": false }
         ],
         "main-middlewares": [
         ]           
@@ -20,7 +19,6 @@
     
     "worker:flair.app": {
         "load": [
-            "./lib/flairjs/preamble.js",
             "./app/preamble.js",
             "flair.bw.DIContainer"
         ]
