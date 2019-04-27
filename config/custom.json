@@ -6,58 +6,41 @@
     "profiles": {
         "server": {
             "root": "server",
-            "modules": [
-            ],
+            "dest": "/",
+            "skipMinify": true,
             "copy": [
-                "server/appConfig.json",
-                "server/main.js",
-                "server/private"
+                "appConfig.json",
+                "main.js",
+                "private"
             ],
             "build": [
-                "server/app/core/",
-                "server/app/group1/",
-                "server/app/group2/",
-                "server/api/"
-            ],
-            "skipMinifyRoot": [
-                "server/app/",
-                "server/api/"
-            ],
-            "resolveRoot": {
-                "server/app/": "server/",
-                "server/api/": "server/"
-            },
-            "preambleRoot": {
-                "server/app/": "server/app",
-                "server/api/": "server/app"
-            }
+                "app",
+                "api"
+            ]
         },
         "client": {
             "root": "www",
+            "dest": "@server",
+            "omitRoot": true,
             "modules": [
-                "flairjs"
+                "flairjs",
+                "vue/dist",
+                "requirejs"
             ],
             "copy": [
-                "www/assets",
-                "www/favicon.png",
-                "www/webConfig.json",
-                "www/index.html",
-                "www/index.js"
+                "assets",
+                "views",
+                "favicon.png",
+                "webConfig.json",
+                "index.html",
+                "index.js"
+            ],
+            "minify": [
+                "modules/requirejs/require.js"
             ],
             "build": [
-                "www/app/core/",
-                "www/app/group1/",
-                "www/app/group2/",
-                "www/app/group3/"
-            ],
-            "skipMinifyRoot": [
-            ],
-            "resolveRoot": {
-                "www/app/": "www/app"
-            },
-            "preambleRoot": {
-                "www/app/": "www/app/"
-            }
+                "app"
+            ]
         }
     }
 }

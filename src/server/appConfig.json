@@ -2,11 +2,11 @@
     "flair.app": {
         "load": [
             "./app/preamble.js",
-            "flair.bw.NodeEnv",
-            "flair.bw.Middlewares",
-            "flair.bw.ResHeaders",
-            "flair.bw.DIContainer",
-            "flair.bw.Router"
+            "flair.boot.NodeEnv",
+            "flair.boot.Middlewares",
+            "flair.boot.ResHeaders",
+            "flair.boot.DIContainer",
+            "flair.boot.Router"
         ],
         "envVars": [
             "./private/.env"
@@ -24,12 +24,12 @@
         "main-resHeaders": [
             { "name": "X-Powered-By", "value": "flairApp" }
         ],
-        "server-http": {
+        "http": {
             "enable": true,
             "port": 8080,
             "timeout": -1
         },
-        "server-https": {
+        "https": {
             "enable": true,
             "port": 8443,
             "timeout": -1,
@@ -39,9 +39,8 @@
     },
     "worker:flair.app": {
         "load": [
-            "flairjs/preamble.js",
             "./app/preamble.js",
-            "flair.bw.DIContainer"
+            "flair.boot.DIContainer"
         ]
     }
 }

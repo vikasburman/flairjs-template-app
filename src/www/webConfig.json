@@ -2,8 +2,9 @@
     "flair.app": {
         "load": [
             "./app/preamble.js",
-            "flair.bw.DIContainer",
-            "flair.bw.Router"
+            "flair.boot.DIContainer",
+            "flair.ui.vue.VueSetup",
+            "flair.boot.Router"
         ],
         "container": {
         },
@@ -14,13 +15,28 @@
             { "name": "strict", "value": false }
         ],
         "main-middlewares": [
-        ]           
+        ],
+        "url": {
+            "home": "/",
+            "404": "/404"
+        }
     },
-    
     "worker:flair.app": {
         "load": [
             "./app/preamble.js",
-            "flair.bw.DIContainer"
+            "flair.boot.DIContainer"
         ]
+    },
+
+    "flair.ui": {
+        "title": "My App",
+        "viewTransition": "",
+        "components": [],
+        "transitions": [],
+        "filters": [],
+        "mixins": [],
+        "plugins": [],
+        "pluginOptions": {
+        }      
     }
 }

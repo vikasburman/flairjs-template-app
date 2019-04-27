@@ -19,7 +19,7 @@
     "lintConfig": "./config/lint.json",
     "lintTypes": ["js", "css", "html"],
 
-    "minify": false,
+    "minify": true,
     "minifyConfig": "./config/minify.json",
     "minifyTypes": ["js", "css", "html"],
     "generateJSSourceMap": false,
