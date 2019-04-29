@@ -20,7 +20,9 @@
         ],
         "main-middlewares": [
             { "name": "compression", "func": "", "args": [] }
-        ],    
+        ],  
+        "main-interceptors": [
+        ],          
         "main-resHeaders": [
             { "name": "X-Powered-By", "value": "flairApp" }
         ],
