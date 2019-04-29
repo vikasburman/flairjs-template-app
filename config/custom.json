@@ -29,7 +29,6 @@
             ],
             "copy": [
                 "assets",
-                "views",
                 "favicon.png",
                 "webConfig.json",
                 "index.html",
