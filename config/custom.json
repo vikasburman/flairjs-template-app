@@ -24,8 +24,8 @@
             "omitRoot": true,
             "modules": [
                 "flairjs",
-                "vue/dist",
-                "requirejs"
+                "requirejs",
+                "vue/dist"
             ],
             "copy": [
                 "assets",

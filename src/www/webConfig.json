@@ -11,10 +11,10 @@
         "mounts": {
             "main": "/"
         },
-        "main-appSettings": [
+        "main-options": [
             { "name": "strict", "value": false }
         ],
-        "main-middlewares": [
+        "main-interceptors": [
         ],
         "url": {
             "home": "/",
@@ -34,6 +34,7 @@
         "components": [],
         "transitions": [],
         "filters": [],
+        "directives": [],
         "mixins": [],
         "plugins": [],
         "pluginOptions": {
