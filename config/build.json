@@ -8,8 +8,6 @@
     "customBuild": true,
     "customBuildConfig": "./config/custom.json",
 
-    "mainAssembly": "",
-    
     "fullBuild": false,
     "clean": true,
     "skipBumpVersion": false,

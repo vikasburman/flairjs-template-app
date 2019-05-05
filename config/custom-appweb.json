@@ -1,25 +1,23 @@
 {
     "plugins": [
-        { "name": "docker_image", "file": "docker_image.js", "settings": { "cmd": "" } },
+        { "name": "docker_image", "file": "docker_image.js", "settings": { "cmd": "yarn install --prod" } },
         { "name": "node_modules", "file": "node_modules.js", "settings": { "cmd": "yarn install --prod" } },
         { "name": "web_modules", "file": "web_modules.js" },
         { "name": "copy_files", "file": "copy_files.js" },
         { "name": "minify_files", "file": "minify_files.js" }
-    ],    
+    ],      
     "build": [
-        { "profile": "server" },
-        { "profile": "client" }
+        { "profile": "server", "plugins": ["copy_files", "docker_image"] },
+        { "profile": "client", "plugins": ["copy_files", "web_modules", "minify_files", "docker_image"] }
     ],
     "profiles": {
         "server": {
             "root": "server",
-            "dest": "/",
             "skipMinify": true,
             "build": [
                 "app",
                 "api"
             ],
-            "plugins": ["copy_files", "node_modules"],
             "copy": [
                 "appConfig.json",
                 "main.js",
@@ -28,12 +26,9 @@
         },
         "client": {
             "root": "www",
-            "dest": "@server",
-            "omitRoot": true,
             "build": [
                 "app"
             ],
-            "plugins": ["copy_files", "web_modules", "minify_files"],
             "copy": [
                 "assets",
                 "favicon.png",

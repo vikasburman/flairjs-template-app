@@ -16,3 +16,8 @@ gulp.task('test', (done) => {
 gulp.task('test-client', (done) => {
     require(gulpOptions.test).test(done);
 });
+
+// task: package
+gulp.task('package', (done) => {
+    require(gulpOptions.package).pack(done);
+});

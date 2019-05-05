@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.1.94",
+    "version": "0.2.14",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -25,11 +25,9 @@
         "build-quick": "gulp build --quick --options ./config/build.json",
         "test": "gulp test --TEST --options ./config/test.json",
         "test-client": "gulp test --TEST --client --options ./config/test.json",
-        "start-dev": "NODE_ENV='development' node --inspect ./dist/server/main.js",
+        "start-dev": "NODE_ENV='development' node --inspect ./dist/main.js",
         "stop-dev": "pkill -f node",
-        "start-dev-client": "http-server ./dist/www/ & open http://127.0.0.1:8080/ &",
-        "stop-dev-client": "pkill -f http-server",
-        "start": "pm2 start ./dist/server/main.js",
+        "start": "pm2 start ./dist/main.js",
         "stop": "pm2 stop main"
     },
     "devDependencies": {
@@ -42,7 +40,6 @@
         "gulp": "^4.0.0",
         "html-minifier": "^3.5.21",
         "htmllint": "^0.7.3",
-        "http-server": "^0.11.1",
         "jasmine": "^3.3.1",
         "minimist": "^1.2.0",
         "open": "^0.0.5",

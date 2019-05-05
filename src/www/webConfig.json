@@ -4,21 +4,10 @@
             "./app/preamble.js",
             "flair.boot.DIContainer",
             "flair.ui.vue.VueSetup",
-            "flair.boot.Router"
+            "flair.boot.ClientRouter"
         ],
+
         "container": {
-        },
-        "mounts": {
-            "main": "/"
-        },
-        "main-options": [
-            { "name": "strict", "value": false }
-        ],
-        "main-interceptors": [
-        ],
-        "url": {
-            "home": "/",
-            "404": "/404"
         }
     },
     "worker:flair.app": {
@@ -28,7 +17,7 @@
         ]
     },
 
-    "flair.ui": {
+    "flair.client": {
         "title": "My App",
         "viewTransition": "",
         "components": [],
@@ -38,6 +27,20 @@
         "mixins": [],
         "plugins": [],
         "pluginOptions": {
-        }
+        },
+
+        "url": {
+            "home": "/",
+            "404": "/404"
+        },
+
+        "mounts": {
+            "main": "/"
+        },
+        "main-options": [
+            { "name": "strict", "value": false }
+        ],
+        "main-interceptors": [
+        ]
     }
 }

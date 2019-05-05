@@ -6,11 +6,39 @@
             "flair.boot.Middlewares",
             "flair.boot.ResHeaders",
             "flair.boot.DIContainer",
-            "flair.boot.Router"
-        ],
+            "flair.boot.ServerRouter"
+        ]
+    },
+    "worker:flair.app": {
+        "load": [
+            "./app/preamble.js",
+            "flair.boot.DIContainer"
+        ]
+    },
+
+    "flair.server": {
+        "server": "flair.app.server.ExpressServer",
+
+        "server-http": {
+            "enable": true,
+            "port": 8080,
+            "timeout": -1
+        },
+        "server-https": {
+            "enable": true,
+            "port": 8443,
+            "timeout": -1,
+            "privateKey": "./private/key.pem",
+            "publicCert": "./private/cert.pem"
+        },
+
         "envVars": [
             "./private/.env"
         ],
+        "envVarsloadOptions": {
+            "overwrite": true
+        },
+
         "mounts": {
             "main": "/"
         },
@@ -25,24 +53,6 @@
         ],          
         "main-resHeaders": [
             { "name": "X-Powered-By", "value": "flairApp" }
-        ],
-        "http": {
-            "enable": true,
-            "port": 8080,
-            "timeout": -1
-        },
-        "https": {
-            "enable": true,
-            "port": 8443,
-            "timeout": -1,
-            "privateKey": "./private/key.pem",
-            "publicCert": "./private/cert.pem"
-        }        
-    },
-    "worker:flair.app": {
-        "load": [
-            "./app/preamble.js",
-            "flair.boot.DIContainer"
-        ]
-    }
+        ]          
+    }    
 }
