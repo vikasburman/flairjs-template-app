@@ -20,14 +20,6 @@
     "flair.client": {
         "title": "My App",
         "viewTransition": "",
-        "components": [],
-        "transitions": [],
-        "filters": [],
-        "directives": [],
-        "mixins": [],
-        "plugins": [],
-        "pluginOptions": {
-        },
 
         "url": {
             "home": "/",
@@ -42,5 +34,15 @@
         ],
         "main-interceptors": [
         ]
-    }
+    },
+
+    "flair.vue": {
+        "components": [],
+        "filters": [],
+        "directives": [],
+        "mixins": [],
+        "plugins": [],
+        "pluginOptions": {
+        }
+    }    
 }

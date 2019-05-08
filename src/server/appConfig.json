@@ -47,7 +47,7 @@
             { "name": "strict routing", "value": false }
         ],
         "main-middlewares": [
-            { "name": "compression", "func": "", "args": [] }
+            { "name": "express", "func": "static", "args": ["www"] }
         ],  
         "main-interceptors": [
         ],          

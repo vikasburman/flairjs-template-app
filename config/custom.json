@@ -16,8 +16,7 @@
             "dest": "/",
             "skipMinify": true,
             "build": [
-                "app",
-                "api"
+                "app"
             ],
             "plugins": ["copy_files", "node_modules"],
             "copy": [
@@ -44,6 +43,7 @@
             "modules": [
                 "flairjs",
                 "requirejs",
+                "page",
                 "vue/dist"
             ],
             "minify": [

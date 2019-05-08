@@ -1,4 +1,5 @@
 {
     "build": "flairjs/flair.cli/gulp/build.js",
-    "test": "flairjs/flair.cli/gulp/test.js"
+    "test": "flairjs/flair.cli/gulp/test.js",
+    "package": "flairjs/flair.cli/gulp/package.js"
 }

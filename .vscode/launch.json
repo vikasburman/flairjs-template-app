@@ -5,19 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Client Mode",
-            "url": "http://localhost:8088/debug/client.html",
-            "webRoot": "${workspaceFolder}",
-            "preLaunchTask": "server"
-        },
-        {
             "type": "node",
             "request": "launch",
-            "name": "Server Mode",
-            "program": "${workspaceFolder}/debug/server.js",
-            "cwd": "${workspaceFolder}"
+            "name": "Server",
+            "program": "${workspaceFolder}/dist/main.js",
+            "cwd": "${workspaceFolder}/dist"
         }
     ]
 }

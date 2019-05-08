@@ -1,6 +1,5 @@
 {
     "engine": "flairjs/flair.cli.js",
-    "package": "./package.json",
 
     "dest": "./dist",
     "src": "./src",
