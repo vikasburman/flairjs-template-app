@@ -1,5 +1,5 @@
 {
-    "engine": "flairjs/flair.cli.js",
+    "engine": "flairjs/flair/flairBuild.js",
 
     "dest": "./dist",
     "src": "./src",

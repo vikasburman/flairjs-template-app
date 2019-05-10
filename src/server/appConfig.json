@@ -1,58 +1,63 @@
 {
     "flair.app": {
-        "load": [
-            "./app/preamble.js",
-            "flair.boot.NodeEnv",
-            "flair.boot.Middlewares",
-            "flair.boot.ResHeaders",
-            "flair.boot.DIContainer",
-            "flair.boot.ServerRouter"
-        ]
+        "boot": {
+            "load": [
+                "./app/preamble.js",
+                "flair.boot.NodeEnv",
+                "flair.boot.Middlewares",
+                "flair.boot.ResHeaders",
+                "flair.boot.DIContainer",
+                "flair.boot.ServerRouter"
+            ]
+        }
     },
     "worker:flair.app": {
-        "load": [
-            "./app/preamble.js",
-            "flair.boot.DIContainer"
-        ]
+        "boot": {
+            "load": [
+                "./app/preamble.js",
+                "flair.boot.DIContainer"
+            ]
+        }
     },
 
     "flair.server": {
-        "server": "flair.app.server.ExpressServer",
-
-        "server-http": {
-            "enable": true,
-            "port": 8080,
-            "timeout": -1
-        },
-        "server-https": {
-            "enable": true,
-            "port": 8443,
-            "timeout": -1,
-            "privateKey": "./private/key.pem",
-            "publicCert": "./private/cert.pem"
-        },
-
-        "envVars": [
-            "./private/.env"
-        ],
-        "envVarsloadOptions": {
-            "overwrite": true
+        "express": {
+            "server-http": {
+                "enable": true,
+                "port": 8080,
+                "timeout": -1
+            },
+            "server-https": {
+                "enable": true,
+                "port": 8443,
+                "timeout": -1,
+                "privateKey": "./private/key.pem",
+                "publicCert": "./private/cert.pem"
+            }
         },
 
-        "mounts": {
-            "main": "/"
+        "envVars": {
+            "vars": [
+                "./private/.env"
+            ]
         },
-        "main-appSettings": [
-            { "name": "case sensitive routing", "value": false },
-            { "name": "strict routing", "value": false }
-        ],
-        "main-middlewares": [
-            { "name": "express", "func": "static", "args": ["www"] }
-        ],  
-        "main-interceptors": [
-        ],          
-        "main-resHeaders": [
-            { "name": "X-Powered-By", "value": "flairApp" }
-        ]          
+
+        "routing": {
+            "mounts": {
+                "main": "/"
+            },
+            "main-appSettings": [
+                { "name": "case sensitive routing", "value": false },
+                { "name": "strict routing", "value": false }
+            ],
+            "main-middlewares": [
+                { "name": "express", "func": "static", "args": ["www"] }
+            ],  
+            "main-interceptors": [
+            ],          
+            "main-resHeaders": [
+                { "name": "X-Powered-By", "value": "flairApp" }
+            ]          
+        }
     }    
 }

@@ -1,48 +1,69 @@
 {
     "flair.app": {
-        "load": [
-            "./app/preamble.js",
-            "flair.boot.DIContainer",
-            "flair.ui.vue.VueSetup",
-            "flair.boot.ClientRouter"
-        ],
+        "boot": {
+            "load": [
+                "./app/preamble.js",
+                "flair.boot.DIContainer",
+                "flair.ui.vue.VueSetup",
+                "flair.boot.ClientRouter"
+            ]
+        },
 
-        "container": {
+        "di": {
+            "container": {
+            }
         }
     },
     "worker:flair.app": {
-        "load": [
-            "./app/preamble.js",
-            "flair.boot.DIContainer"
-        ]
+        "boot": {
+            "load": [
+                "./app/preamble.js",
+                "flair.boot.DIContainer"
+            ]
+        }
     },
 
     "flair.client": {
-        "title": "My App",
-        "viewTransition": "",
+        "view": {
+            "el": "main",
+            "title": "My App",
+            "transition": ""
+        },        
+
+        "vue": {
+            "components": [],
+            "filters": [],
+            "directives": [],
+            "mixins": [],
+            "plugins": [],
+            "pluginOptions": {
+            }
+        },
 
         "url": {
-            "home": "/",
+            "hashbang": false,
+            "i18n": false,
             "404": "/404"
         },
 
-        "mounts": {
-            "main": "/"
+        "i18n": {
+            "enabled": true,
+            "locale": "en",
+            "locales": [
+                { "code": "en", "name": "English", "native": "English" }
+            ]
         },
-        "main-options": [
-            { "name": "strict", "value": false }
-        ],
-        "main-interceptors": [
-        ]
-    },
 
-    "flair.vue": {
-        "components": [],
-        "filters": [],
-        "directives": [],
-        "mixins": [],
-        "plugins": [],
-        "pluginOptions": {
+        "routing": {
+            "mounts": {
+                "main": "/"
+            },
+            "main-options": [
+                { "name": "strict", "value": false }
+            ],
+            "main-interceptors": [
+            ]
         }
-    }    
+    }
+  
 }
