@@ -9,7 +9,53 @@
                 "flair.boot.DIContainer",
                 "flair.boot.ServerRouter"
             ]
-        }
+        },
+
+        "di": {
+            "container": {
+            }
+        },
+
+        "server": {
+            "express": {
+                "server-http": {
+                    "enable": true,
+                    "port": 8080,
+                    "timeout": -1
+                },
+                "server-https": {
+                    "enable": true,
+                    "port": 8443,
+                    "timeout": -1,
+                    "privateKey": "./private/key.pem",
+                    "publicCert": "./private/cert.pem"
+                }
+            },
+    
+            "envVars": {
+                "vars": [
+                    "./private/.env"
+                ]
+            },
+    
+            "routing": {
+                "mounts": {
+                    "main": "/"
+                },
+                "main-appSettings": [
+                    { "name": "case sensitive routing", "value": false },
+                    { "name": "strict routing", "value": false }
+                ],
+                "main-middlewares": [
+                    { "name": "express", "func": "static", "args": ["www"] }
+                ],  
+                "main-interceptors": [
+                ],          
+                "main-resHeaders": [
+                    { "name": "X-Powered-By", "value": "flairApp" }
+                ]          
+            }
+        }   
     },
     "worker:flair.app": {
         "boot": {
@@ -18,46 +64,5 @@
                 "flair.boot.DIContainer"
             ]
         }
-    },
-
-    "flair.server": {
-        "express": {
-            "server-http": {
-                "enable": true,
-                "port": 8080,
-                "timeout": -1
-            },
-            "server-https": {
-                "enable": true,
-                "port": 8443,
-                "timeout": -1,
-                "privateKey": "./private/key.pem",
-                "publicCert": "./private/cert.pem"
-            }
-        },
-
-        "envVars": {
-            "vars": [
-                "./private/.env"
-            ]
-        },
-
-        "routing": {
-            "mounts": {
-                "main": "/"
-            },
-            "main-appSettings": [
-                { "name": "case sensitive routing", "value": false },
-                { "name": "strict routing", "value": false }
-            ],
-            "main-middlewares": [
-                { "name": "express", "func": "static", "args": ["www"] }
-            ],  
-            "main-interceptors": [
-            ],          
-            "main-resHeaders": [
-                { "name": "X-Powered-By", "value": "flairApp" }
-            ]          
-        }
-    }    
+    }
 }

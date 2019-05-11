@@ -12,7 +12,51 @@
         "di": {
             "container": {
             }
+        },
+
+        "client": {
+            "view": {
+                "el": "main",
+                "title": "My App",
+                "transition": ""
+            },        
+    
+            "url": {
+                "hashbang": false,
+                "i18n": false,
+                "404": "/404"
+            },
+    
+            "vue": {
+                "components": [],
+                "filters": [],
+                "directives": [],
+                "mixins": [],
+                "plugins": [],
+                "pluginOptions": {
+                }
+            },
+    
+            "i18n": {
+                "enabled": true,
+                "locale": "en",
+                "locales": [
+                    { "code": "en", "name": "English", "native": "English" }
+                ]
+            },
+    
+            "routing": {
+                "mounts": {
+                    "main": "/"
+                },
+                "main-options": [
+                    { "name": "strict", "value": false }
+                ],
+                "main-interceptors": [
+                ]
+            }
         }
+
     },
     "worker:flair.app": {
         "boot": {
@@ -21,49 +65,5 @@
                 "flair.boot.DIContainer"
             ]
         }
-    },
-
-    "flair.client": {
-        "view": {
-            "el": "main",
-            "title": "My App",
-            "transition": ""
-        },        
-
-        "vue": {
-            "components": [],
-            "filters": [],
-            "directives": [],
-            "mixins": [],
-            "plugins": [],
-            "pluginOptions": {
-            }
-        },
-
-        "url": {
-            "hashbang": false,
-            "i18n": false,
-            "404": "/404"
-        },
-
-        "i18n": {
-            "enabled": true,
-            "locale": "en",
-            "locales": [
-                { "code": "en", "name": "English", "native": "English" }
-            ]
-        },
-
-        "routing": {
-            "mounts": {
-                "main": "/"
-            },
-            "main-options": [
-                { "name": "strict", "value": false }
-            ],
-            "main-interceptors": [
-            ]
-        }
     }
-  
 }
