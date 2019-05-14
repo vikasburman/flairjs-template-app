@@ -1,8 +1,14 @@
 {
     "flair.app": {
+        "app": "myapp.main.App",
+
         "boot": {
-            "load": [
-                "./app/preamble.js",
+            "files": [
+            ],
+            "preambles": [
+                "./app/preamble.js"
+            ],
+            "bootwares": [
                 "flair.boot.DIContainer",
                 "flair.ui.vue.VueSetup",
                 "flair.boot.ClientRouter"
@@ -60,8 +66,12 @@
     },
     "worker:flair.app": {
         "boot": {
-            "load": [
-                "./app/preamble.js",
+            "files": [
+            ],
+            "preambles": [
+                "./app/preamble.js"
+            ],
+            "bootwares": [
                 "flair.boot.DIContainer"
             ]
         }

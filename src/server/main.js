@@ -4,4 +4,6 @@
  * Copyright Message
  */
 const flair = require('flairjs');
-flair('./appConfig.json', __filename);
+flair(__filename, './appConfig.json').then((app) => {
+    console.log('*');
+});

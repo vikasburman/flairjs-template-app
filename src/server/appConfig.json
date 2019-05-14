@@ -1,8 +1,14 @@
 {
     "flair.app": {
+        "app": "myapp.main.App",
+
         "boot": {
-            "load": [
-                "./app/preamble.js",
+            "files": [
+            ],
+            "preambles": [
+                "./app/preamble.js"
+            ],            
+            "bootwares": [
                 "flair.boot.NodeEnv",
                 "flair.boot.Middlewares",
                 "flair.boot.ResHeaders",
@@ -59,8 +65,12 @@
     },
     "worker:flair.app": {
         "boot": {
-            "load": [
-                "./app/preamble.js",
+            "files": [
+            ],
+            "preambles": [
+                "./app/preamble.js"
+            ],            
+            "bootwares": [
                 "flair.boot.DIContainer"
             ]
         }
