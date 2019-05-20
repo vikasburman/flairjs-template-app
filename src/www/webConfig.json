@@ -10,7 +10,7 @@
             ],
             "bootwares": [
                 "flair.boot.DIContainer",
-                "flair.ui.vue.VueSetup",
+                "flair.boot.vue.VueSetup",
                 "flair.boot.ClientRouter"
             ]
         },
@@ -30,16 +30,9 @@
             "url": {
                 "hashbang": false,
                 "i18n": false,
-                "404": "/404"
-            },
-    
-            "vue": {
-                "components": [],
-                "filters": [],
-                "directives": [],
-                "mixins": [],
-                "plugins": [],
-                "pluginOptions": {
+                "routes": {
+                    "home": "myapp.main.ui.home",
+                    "404": "myapp.main.ui.notfound"
                 }
             },
     
@@ -62,7 +55,6 @@
                 ]
             }
         }
-
     },
     "worker:flair.app": {
         "boot": {
@@ -75,5 +67,9 @@
                 "flair.boot.DIContainer"
             ]
         }
+    },
+
+    "flair.vue": {
+        "extensions": []
     }
 }

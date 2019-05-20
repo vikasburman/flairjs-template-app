@@ -6,9 +6,9 @@ const { VueView } = ns('flair.ui.vue');
  */
 $$('ns', '(auto)');
 Class('(auto)', VueView, function() {
-    $$('protected');
-    this.data = null;
+    this.title = "Not Found";
 
-    $$('protected');
-    this.layout = null;
+    this.html = `
+        <div><h2>Not Found</h2></div>
+    `;
 });

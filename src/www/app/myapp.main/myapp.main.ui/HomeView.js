@@ -1,4 +1,5 @@
 const { VueView } = ns('flair.ui.vue');
+const { CommonLayout } = await ns('myapp.main.ui', 'myapp.main.ui.CommonLayout');
 
 /**
  * @name HomeView
@@ -6,9 +7,15 @@ const { VueView } = ns('flair.ui.vue');
  */
 $$('ns', '(auto)');
 Class('(auto)', VueView, function() {
-    $$('protected');
-    this.data = null;
+    this.layout = new CommonLayout();
 
-    $$('protected');
-    this.layout = null;
+    this.title = "Home";
+
+    this.data = {
+        message: 'Hello World!'
+    };
+
+    this.html = `
+    <div><h2>{{message}}</h2></div>
+    `;
 });

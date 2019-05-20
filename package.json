@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.2.61",
+    "version": "0.2.75",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -25,9 +25,9 @@
         "build-quick": "gulp build --quick --options ./config/build.json",
         "test": "gulp test --TEST --options ./config/test.json",
         "test-client": "gulp test --TEST --client --options ./config/test.json",
-        "start-dev": "NODE_ENV='development' node --inspect ./dist/main.js",
+        "start-dev": "cd ./dist && NODE_ENV='development' node --inspect main.js",
         "stop-dev": "pkill -f node",
-        "start": "NODE_ENV='production' pm2 start ./dist/main.js",
+        "start": "cd ./dist && NODE_ENV='production' pm2 start main.js",
         "stop": "pm2 stop main"
     },
     "devDependencies": {
@@ -50,7 +50,7 @@
     },
     "dependencies": {
         "express": "^4.16.4",
-        "flairjs": "^0.6.84",
+        "flairjs": "^0.6.92",
         "http-shutdown": "^1.2.0",
         "node-env-file": "^0.1.8",
         "node-fetch": "^2.3.0",
