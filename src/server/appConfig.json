@@ -48,7 +48,7 @@
                 "mounts": {
                     "main": "/"
                 },
-                "main-appSettings": [
+                "main-settings": [
                     { "name": "case sensitive routing", "value": false },
                     { "name": "strict routing", "value": false }
                 ],
