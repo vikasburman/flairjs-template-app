@@ -1,5 +1,5 @@
-const { VueView } = ns('flair.ui.vue');
-const { CommonLayout } = await ns('myapp.main.ui', 'myapp.main.ui.CommonLayout');
+const VueView = await include('flair.ui.vue.VueView');
+const CommonLayout = await include('myapp.main.ui.CommonLayout');
 
 /**
  * @name HomeView
@@ -9,13 +9,30 @@ $$('ns', '(auto)');
 Class('(auto)', VueView, function() {
     this.layout = new CommonLayout();
 
-    this.title = "Home";
+    this.i18n = {
+        titles: "./titles.json",
+        strings: "./strings.json"
+    };
 
+    this.title = "Home";
     this.data = {
-        message: 'Hello World!'
+        now: ''
     };
 
     this.html = `
-    <div><h2>{{message}}</h2></div>
+    <div><h2>{{ i18n('strings', 'hello', 'Hello World!') }}</h2><p>Current server time is: {{ now }}</p></div>
     `;
+
+    $$('fetch', 'get', 'json', '/api/v1/now');
+    this.now = async (api) => {
+        let result = await api() || { now: 'Could not connect to server.' };
+        return result.now;
+    };
+
+    $$('override');
+    this.beforeLoad = async (base, ctx, el) => { // eslint-disable-line no-unused-vars
+        this.title = this.i18n.titles.home || 'Home';
+
+        this.data.now = await this.now();
+    };
 });

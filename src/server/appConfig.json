@@ -46,7 +46,8 @@
     
             "routing": {
                 "mounts": {
-                    "main": "/"
+                    "main": "/",
+                    "api1": "/api/v1/"
                 },
                 "main-settings": [
                     { "name": "case sensitive routing", "value": false },
@@ -59,7 +60,17 @@
                 ],          
                 "main-resHeaders": [
                     { "name": "X-Powered-By", "value": "flairApp" }
-                ]          
+                ],
+                "api1-settings": [
+                    { "name": "case sensitive routing", "value": false },
+                    { "name": "strict routing", "value": false }
+                ],
+                "api1-middlewares": [
+                ],  
+                "api1-interceptors": [
+                ],          
+                "api1-resHeaders": [
+                ]                         
             }
         }   
     },
