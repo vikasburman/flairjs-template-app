@@ -5,11 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Client Mode",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}/dist/www"
+        },        
+        {
             "type": "node",
             "request": "launch",
-            "name": "Server",
+            "name": "Server Mode",
             "program": "${workspaceFolder}/dist/main.js",
-            "cwd": "${workspaceFolder}/dist"
+            "cwd": "${workspaceFolder}/dist",
+            "args": [ "${env:NODE_ENV='development'}" ]
         }
     ]
 }

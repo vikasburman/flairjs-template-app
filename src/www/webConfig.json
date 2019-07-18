@@ -6,7 +6,8 @@
             "files": [
             ],
             "preambles": [
-                "./app/preamble.js"
+                "flairjs-fabric",
+                "./app"
             ],
             "bootwares": [
                 "flair.boot.DIContainer",
@@ -18,42 +19,6 @@
         "di": {
             "container": {
             }
-        },
-
-        "client": {
-            "view": {
-                "el": "main",
-                "title": "My App",
-                "transition": ""
-            },        
-    
-            "routes": {
-                "home": "myapp.main.ui.home",
-                "notfound": "myapp.main.ui.notfound"
-            },
-    
-            "i18n": {
-                "lang": {
-                    "default": "en",
-                    "locales": [
-                        { "code": "en", "name": "English", "native": "English" },
-                        { "code": "hi", "name": "Hindi", "native": "हिंदी" }
-                    ]
-                }
-            },
-    
-            "routing": {
-                "mounts": {
-                    "main": "/"
-                },
-                "main-settings": [
-                    { "name": "hashbang", "value": false },
-                    { "name": "lang", "value": false },
-                    { "name": "sensitive", "value": false }
-                ],
-                "main-interceptors": [
-                ]
-            }
         }
     },
     "worker:flair.app": {
@@ -61,7 +26,7 @@
             "files": [
             ],
             "preambles": [
-                "./app/preamble.js"
+                "./app"
             ],
             "bootwares": [
                 "flair.boot.DIContainer"
@@ -69,7 +34,45 @@
         }
     },
 
-    "flair.vue": {
-        "extensions": []
+    "flair.client": {
+        "view": {
+            "el": "main",
+            "title": "My App",
+            "transition": ""
+        },      
+        
+        "ui": {
+            "vue": {
+                "extensions": []
+            }
+        },
+
+        "routes": {
+            "home": "myapp.main.ui.home",
+            "notfound": "myapp.main.ui.notfound"
+        },
+
+        "i18n": {
+            "lang": {
+                "default": "en",
+                "locales": [
+                    { "code": "en", "name": "English", "native": "English" },
+                    { "code": "hi", "name": "Hindi", "native": "हिंदी" }
+                ]
+            }
+        },
+
+        "routing": {
+            "mounts": {
+                "main": "/"
+            },
+            "main-settings": [
+                { "name": "hashbang", "value": false },
+                { "name": "lang", "value": false },
+                { "name": "sensitive", "value": false }
+            ],
+            "main-interceptors": [
+            ]
+        }
     }
 }
