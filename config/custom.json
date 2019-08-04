@@ -12,7 +12,6 @@
     ],
     "profiles": {
         "server": {
-            "root": "server",
             "dest": "/",
             "skipMinify": true,
             "build": [
@@ -20,9 +19,9 @@
             ],
             "plugins": ["copy_files", "node_modules"],
             "copy": [
+                "private",
                 "appConfig.json",
-                "main.js",
-                "private"
+                "main.js"
             ]
         },
         "client": {
