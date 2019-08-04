@@ -51,7 +51,7 @@
     "dependencies": {
         "express": "^4.17.1",
         "flairjs": "^0.9.38",
-        "flairjs-fabric": "^0.9.20",
+        "flairjs-fabric": "^0.9.21",
         "http-shutdown": "^1.2.1",
         "node-env-file": "^0.1.8",
         "node-fetch": "^2.6.0",
