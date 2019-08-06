@@ -3,7 +3,7 @@
  * Your App Description
  * Copyright Message
  */
-const flair = require('flairjs');
-flair(__filename).then((app) => {
-    console.log('*');
+const start = require('flairjs-fabric/flair.server/start.js');
+start(__filename, (flair, app) => {
+    console.log('!'); // application is started now
 });

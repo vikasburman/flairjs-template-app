@@ -1,4 +1,15 @@
 {
+    "flair": {
+        "api": {
+            "roots": {
+                "dev": "",
+                "test": "",
+                "prod": ""
+            },
+            "version": ""
+        }
+    },
+        
     "flair.app": {
         "app": "myapp.main.App",
 
