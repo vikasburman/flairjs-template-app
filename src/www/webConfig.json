@@ -18,7 +18,8 @@
             ],
             "preambles": [
                 "flairjs-fabric",
-                "./app"
+                "./app",
+                "./ui"
             ],
             "bootwares": [
                 "flair.boot.DIContainer",

@@ -8,8 +8,8 @@ $$('ns', '(auto)');
 Class('(auto)', VueLayout, function() {
     this.viewArea = 'view';
     this.areas = [
-        { area: "header", component: "CommonHeader", type: "myapp.main.ui.CommonHeader" },
-        { area: "footer", component: "CommonFooter", type: "myapp.main.ui.CommonFooter" },
+        { area: "header", component: "CommonHeader", type: "myapp.shared.ui.CommonHeader" },
+        { area: "footer", component: "CommonFooter", type: "myapp.shared.ui.CommonFooter" },
     ];
 
     this.html = `

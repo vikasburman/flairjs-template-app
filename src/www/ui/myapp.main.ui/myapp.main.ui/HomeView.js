@@ -1,5 +1,5 @@
 const VueView = await include('flair.ui.vue.VueView');
-const CommonLayout = await include('myapp.main.ui.CommonLayout');
+const CommonLayout = await include('myapp.shared.ui.CommonLayout');
 
 /**
  * @name HomeView
@@ -23,7 +23,7 @@ Class('(auto)', VueView, function() {
     <div><h2>{{ i18n('strings', 'hello', 'Hello World!') }}</h2><p>Current server time is: {{ now }}</p></div>
     `;
 
-    $$('fetch', 'get', 'json', '/api/v1/now');
+    $$('fetch', 'get', 'json', '/**/api/*/now');
     this.now = async (api) => {
         let result = await api() || { now: 'Could not connect to server.' };
         return result.now;

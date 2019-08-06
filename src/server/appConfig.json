@@ -7,7 +7,8 @@
             ],
             "preambles": [
                 "flairjs-fabric",
-                "./app"
+                "./app",
+                "./api"
             ],            
             "bootwares": [
                 "flair.boot.NodeEnv",
@@ -28,7 +29,8 @@
             "files": [
             ],
             "preambles": [
-                "./app"
+                "./app",
+                "./api"
             ],            
             "bootwares": [
                 "flair.boot.DIContainer"
@@ -61,7 +63,7 @@
         "routing": {
             "mounts": {
                 "main": "/",
-                "api1": "/api/v1/"
+                "api_v1": "/api/v1/"
             },
             "main-settings": [
                 { "name": "case sensitive routing", "value": false },
@@ -73,17 +75,20 @@
             "main-interceptors": [
             ],          
             "main-resHeaders": [
-                { "name": "X-Powered-By", "value": "flairApp" }
+                { "name": "X-Built-On", "value": "flairjs" }
             ],
-            "api1-settings": [
+            "api_v1-settings": [
                 { "name": "case sensitive routing", "value": false },
                 { "name": "strict routing", "value": false }
             ],
-            "api1-middlewares": [
+            "api_v1-middlewares": [
+                { "name": "cors", "args": [{ "origin": true }] }
             ],  
-            "api1-interceptors": [
+            "api_v1-interceptors": [
             ],          
-            "api1-resHeaders": [
+            "api_v1-resHeaders": [
+                { "name": "X-Built-On", "value": "flairjs" },
+                { "name": "Access-Control-Allow-Origin", "value": "*" }
             ]                         
         }
     }

@@ -15,7 +15,8 @@
             "dest": "/",
             "skipMinify": true,
             "build": [
-                "app"
+                "app",
+                "api"
             ],
             "plugins": ["copy_files", "node_modules"],
             "copy": [

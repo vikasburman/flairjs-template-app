@@ -1,3 +1,0 @@
-[
-    { "name": "now", "handler": "myapp.main.services.Now", "mount": "api1", "path": "/now", "verbs": ["get"] }
-]
