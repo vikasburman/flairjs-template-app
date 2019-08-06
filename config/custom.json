@@ -30,7 +30,8 @@
             "dest": "@server",
             "omitRoot": true,
             "build": [
-                "app"
+                "app",
+                "ui"
             ],
             "plugins": ["copy_files", "web_modules", "minify_files"],
             "copy": [
