@@ -27,8 +27,9 @@ Class('(auto)', VueView, function() {
 
     $$('override');
     this.loadData = async (base, ctx, el) => { // eslint-disable-line no-unused-vars
-        this.data.now = await ServerDateTime.now(this.abortHandle());
-        // note: save result of abortHandle (which is an instance of AbortController) to cancel
-        // on choice here, otherwise cancelLoadData call will do it automatically
+        this.data.now = await ServerDateTime.now(this.abortHandle('serverTime'));
+        // note: by calling this.abort('serverTime') any long running service call 
+        // can be aborted on choice here, otherwise if page load aborted in between 
+        // cancelLoadData call will do it automatically for all such abortHandles
     };
 });
