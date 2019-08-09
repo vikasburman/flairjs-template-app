@@ -1,0 +1,4 @@
+[
+    { "name": "home", "handler": "myapp.feature1.views.HomeView", "mount": "main", "path": "/" },
+    { "name": "notfound", "handler": "myapp.feature1.views.Error404View", "mount": "main", "path": "/404" }
+]

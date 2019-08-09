@@ -1,0 +1,3 @@
+[
+    { "name": "now", "handler": "myapp.feature1.api.Now", "mount": ["main", "api"], "path": "/now", "verbs": ["get"] }
+]

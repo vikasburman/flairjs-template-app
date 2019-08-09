@@ -2,7 +2,8 @@
     "flair": {
         "api": {
             "roots": {
-                "dev": "",
+                "local": "http://localhost:8080/",
+                "dev": "http://localhost:8080/",
                 "test": "",
                 "prod": ""
             },
@@ -14,12 +15,16 @@
         "app": "myapp.main.App",
 
         "boot": {
+            "links": [
+                { "rel": "stylesheet", "href": "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" },
+                { "rel": "stylesheet", "href": "./assets/css/styles.css" }
+            ],            
             "files": [
             ],
             "preambles": [
                 "flairjs-fabric",
                 "./app",
-                "./ui"
+                "./features"
             ],
             "bootwares": [
                 "flair.boot.DIContainer",
@@ -38,7 +43,8 @@
             "files": [
             ],
             "preambles": [
-                "./app"
+                "./app",
+                "./features"
             ],
             "bootwares": [
                 "flair.boot.DIContainer"
@@ -60,8 +66,8 @@
         },
 
         "routes": {
-            "home": "myapp.main.ui.home",
-            "notfound": "myapp.main.ui.notfound"
+            "home": "myapp.feature1.views.home",
+            "notfound": "myapp.feature1.views.notfound"
         },
 
         "i18n": {

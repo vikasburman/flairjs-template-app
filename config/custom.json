@@ -16,7 +16,7 @@
             "skipMinify": true,
             "build": [
                 "app",
-                "api"
+                "features"
             ],
             "plugins": ["copy_files", "node_modules"],
             "copy": [
@@ -31,7 +31,7 @@
             "omitRoot": true,
             "build": [
                 "app",
-                "ui"
+                "features"
             ],
             "plugins": ["copy_files", "web_modules", "minify_files"],
             "copy": [

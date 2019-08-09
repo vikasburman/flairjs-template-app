@@ -1146,6 +1146,14 @@ core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
+cors@^2.8.5:
+  version "2.8.5"
+  resolved "https://registry.yarnpkg.com/cors/-/cors-2.8.5.tgz#eac11da51592dd86b9f06f6e7ac293b3df875d29"
+  integrity sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==
+  dependencies:
+    object-assign "^4"
+    vary "^1"
+
 cosmiconfig@^5.2.0:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/cosmiconfig/-/cosmiconfig-5.2.1.tgz#040f726809c591e77a17c0a3626ca45b4f168b1a"
@@ -1945,15 +1953,15 @@ flagged-respawn@^1.0.0:
   resolved "https://registry.yarnpkg.com/flagged-respawn/-/flagged-respawn-1.0.1.tgz#e7de6f1279ddd9ca9aac8a5971d618606b3aab41"
   integrity sha512-lNaHNVymajmk0OJMBn8fVUAU1BtDeKIqKoVhk4xAALB57aALg6b4W0MfJ/cUE0g9YBXy5XhSlPIpYIJ7HaY/3Q==
 
-flairjs-fabric@^0.9.22:
-  version "0.9.22"
-  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.9.22.tgz#7df59e289af389adc2f6987c3e4cdf77135c5b79"
-  integrity sha512-WSTFUG38GHRJENeUE9lBtplw+wLhuy6SEhjdj7D3+a7Ih2VrbAs9/PNBIOaEYg43YAyqB6FA5qlVKXsTJ1eyWw==
+flairjs-fabric@^0.55.14:
+  version "0.55.14"
+  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.55.14.tgz#46d89680af2d1c33c5d3f2d5ec8062080d18e72b"
+  integrity sha512-B/k9Uoieosjnhw/5/+6dK4DBvXlzgS7uljlal8u27ovKlpdl9xPsphpHMRTaa5ueRJWndEqWX/3QwLSK6tWL0g==
 
-flairjs@^0.9.49:
-  version "0.9.49"
-  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.9.49.tgz#6869b0b8ca880d71aaf12825a867496cc66a0c9f"
-  integrity sha512-vDqg4KQU5py1P/7qYzROUVlJHDRvZsqyPHd+M0AQK7C1ot+Ob7qBA00AUhvmaCSFUZ/8XhHqJxUUaTfISrOU0g==
+flairjs@^0.55.10:
+  version "0.55.10"
+  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.55.10.tgz#7ad403f37ab63066490c8ac39c9de1f9f91f1a9e"
+  integrity sha512-Y8CMjRHSGg8X6XgZC8engjw9sHIYSUPEJhY6uwcgL9e5El3MyiWW/Ab04M+DlOHqwsJaZ25uZx3jRx9HjD/YPQ==
 
 flat-cache@^2.0.1:
   version "2.0.1"
@@ -3584,7 +3592,7 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
-object-assign@^4.1.0:
+object-assign@^4, object-assign@^4.1.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
@@ -5520,7 +5528,7 @@ value-or-function@^3.0.0:
   resolved "https://registry.yarnpkg.com/value-or-function/-/value-or-function-3.0.0.tgz#1c243a50b595c1be54a754bfece8563b9ff8d813"
   integrity sha1-HCQ6ULWVwb5Up1S/7OhWO5/42BM=
 
-vary@~1.1.2:
+vary@^1, vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=

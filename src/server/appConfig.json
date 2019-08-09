@@ -1,4 +1,16 @@
 {
+    "global": {
+        "api": {
+            "roots": {
+                "local": "",
+                "dev": "",
+                "test": "",
+                "prod": ""
+            },
+            "version": ""
+        }        
+    },
+
     "flair.app": {
         "app": "myapp.main.App",
 
@@ -8,7 +20,7 @@
             "preambles": [
                 "flairjs-fabric",
                 "./app",
-                "./api"
+                "./features"
             ],            
             "bootwares": [
                 "flair.boot.NodeEnv",
@@ -30,7 +42,7 @@
             ],
             "preambles": [
                 "./app",
-                "./api"
+                "./features"
             ],            
             "bootwares": [
                 "flair.boot.DIContainer"
@@ -63,30 +75,32 @@
         "routing": {
             "mounts": {
                 "main": "/",
-                "api_v1": "/api/v1/"
+                "api": "/api/"
             },
             "main-settings": [
                 { "name": "case sensitive routing", "value": false },
                 { "name": "strict routing", "value": false }
             ],
             "main-middlewares": [
+                { "name": "cors", "args": [{ "origin": true }] },
                 { "name": "express", "func": "static", "args": ["www"] }
             ],  
             "main-interceptors": [
             ],          
             "main-resHeaders": [
-                { "name": "X-Built-On", "value": "flairjs" }
+                { "name": "X-Built-On", "value": "flairjs" },
+                { "name": "Access-Control-Allow-Origin", "value": "*" }
             ],
-            "api_v1-settings": [
+            "api-settings": [
                 { "name": "case sensitive routing", "value": false },
                 { "name": "strict routing", "value": false }
             ],
-            "api_v1-middlewares": [
+            "api-middlewares": [
                 { "name": "cors", "args": [{ "origin": true }] }
             ],  
-            "api_v1-interceptors": [
+            "api-interceptors": [
             ],          
-            "api_v1-resHeaders": [
+            "api-resHeaders": [
                 { "name": "X-Built-On", "value": "flairjs" },
                 { "name": "Access-Control-Allow-Origin", "value": "*" }
             ]                         

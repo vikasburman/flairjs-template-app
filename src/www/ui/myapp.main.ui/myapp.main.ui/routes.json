@@ -1,4 +1,0 @@
-[
-    { "name": "home", "handler": "myapp.main.ui.HomeView", "mount": "main", "path": "/" },
-    { "name": "notfound", "handler": "myapp.main.ui.Error404View", "mount": "main", "path": "/404" }
-]
