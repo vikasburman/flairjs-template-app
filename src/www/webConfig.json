@@ -1,33 +1,21 @@
 {
-    "global": {
+    "flair": {
         "api": {
-            "endpoint": {
-                "policies": {
-                    "endPointPolicy1": {
-                        "R": {
-                            "local": "http://localhost:8080",
-                            "dev": "http://localhost:8080",
-                            "test": "",
-                            "prod": ""
-                        },
-                        "V": "",
-                        "L": "",
-                        "G": ""
-                    }
-                }
-            },
-            "cache": {
-                "enabled": true,
-                "policies": {
-                    "cachePolicyType1": {
-                        "duration": 10000
+            "connections": {
+                "connection1": {
+                    "R": {
+                        "local": "http://localhost:8080",
+                        "dev": "http://localhost:8080",
+                        "test": "",
+                        "prod": ""
                     },
-                    "cachePolicyType2": {
-                        "duration": 5000
-                    }
+                    "V": "",
+                    "L": "",
+                    "P": "",
+                    "G": ""
                 }
             }
-        }
+        }     
     },
 
     "flair.app": {

@@ -1,9 +1,9 @@
 {
-    "global": {
+    "flair": {
         "api": {
-            "endpoint": {},
-            "cache": {}
-        }
+            "connections": {
+            }
+        }     
     },
 
     "flair.app": {
