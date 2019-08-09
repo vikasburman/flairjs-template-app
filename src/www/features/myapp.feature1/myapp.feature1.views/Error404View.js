@@ -17,7 +17,7 @@ Class('(auto)', VueView, function() {
     this.html = `
     <div class="center">
         <div class="card">
-            <p1></p1>
+            <p></p>
             <h1>404</h1>
             <h2>{{ i18n('strings', 'notfound', 'Not Found') }}</h2>
             <h4>{{ page }}</h4>
