@@ -1,5 +1,5 @@
 {
-    "flair": {
+    "global": {
         "api": {
             "roots": {
                 "local": "http://localhost:8080/",
@@ -7,7 +7,17 @@
                 "test": "",
                 "prod": ""
             },
-            "version": ""
+            "version": "",
+            "cache": {
+                "policies": {
+                    "cachePolicyType1": {
+                        "duration": 10000
+                    },
+                    "cachePolicyType2": {
+                        "duration": 5000
+                    }
+                }
+            }            
         }
     },
         
