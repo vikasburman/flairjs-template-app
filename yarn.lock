@@ -1958,10 +1958,10 @@ flairjs-fabric@^0.55.16:
   resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.55.16.tgz#e6e39f7885db851cbc5f4be277e0fce5bec54069"
   integrity sha512-Kh5Nja3BXxAlDMWFjQe4bCViXZ8r8adJrBvtNSIcIMJRqlsRpTScojS6PWaFA7S8IudKmQHxs7TT953nZHAb1A==
 
-flairjs@^0.55.14:
-  version "0.55.14"
-  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.55.14.tgz#49cfa9010a4ee0c3f73e5500b45842e63188abfc"
-  integrity sha512-jdqqoXczM4Zr66U+DlOkXh2fPjzRrOJ/XGIXk8IRohC7xyz8EVxbeQG8SnI9q9X0UkAhkCdDRMg9s6hOaNw7cA==
+flairjs@^0.55.16:
+  version "0.55.16"
+  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.55.16.tgz#29dd35e006d5f8ba390e00bd781bd504c66bdbb9"
+  integrity sha512-QwRZNf/hDX2uft0EZ8q2xMmMB9jRx7/H5pY+LKUaMYx2+Sqnf/NkeNppiRaAZeasf6NFxmomRTCD/aa1fSpncQ==
 
 flat-cache@^2.0.1:
   version "2.0.1"
