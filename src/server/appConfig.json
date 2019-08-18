@@ -1,10 +1,9 @@
 {
-    "flair": {
-        "api": {
-            "connections": {
-            }
-        }     
+    "global": {
+        "flair": {
+        }
     },
+
 
     "flair.app": {
         "app": "myapp.main.App",

@@ -1,21 +1,7 @@
 {
-    "flair": {
-        "api": {
-            "connections": {
-                "connection1": {
-                    "R": {
-                        "local": "http://localhost:8080",
-                        "dev": "http://localhost:8080",
-                        "test": "",
-                        "prod": ""
-                    },
-                    "V": "",
-                    "L": "",
-                    "P": "",
-                    "G": ""
-                }
-            }
-        }     
+    "global": {
+        "flair": {
+        }
     },
 
     "flair.app": {
