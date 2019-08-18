@@ -15,7 +15,9 @@
                 "flairjs-fabric",
                 "./app",
                 "./features"
-            ],            
+            ],  
+            "ports": {
+            },       
             "bootwares": [
                 "flair.boot.NodeEnv",
                 "flair.boot.Middlewares",

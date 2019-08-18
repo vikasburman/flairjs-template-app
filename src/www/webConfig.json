@@ -19,6 +19,8 @@
                 "./app",
                 "./features"
             ],
+            "ports": {
+            },       
             "bootwares": [
                 "flair.boot.DIContainer",
                 "flair.boot.vue.VueSetup",
