@@ -4,7 +4,8 @@
         { "name": "node_modules", "file": "node_modules.js", "settings": { "cmd": "yarn install --prod" } },
         { "name": "web_modules", "file": "web_modules.js" },
         { "name": "copy_files", "file": "copy_files.js" },
-        { "name": "minify_files", "file": "minify_files.js" }
+        { "name": "minify_files", "file": "minify_files.js" },
+        { "name": "set_symbols", "file": "set_symbols.js" }
     ],    
     "build": [
         { "profile": "server" },
@@ -33,7 +34,7 @@
                 "app",
                 "features"
             ],
-            "plugins": ["copy_files", "web_modules", "minify_files"],
+            "plugins": ["copy_files", "web_modules", "minify_files", "set_symbols"],
             "copy": [
                 "assets",
                 "favicon.png",
@@ -49,6 +50,10 @@
             ],
             "minify": [
                 "modules/requirejs/require.js"
+            ],
+            "symbols": [
+                "DEV",
+                "DEBUG"
             ]
         }
     }
