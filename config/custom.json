@@ -5,7 +5,7 @@
         { "name": "web_modules", "file": "web_modules.js" },
         { "name": "copy_files", "file": "copy_files.js" },
         { "name": "minify_files", "file": "minify_files.js" },
-        { "name": "set_symbols", "file": "set_symbols.js" }
+        { "name": "write_env", "file": "write_env.js" }
     ],    
     "build": [
         { "profile": "server" },
@@ -19,12 +19,18 @@
                 "app",
                 "features"
             ],
-            "plugins": ["copy_files", "node_modules"],
+            "plugins": ["copy_files", "node_modules", "write_env"],
             "copy": [
                 "private",
                 "appConfig.json",
                 "main.js"
-            ]
+            ],
+            "env": {
+                "type": "server",
+                "vars": {
+                    "FLAIR_SYMBOLS": "DEV,DEBUG"
+                }
+            }            
         },
         "client": {
             "root": "www",
@@ -34,7 +40,7 @@
                 "app",
                 "features"
             ],
-            "plugins": ["copy_files", "web_modules", "minify_files", "set_symbols"],
+            "plugins": ["copy_files", "web_modules", "minify_files", "write_env"],
             "copy": [
                 "assets",
                 "favicon.png",
@@ -51,10 +57,12 @@
             "minify": [
                 "modules/requirejs/require.js"
             ],
-            "symbols": [
-                "DEV",
-                "DEBUG"
-            ]
+            "env": {
+                "type": "client",
+                "vars": {
+                    "FLAIR_SYMBOLS": "DEV,DEBUG"
+                }
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ Class('(auto)', VueComponent, function() {
     this.html = `
     <header>
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-            <span class="navbar-brand">{{title}} Firebase App</span>
+            <span class="navbar-brand">{{title}} App</span>
         </nav>
     </header>
     `;
