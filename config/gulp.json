@@ -1,5 +1,0 @@
-{
-    "build": "flairjs/flair/gulp/build.js",
-    "flag": "flairjs/flair/gulp/flag.js",
-    "test": "flairjs/flair/gulp/test.js"
-}

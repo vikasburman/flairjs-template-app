@@ -1,12 +1,10 @@
 {
-    "engine": "flairjs/flair/flairBuild.js",
-
     "dest": "./dist",
     "src": "./src",
     "cache": "./temp",
 
     "customBuild": true,
-    "customBuildConfig": "./config/custom.json",
+    "customBuildConfig": "./config/build/custom.json",
 
     "fullBuild": false,
     "clean": true,
@@ -14,16 +12,16 @@
     "suppressLogging": false,
 
     "lint": true,
-    "lintConfig": "./config/lint.json",
+    "lintConfig": "./config/build/lint.json",
     "lintTypes": ["js", "css", "html"],
 
     "minify": true,
-    "minifyConfig": "./config/minify.json",
+    "minifyConfig": "./config/build/minify.json",
     "minifyTypes": ["js", "css", "html"],
     "generateJSSourceMap": false,
 
     "gzip": false,
-    "gzipConfig": "./config/gzip.json",
+    "gzipConfig": "./config/build/gzip.json",
     "gzipTypes": ["js", "css", "html", "txt", "xml", "md", "json", "svg", "jpg", "jpeg", "gif", "png"],
 
     "lintAssets": false,
@@ -34,7 +32,7 @@
     "minifyResources": false,
     "utf8EncodeResourceTypes": ["txt", "xml", "js", "md", "json", "css", "html", "svg"],
 
-    "depsConfig": "./config/deps.json",
+    "depsConfig": "./config/build/deps.json",
     "preBuildDeps": true,
     "postBuildDeps": true
 }
