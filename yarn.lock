@@ -1901,10 +1901,10 @@ find-up@^2.0.0:
   dependencies:
     locate-path "^2.0.0"
 
-flairjs-cli@^0.55.86:
-  version "0.55.86"
-  resolved "https://registry.yarnpkg.com/flairjs-cli/-/flairjs-cli-0.55.86.tgz#7242aef0fdc884da2ca37504504f2828c9ddcbdf"
-  integrity sha512-XE/knDV4VfAcygaufzOGrIyxoW+co5qBiT6ihrBIycKIjYHoys/TRotZ/Ex0/YlL3HsldYsskjxQpUBg2rdndw==
+flairjs-cli@^0.55.87:
+  version "0.55.87"
+  resolved "https://registry.yarnpkg.com/flairjs-cli/-/flairjs-cli-0.55.87.tgz#d214daf5780930fde69bbd6500bac1a4ce294048"
+  integrity sha512-88LehOZXe1E5ww8gqfyLQAWogf+2NzUKD1UHsCzHOms8t3r8J0YdtyqXsYeb0T4VIaLJUZDDyDgJgS6ESxmrVA==
   dependencies:
     clean-css "^4.2.1"
     copy-dir "^1.1.0"
@@ -1922,10 +1922,18 @@ flairjs-cli@^0.55.86:
     stylelint "^10.1.0"
     uglify-es "^3.3.9"
 
-flairjs-fabric@^0.55.73:
-  version "0.55.73"
-  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.55.73.tgz#fe145588a8008a0e1d281979899f732891390f27"
-  integrity sha512-dZNBOSvJNz3EZhOcl6R+NLu5EtUN6zOUJ4AETrCwMl2wdflReKupz8b76ei0+uQ3mga/rSGzC/4NVoC/7oZ0EQ==
+flairjs-fabric@^0.55.74:
+  version "0.55.74"
+  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.55.74.tgz#21815dd973b44e142bec57c8b51dd4781252e5f7"
+  integrity sha512-3GivNV1zBjOCba7PpUrMIpIS8zyg4hgtqRi2GxGCat8nojUJVays9bsDwPUr0F/sLsrK8vfkoVuX2vlRhzCM5Q==
+  dependencies:
+    cors "^2.8.5"
+    express "^4.17.1"
+    http-shutdown "^1.2.1"
+    node-env-file "^0.1.8"
+    node-fetch "^2.6.0"
+    requirejs "^2.3.6"
+    vue "^2.6.10"
 
 flairjs@^0.55.73:
   version "0.55.73"
@@ -3186,9 +3194,9 @@ minimist@^1.2.0:
   integrity sha1-o1AIsg9BOD7sH7kU9M1d95omQoQ=
 
 minipass@^2.2.1, minipass@^2.3.5:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.4.0.tgz#38f0af94f42fb6f34d3d7d82a90e2c99cd3ff485"
-  integrity sha512-6PmOuSP4NnZXzs2z6rbwzLJu/c5gdzYg1mRI/WIYdx45iiX7T+a4esOzavD6V/KmBzAaopFSTZPZcUx73bqKWA==
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-2.5.0.tgz#dddb1d001976978158a05badfcbef4a771612857"
+  integrity sha512-9FwMVYhn6ERvMR8XFdOavRz4QK/VJV8elU1x50vYexf9lslDcWe/f4HBRxCPd185ekRSjU6CfYyJCECa/CQy7Q==
   dependencies:
     safe-buffer "^5.1.2"
     yallist "^3.0.0"
