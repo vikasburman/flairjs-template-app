@@ -28,7 +28,7 @@
                 { "rel": "stylesheet", "href": "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" },
                 { "rel": "stylesheet", "href": "./assets/css/styles.css" }
             ],            
-            "files": [
+            "scripts": [
             ],
             "preambles": [
                 "flairjs-fabric",
@@ -51,8 +51,6 @@
     },
     "worker:flair.app": {
         "boot": {
-            "files": [
-            ],
             "preambles": [
                 "./app",
                 "./features"

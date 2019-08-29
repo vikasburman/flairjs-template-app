@@ -9,8 +9,6 @@
         "app": "myapp.main.App",
 
         "boot": {
-            "files": [
-            ],
             "preambles": [
                 "flairjs-fabric",
                 "./app",
