@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.9.180",
+    "version": "0.9.198",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -39,14 +39,14 @@
         "stop": "pm2 stop main"
     },
     "devDependencies": {
-        "flairjs-cli": "^0.55.85",
+        "flairjs-cli": "^0.55.86",
         "pm2": "^3.4.0"
     },
     "dependencies": {
         "cors": "^2.8.5",
         "express": "^4.17.1",
-        "flairjs": "^0.55.68",
-        "flairjs-fabric": "^0.55.70",
+        "flairjs": "^0.55.73",
+        "flairjs-fabric": "^0.55.73",
         "http-shutdown": "^1.2.1",
         "node-env-file": "^0.1.8",
         "node-fetch": "^2.6.0",

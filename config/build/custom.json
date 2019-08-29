@@ -47,8 +47,8 @@
                 "assets",
                 "favicon.png",
                 "webConfig.json",
-                "index.html",
-                "index.js"
+                "~/node_modules/flairjs-fabric/flair.client/index.html >> ./index.html",
+                "~/node_modules/flairjs-fabric/flair.client/index.js >> ./index.js"
             ],
             "modules": [
                 "flairjs",
