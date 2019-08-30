@@ -23,7 +23,7 @@
             "copy": [
                 "private",
                 "appConfig.json",
-                "main.js"
+                "~/node_modules/flairjs-fabric/flair.server/main.js >> ./main.js"
             ],
             "flags": {
                 "dev": {
