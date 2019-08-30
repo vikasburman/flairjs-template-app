@@ -33,13 +33,14 @@
         "flag": "flair flag --options ./config/build/options.json",
         "test": "flair test --options ./config/test/options.json",
         "test-client": "flair test --options ./config/test/options.json --client",
-        "serve": "cd ./dist && node --inspect main.js && pkill -f node",
+        "serve": "nodemon --watch ./src --delay 5 --exec 'yarn build-quick && cd ./dist && node --inspect main.js'",
         "deploy": "cd ./dist && echo '** define deploy command **'",
         "start": "cd ./dist && pm2 start main.js",
         "stop": "pm2 stop main"
     },
     "devDependencies": {
-        "flairjs-cli": "^0.55.88"
+        "flairjs-cli": "^0.55.88",
+        "nodemon": "^1.19.1"
     },
     "dependencies": {
         "flairjs": "^0.55.73",
