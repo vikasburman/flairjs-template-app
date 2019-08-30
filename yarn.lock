@@ -2014,10 +2014,10 @@ flairjs-fabric-defaults@^0.55.79:
     requirejs "^2.3.6"
     vue "^2.6.10"
 
-flairjs-fabric@^0.55.75:
-  version "0.55.75"
-  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.55.75.tgz#4578b524aafe4ae0cd0a07e4a1516bf124382063"
-  integrity sha512-6WRaTsqBjnVFm/QJyDYLSZnXN6fQU/1AGqeFLrI/7ZN+FxgzMxdWn1zJNUQvCWfGgahodKVMsimL489RUQ0KlQ==
+flairjs-fabric@^0.55.76:
+  version "0.55.76"
+  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.55.76.tgz#d94a170602cebed6b097d73ecec7feb69a385e7a"
+  integrity sha512-G0zWZp0dra/WQHdbSaziRwCxc/D8HTKX7wNRf0T/DaBKKuu7tN03V+9NRa0PSyNoRqDf4X+xcpSoVqlNp8lr3Q==
   dependencies:
     node-env-file "^0.1.8"
     node-fetch "^2.6.0"
@@ -3510,9 +3510,9 @@ node-pre-gyp@^0.12.0:
     tar "^4"
 
 node-releases@^1.1.25:
-  version "1.1.28"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.28.tgz#503c3c70d0e4732b84e7aaa2925fbdde10482d4a"
-  integrity sha512-AQw4emh6iSXnCpDiFe0phYcThiccmkNWMZnFZ+lDJjAP8J0m2fVd59duvUUyuTirQOhIAajTFkzG6FHCLBO59g==
+  version "1.1.29"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.29.tgz#86a57c6587a30ecd6726449e5d293466b0a0bb86"
+  integrity sha512-R5bDhzh6I+tpi/9i2hrrvGJ3yKPYzlVOORDkXhnZuwi5D3q1I5w4vYy24PJXTcLk9Q0kws9TO77T75bcK8/ysQ==
   dependencies:
     semver "^5.3.0"
 
