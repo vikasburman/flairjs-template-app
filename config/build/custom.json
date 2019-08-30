@@ -1,11 +1,11 @@
 {
     "plugins": [
-        { "name": "docker_image", "file": "docker_image.js", "settings": { "cmd": "" } },
-        { "name": "node_modules", "file": "node_modules.js", "settings": { "cmd": "yarn install --prod" } },
-        { "name": "web_modules", "file": "web_modules.js" },
-        { "name": "copy_files", "file": "copy_files.js" },
-        { "name": "minify_files", "file": "minify_files.js" },
-        { "name": "write_flags", "file": "write_flags.js", "settings": { "defaultFlag": "dev" } }
+        { "name": "docker_image", "settings": { "cmd": "" } },
+        { "name": "node_modules", "settings": { "cmd": "yarn install --prod" } },
+        { "name": "web_modules" },
+        { "name": "copy_files" },
+        { "name": "minify_files" },
+        { "name": "write_flags", "settings": { "defaultFlag": "dev" } }
     ],    
     "build": [
         { "profile": "server" },
