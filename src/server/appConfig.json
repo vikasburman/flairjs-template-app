@@ -10,7 +10,6 @@
 
         "boot": {
             "preambles": [
-                "flairjs-fabric",
                 "./app",
                 "./features"
             ],  

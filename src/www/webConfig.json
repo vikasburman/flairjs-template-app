@@ -31,7 +31,6 @@
             "scripts": [
             ],
             "preambles": [
-                "flairjs-fabric",
                 "./app",
                 "./features"
             ],
