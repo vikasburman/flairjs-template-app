@@ -89,11 +89,25 @@
             "mounts": {
                 "main": "/"
             },
+            "all": {
+                "before": {
+                    "settings": [
+                        { "name": "hashbang", "value": false },
+                        { "name": "lang", "value": false },
+                        { "name": "sensitive", "value": false }
+                    ],
+                    "interceptors": [
+                    ]
+                },
+                "after": {
+                    "settings": [
+                    ],
+                    "interceptors": [
+                    ]
+                }
+            },
             "main": {
                 "settings": [
-                    { "name": "hashbang", "value": false },
-                    { "name": "lang", "value": false },
-                    { "name": "sensitive", "value": false }
                 ],
                 "interceptors": [
                 ]

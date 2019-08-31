@@ -70,34 +70,51 @@
                 "main": "/",
                 "api": "/api/"
             },
+            "all": {
+                "before": {
+                    "settings": [
+                        { "name": "case sensitive routing", "value": false },
+                        { "name": "strict routing", "value": false }
+                    ],
+                    "middlewares": [
+                        { "name": "cors", "args": [{ "origin": true }] }
+                    ],  
+                    "interceptors": [
+                    ],
+                    "resHeaders": [
+                    ]                    
+                },
+                "after": {
+                    "settings": [
+                    ],
+                    "middlewares": [
+                    ],  
+                    "interceptors": [
+                    ],                    
+                    "resHeaders": [
+                        { "name": "X-Built-On", "value": "flairjs" }
+                    ]
+                }
+            },
             "main": {
                 "settings": [
-                    { "name": "case sensitive routing", "value": false },
-                    { "name": "strict routing", "value": false }
                 ],
                 "middlewares": [
-                    { "name": "cors", "args": [{ "origin": true }] },
                     { "name": "express", "func": "static", "args": ["www"] }
                 ],  
                 "interceptors": [
                 ],          
                 "resHeaders": [
-                    { "name": "X-Built-On", "value": "flairjs" },
-                    { "name": "Access-Control-Allow-Origin", "value": "*" }
                 ]
             },
             "api": {
                 "settings": [
-                    { "name": "case sensitive routing", "value": false },
-                    { "name": "strict routing", "value": false }
                 ],
                 "middlewares": [
-                    { "name": "cors", "args": [{ "origin": true }] }
                 ],  
                 "interceptors": [
-                ],          
+                ],
                 "resHeaders": [
-                    { "name": "X-Built-On", "value": "flairjs" },
                     { "name": "Access-Control-Allow-Origin", "value": "*" }
                 ]
             }
