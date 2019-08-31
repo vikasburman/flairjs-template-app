@@ -9,6 +9,9 @@
         "app": "myapp.main.App",
 
         "boot": {
+            "env": {
+                "isExpress": true
+            },
             "preambles": [
                 "./app",
                 "./features"
@@ -31,8 +34,6 @@
     },
     "worker:flair.app": {
         "boot": {
-            "files": [
-            ],
             "preambles": [
                 "./app",
                 "./features"

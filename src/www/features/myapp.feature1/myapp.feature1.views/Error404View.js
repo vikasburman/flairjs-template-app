@@ -1,6 +1,4 @@
 const { VueView } = await ns('flair.ui');
-const { CommonLayout } = await ns('myapp.shared.views');
-
 
 /**
  * @name Error404View
@@ -8,18 +6,19 @@ const { CommonLayout } = await ns('myapp.shared.views');
  */
 $$('ns', '(auto)');
 Class('(auto)', VueView, function() {
-    this.title = "Not Found";
-    this.layout = new CommonLayout();
-    this.i18n = {
-        titles: "./titles.json",
-        strings: "./strings.json"
-    };
+    this.i18n = 'titles, strings';
+    this.title = "@titles.notfound | Not Found";
+    this.layout = "myapp.shared.views.CommonLayout";
+    this.data = {
+      page: ''
+  };
+
     this.html = `
     <div class="center">
         <div class="card">
             <p></p>
             <h1>404</h1>
-            <h2>{{ i18n('strings', 'notfound', 'Not Found') }}</h2>
+            <h2>{{ i18n('@strings.notfound | Not Found') }}</h2>
             <h4>{{ page }}</h4>
         </div>
     </div>
@@ -77,13 +76,9 @@ Class('(auto)', VueView, function() {
         font-size: 1.2rem;
       }
     `;
-    this.data = {
-        page: ''
-    };
 
     $$('override');
     this.beforeLoad = async (base, ctx, el) => { // eslint-disable-line no-unused-vars
-        this.title = this.i18n.titles.notfound || 'Not Found';
         this.data.page = ctx.$path;
     };
 });

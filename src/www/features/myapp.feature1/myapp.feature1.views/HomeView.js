@@ -1,6 +1,5 @@
 const { VueView } = await ns('flair.ui');
-const { CommonLayout } = await ns('myapp.shared.views');
-const { ServerDateTime } = await ns('myapp.feature1.services');
+const ServerDateTime = await include('myapp.feature1.services.ServerDateTime');
 
 /**
  * @name HomeView
@@ -8,22 +7,12 @@ const { ServerDateTime } = await ns('myapp.feature1.services');
  */
 $$('ns', '(auto)');
 Class('(auto)', VueView, function() {
-    this.title = "Home";
-    this.layout = new CommonLayout();
-    this.i18n = {
-        titles: "./titles.json",
-        strings: "./strings.json"
-    };
-    this.html = './HomeView/index.html';
-    this.style = './HomeView/styles.css';
-    this.data = {
-        now: 'loading...'
-    };
-
-    $$('override');
-    this.beforeLoad = async (base, ctx, el) => { // eslint-disable-line no-unused-vars
-        this.title = this.i18n.titles.home || 'Home';
-    };
+    this.i18n = 'titles, strings';
+    this.title = '@title.home | Home';
+    this.layout = 'myapp.shared.views.CommonLayout';
+    this.html = true;
+    this.style = true;
+    this.data = true;
 
     $$('override');
     this.loadData = async (base, ctx, el) => { // eslint-disable-line no-unused-vars

@@ -24,6 +24,9 @@
         "app": "myapp.main.App",
 
         "boot": {
+            "env": {
+                "isVue": true
+            },
             "links": [
                 { "rel": "stylesheet", "href": "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" },
                 { "rel": "stylesheet", "href": "./assets/css/styles.css" }
@@ -40,6 +43,8 @@
                 "flair.boot.DIContainer",
                 "flair.boot.VueSetup",
                 "flair.boot.ClientRouter"
+            ],
+            "assemblies": [
             ]
         },
 
