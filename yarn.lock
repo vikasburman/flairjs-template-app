@@ -678,13 +678,13 @@ braces@^3.0.1:
     fill-range "^7.0.1"
 
 browserslist@^4.6.3:
-  version "4.6.6"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.6.6.tgz#6e4bf467cde520bc9dbdf3747dafa03531cec453"
-  integrity sha512-D2Nk3W9JL9Fp/gIcWei8LrERCS+eXu9AM5cfXA8WEZ84lFks+ARnZ0q/R69m2SV3Wjma83QDDPxsNKXUwdIsyA==
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.7.0.tgz#9ee89225ffc07db03409f2fee524dc8227458a17"
+  integrity sha512-9rGNDtnj+HaahxiVV38Gn8n8Lr8REKsel68v1sPFfIGEK6uSXTY3h9acgiT1dZVtOOUtifo/Dn8daDQ5dUgVsA==
   dependencies:
-    caniuse-lite "^1.0.30000984"
-    electron-to-chromium "^1.3.191"
-    node-releases "^1.1.25"
+    caniuse-lite "^1.0.30000989"
+    electron-to-chromium "^1.3.247"
+    node-releases "^1.1.29"
 
 buffer-alloc-unsafe@^1.1.0:
   version "1.1.0"
@@ -813,7 +813,7 @@ camelcase@^4.0.0, camelcase@^4.1.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
   integrity sha1-1UVjW+HjPFQmScaRc+Xeas+uNN0=
 
-caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000984:
+caniuse-lite@^1.0.30000980, caniuse-lite@^1.0.30000989:
   version "1.0.30000989"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000989.tgz#b9193e293ccf7e4426c5245134b8f2a56c0ac4b9"
   integrity sha512-vrMcvSuMz16YY6GSVZ0dWDTJP8jqk3iFQ/Aq5iqblPwxSVVZI+zxDyTX0VPqtQsDnfdrBDcsmhgTEOh5R8Lbpw==
@@ -1481,10 +1481,10 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-electron-to-chromium@^1.3.191:
-  version "1.3.245"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.245.tgz#1829c45165853c37f74e9f6736546917f78a03d4"
-  integrity sha512-W1Tjm8VhabzYmiqLUD/sT/KTKkvZ8QpSkbTfLELBrFdnrolfkCgcbxFE3NXAxL5xedWXF74wWn0j6oVrgBdemw==
+electron-to-chromium@^1.3.247:
+  version "1.3.247"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.247.tgz#ff2332376150436599265b2dfd7a539f214f4ade"
+  integrity sha512-j/Rzx1FyVTwNifpG/DPQKEMz0mruRwoPpJ6Y1tTVmj6+/zAVzG8/YHZwBMLYCZgQH6seLOqaVxZ3RY3KMrT5IQ==
 
 emitter-listener@^1.1.1:
   version "1.1.2"
@@ -1592,9 +1592,9 @@ eslint-visitor-keys@^1.0.0, eslint-visitor-keys@^1.1.0:
   integrity sha512-8y9YjtM1JBJU/A9Kc+SbaOV4y29sSWckBwMHa+FGtVj5gN/sbnKDf6xJUl+8g7FAij9LVaP8C24DUiH/f/2Z9A==
 
 eslint@^6.0.1:
-  version "6.2.2"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.2.2.tgz#03298280e7750d81fcd31431f3d333e43d93f24f"
-  integrity sha512-mf0elOkxHbdyGX1IJEUsNBzCDdyoUgljF3rRlgfyYh0pwGnreLc0jjD6ZuleOibjmnUWZLY2eXwSooeOgGJ2jw==
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-6.3.0.tgz#1f1a902f67bfd4c354e7288b81e40654d927eb6a"
+  integrity sha512-ZvZTKaqDue+N8Y9g0kp6UPZtS4FSY3qARxBs7p4f0H0iof381XHduqVerFWtK8DPtKmemqbqCFENWSQgPR/Gow==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.10.0"
@@ -1982,10 +1982,10 @@ find-up@^2.0.0:
   dependencies:
     locate-path "^2.0.0"
 
-flairjs-cli@^0.55.88:
-  version "0.55.88"
-  resolved "https://registry.yarnpkg.com/flairjs-cli/-/flairjs-cli-0.55.88.tgz#bb898b8da6b56e1ab8603c31d5ef554644cfa2d6"
-  integrity sha512-QkNpmN53+dwb29FH0gP5EPIFq7Rg1NPSruINKiglvZuEtiBOMFxItQZo3RF6uq/AAcNJkLxcbRkbKGE+X8Dabg==
+flairjs-cli@^0.55.92:
+  version "0.55.92"
+  resolved "https://registry.yarnpkg.com/flairjs-cli/-/flairjs-cli-0.55.92.tgz#0e1011f2a6ad4f9c62d1441b0fd24e35c0e5eaaf"
+  integrity sha512-I7ZtyWZ92NpRHdX5zm1+6Mp3DNGwCt6qY75alH0pSpfRFG3LK8dgHRFnHuvzs65PQ+F4J9wppn5ptiHloAQsJA==
   dependencies:
     clean-css "^4.2.1"
     copy-dir "^1.1.0"
@@ -2014,18 +2014,18 @@ flairjs-fabric-defaults@^0.55.79:
     requirejs "^2.3.6"
     vue "^2.6.10"
 
-flairjs-fabric@^0.55.76:
-  version "0.55.76"
-  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.55.76.tgz#d94a170602cebed6b097d73ecec7feb69a385e7a"
-  integrity sha512-G0zWZp0dra/WQHdbSaziRwCxc/D8HTKX7wNRf0T/DaBKKuu7tN03V+9NRa0PSyNoRqDf4X+xcpSoVqlNp8lr3Q==
+flairjs-fabric@^0.55.86:
+  version "0.55.86"
+  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.55.86.tgz#73fbe869b9ae513a97cf462deec8b4de773fb097"
+  integrity sha512-6Fzvtc22R+PSXeZVLTauYXwleJGyK7YyEU0wi1pChIwvlXIpopeMbprTQ0MUq0ybilyVVQBg6BR403a9DOCIGg==
   dependencies:
     node-env-file "^0.1.8"
     node-fetch "^2.6.0"
 
-flairjs@^0.55.73:
-  version "0.55.73"
-  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.55.73.tgz#7bd25800fb40e041b7a2811f4dfc20fecd0b1d98"
-  integrity sha512-BhxKQxGE0aFsYuROZHE5++9CioO++wf0JSoKsh0w4Zmrvl6hm1Sm5PAmF9ggg0kVbDVC53xaoTHkWHgeZFG51Q==
+flairjs@^0.55.78:
+  version "0.55.78"
+  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.55.78.tgz#d66349505ae230257dfc27e9ef5d185e780a3455"
+  integrity sha512-Id+xNKnGbXWZ+KBDpeKVzxp6qk4Yx+nk+ZVH0XAeNmfUyhc4mjzMWfs4Pr81iRNHG33abgP/4VzoaS66/ii1pw==
 
 flat-cache@^2.0.1:
   version "2.0.1"
@@ -3296,10 +3296,15 @@ micromatch@^4.0.0, micromatch@^4.0.2:
     braces "^3.0.1"
     picomatch "^2.0.5"
 
-mime-db@1.40.0, mime-db@^1.28.0:
+mime-db@1.40.0:
   version "1.40.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.40.0.tgz#a65057e998db090f732a68f6c276d387d4126c32"
   integrity sha512-jYdeOMPy9vnxEqFRRo6ZvTZ8d9oPb+k18PKoYNYUe2stVEBPPwsln/qWzdbmaIvnhZ9v2P+CuecK+fpUfsV2mA==
+
+mime-db@^1.28.0:
+  version "1.41.0"
+  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.41.0.tgz#9110408e1f6aa1b34aef51f2c9df3caddf46b6a0"
+  integrity sha512-B5gxBI+2K431XW8C2rcc/lhppbuji67nf9v39eH8pkWoZDxnAL0PxdpH32KYRScniF8qDHBDlI+ipgg5WrCUYw==
 
 mime-types@~2.1.24:
   version "2.1.24"
@@ -3509,7 +3514,7 @@ node-pre-gyp@^0.12.0:
     semver "^5.3.0"
     tar "^4"
 
-node-releases@^1.1.25:
+node-releases@^1.1.29:
   version "1.1.29"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.29.tgz#86a57c6587a30ecd6726449e5d293466b0a0bb86"
   integrity sha512-R5bDhzh6I+tpi/9i2hrrvGJ3yKPYzlVOORDkXhnZuwi5D3q1I5w4vYy24PJXTcLk9Q0kws9TO77T75bcK8/ysQ==
