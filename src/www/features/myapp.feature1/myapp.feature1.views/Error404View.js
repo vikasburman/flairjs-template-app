@@ -1,5 +1,5 @@
-const VueView = await include('flair.ui.vue.VueView');
-const CommonLayout = await include('myapp.shared.views.CommonLayout');
+const { VueView } = await ns('flair.ui.vue');
+const { CommonLayout } = await ns('myapp.shared.views');
 
 
 /**

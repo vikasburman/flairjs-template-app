@@ -1,4 +1,4 @@
-const { App } = ns('flair.app');
+const { App } = await ns('flair.app');
 
 /**
  * @name App
