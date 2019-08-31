@@ -44,6 +44,14 @@
     },
 
     "flair.server": {
+        "envVars": {
+            "vars": [
+                "./private/.env"
+            ]
+        }
+    },
+
+    "flair.server.express": {
         "express": {
             "server-http": {
                 "enable": true,
@@ -57,12 +65,6 @@
                 "privateKey": "./private/key.pem",
                 "publicCert": "./private/cert.pem"
             }
-        },
-
-        "envVars": {
-            "vars": [
-                "./private/.env"
-            ]
         },
 
         "routing": {
@@ -120,5 +122,4 @@
             }
         }
     }
-
 }

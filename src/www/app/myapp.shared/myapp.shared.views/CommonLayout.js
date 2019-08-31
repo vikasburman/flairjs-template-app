@@ -1,4 +1,4 @@
-const { VueLayout } = ns('flair.ui.vue');
+const { VueLayout } = ns('flair.ui');
 
 /**
  * @name CommonLayout

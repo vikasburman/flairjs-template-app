@@ -64,11 +64,7 @@
         "view": {
             "title": "My App",
             "transition": ""
-        },      
-        
-        "vue": {
-            "extensions": []
-        },
+        }, 
 
         "routes": {
             "home": "myapp.feature1.views.home",
@@ -112,6 +108,12 @@
                 "interceptors": [
                 ]
             }
+        }
+    },
+
+    "flair.client.vue": {
+        "vue": {
+            "extensions": []
         }
     }
 }
