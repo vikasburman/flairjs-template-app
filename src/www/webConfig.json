@@ -62,15 +62,12 @@
 
     "flair.client": {
         "view": {
-            "el": "main",
             "title": "My App",
             "transition": ""
         },      
         
-        "ui": {
-            "vue": {
-                "extensions": []
-            }
+        "vue": {
+            "extensions": []
         },
 
         "routes": {
