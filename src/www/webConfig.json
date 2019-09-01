@@ -67,14 +67,16 @@
 
     "flair.client": {
         "view": {
-            "title": "My App",
-            "transition": ""
+            "transition": "",
+            "static": {
+                "root": "./static/",
+                "handler": ""
+            },
+            "routes": {
+                "home": "myapp.feature1.views.home",
+                "notfound": "myapp.feature1.views.notfound"
+            }
         }, 
-
-        "routes": {
-            "home": "myapp.feature1.views.home",
-            "notfound": "myapp.feature1.views.notfound"
-        },
 
         "i18n": {
             "lang": {
