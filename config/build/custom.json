@@ -1,10 +1,6 @@
 {
     "plugins": [
-        { "name": "docker_image", "settings": { "cmd": "" } },
         { "name": "node_modules", "settings": { "cmd": "yarn install --prod" } },
-        { "name": "web_modules" },
-        { "name": "copy_files" },
-        { "name": "minify_files" },
         { "name": "write_flags", "settings": { "defaultFlag": "dev" } }
     ],    
     "build": [
@@ -19,7 +15,7 @@
                 "app",
                 "features"
             ],
-            "plugins": ["copy_files", "node_modules", "write_flags"],
+            "plugins": ["copy_files", "node_modules", "write_flags", "create_bundle"],
             "copy": [
                 "private",
                 "appConfig.json",
@@ -32,7 +28,16 @@
                 "prod": {
                     "FLAIR_SYMBOLS": "PROD"
                 }
-            }            
+            },
+            "bundles": [
+                { 
+                    "target": "./bundles/preambles/preamble.js", 
+                    "files": [
+                        "./app/preamble.js",
+                        "./features/preamble.js"
+                    ]
+                }
+            ]
         },
         "client": {
             "root": "www",
@@ -42,7 +47,7 @@
                 "app",
                 "features"
             ],
-            "plugins": ["copy_files", "web_modules", "minify_files", "write_flags", "copy_static"],
+            "plugins": ["copy_files", "web_modules", "minify_files", "write_flags", "create_bundle"],
             "copy": [
                 "assets",
                 "pages",
@@ -68,7 +73,16 @@
                 "prod": {
                     "FLAIR_SYMBOLS": "PROD"
                 }
-            }
+            },
+            "bundles": [
+                { 
+                    "target": "./bundles/preambles/preamble.js", 
+                    "files": [
+                        "./app/preamble.js",
+                        "./features/preamble.js"
+                    ]
+                }
+            ]            
         }
     }
 }

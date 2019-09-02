@@ -1491,9 +1491,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.247:
-  version "1.3.249"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.249.tgz#14173f53c046c738198b04e38154ed4fbb309515"
-  integrity sha512-BSNKVkF67cfgwCOJD3/eyIFi001+8mRoazPJYZRpxxtabToCDCef1vhZMDjA6CPfAdgOI0QMOiGLELgJVYP76Q==
+  version "1.3.250"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.250.tgz#1f383c16aeb75e7bddbd6a0491237eca81b2cb1f"
+  integrity sha512-2OAU91iUw83QvzuWJPfT+FMj+O+DC1EyTx1QBFcc9WZzOQSfZEAWINpdLWElxkgfiqTvQRDOKg0DkMZd9QoNug==
 
 emitter-listener@^1.1.1:
   version "1.1.2"
@@ -1991,10 +1991,10 @@ find-up@^2.0.0, find-up@^2.1.0:
   dependencies:
     locate-path "^2.0.0"
 
-flairjs-cli@^0.55.97:
-  version "0.55.97"
-  resolved "https://registry.yarnpkg.com/flairjs-cli/-/flairjs-cli-0.55.97.tgz#4cc224001a86bf853d20f0f5082e3f0cd720318f"
-  integrity sha512-jOOAxvLiw30AwnHMAf8jX/w3FpQU3LcuuD+x5zlY79cHvnQLYIwm9LcJmlRaewryu2ZMpilvytdh7a7GfVsCPw==
+flairjs-cli@^0.56.1:
+  version "0.56.1"
+  resolved "https://registry.yarnpkg.com/flairjs-cli/-/flairjs-cli-0.56.1.tgz#f32611c4013e453c23ed2816ff3c14c22436a06c"
+  integrity sha512-xQ0cUhXGLa4/QvwWQufT9FwzDZ7BypW4+OxBzbzTJgIRjT2hitc7jEVIkjgFBR+wbrOnfQDnT6qjC8l7POlf3A==
   dependencies:
     clean-css "^4.2.1"
     copy-dir "^1.1.0"
@@ -2032,10 +2032,10 @@ flairjs-fabric@^0.56.23:
     node-env-file "^0.1.8"
     node-fetch "^2.6.0"
 
-flairjs@^0.56.1:
-  version "0.56.1"
-  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.56.1.tgz#b23c0aa38f01233cb9de248b2532c5b18f1a837f"
-  integrity sha512-+DF7mAkmodCG2jzsk6O0F0iUYj4rdpWxHp8td5fgO+ujH6CBLlvjNwaco5i95dWgMGz/XXcI37gMUePunzsv6Q==
+flairjs@^0.56.2:
+  version "0.56.2"
+  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.56.2.tgz#864e82571828bd714c280f19ab8fe1043472f261"
+  integrity sha512-9GCkhsWTcbPg1Wl+HgTfgPMQPbRTia4Y0ty7Ru+0iK04v7/kQQSo5O/Nq9nSHaZ4xLZVgBzdu/B71MTj88DhAg==
 
 flat-cache@^2.0.1:
   version "2.0.1"

@@ -34,8 +34,7 @@
             "scripts": [
             ],
             "preambles": [
-                "./app",
-                "./features"
+                "./bundles/preambles"
             ],
             "ports": {
             },       
@@ -55,10 +54,6 @@
     },
     "worker:flair.app": {
         "boot": {
-            "preambles": [
-                "./app",
-                "./features"
-            ],
             "bootwares": [
                 "flair.boot.DIContainer"
             ]

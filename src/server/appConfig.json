@@ -13,8 +13,7 @@
                 "isExpress": true
             },
             "preambles": [
-                "./app",
-                "./features"
+                "./bundles/preambles"
             ],  
             "ports": {
             },       
