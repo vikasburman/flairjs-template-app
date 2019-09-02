@@ -6,7 +6,14 @@ const { VueLayout } = await ns('flair.ui');
  */
 $$('ns', '(auto)');
 Class('(auto)', VueLayout, function() {
-    this.viewArea = 'view';
+
+    $$('override');
+    this.construct = (base) => {
+        base();
+        
+        this.viewArea = 'view';
+    };
+
     this.areas = [
         { area: "header", component: "CommonHeader", type: "myapp.shared.views.CommonHeader" },
         { area: "footer", component: "CommonFooter", type: "myapp.shared.views.CommonFooter" },

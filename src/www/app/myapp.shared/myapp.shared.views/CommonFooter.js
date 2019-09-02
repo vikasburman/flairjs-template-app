@@ -28,7 +28,7 @@ Class('(auto)', VueComponent, function() {
     this.html = `
     <footer class="footer bottom">
         <div class="container">
-            <span class="text-muted">{{ stuff(i18n('strings', 'poweredBy', 'powered by %1, %2'), poweredBy1, poweredBy2) }}</span>
+            <span class="text-muted">{{ stuff(i18n('@strings.poweredBy | powered by %1, %2'), poweredBy1, poweredBy2) }}</span>
         </div>
     </footer>
     `;
