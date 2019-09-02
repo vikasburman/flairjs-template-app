@@ -42,9 +42,10 @@
                 "app",
                 "features"
             ],
-            "plugins": ["copy_files", "web_modules", "minify_files", "write_flags"],
+            "plugins": ["copy_files", "web_modules", "minify_files", "write_flags", "copy_static"],
             "copy": [
                 "assets",
+                "pages",
                 "favicon.png",
                 "webConfig.json",
                 "~/node_modules/flairjs-fabric/flair.client/index.html >> ./index.html",
@@ -67,7 +68,7 @@
                 "prod": {
                     "FLAIR_SYMBOLS": "PROD"
                 }
-            }   
+            }
         }
     }
 }

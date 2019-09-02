@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.10.7",
+    "version": "0.10.9",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -33,7 +33,7 @@
         "flag": "flair flag --options ./config/build/options.json",
         "test": "flair test --options ./config/test/options.json",
         "test-client": "flair test --options ./config/test/options.json --client",
-        "serve": "nodemon --watch ./src --delay 5 --exec 'yarn build-quick && cd ./dist && node --inspect main.js'",
+        "serve": "nodemon --watch ./src --delay 5 --ext js,css,html,json,png,jpg,gif,xml --exec 'yarn build-quick && cd ./dist && node --inspect main.js'",
         "deploy": "cd ./dist && echo '** define deploy command **'",
         "start": "cd ./dist && pm2 start main.js",
         "stop": "pm2 stop main",
@@ -45,7 +45,7 @@
     },
     "dependencies": {
         "flairjs": "^0.56.1",
-        "flairjs-fabric": "^0.56.21",
+        "flairjs-fabric": "^0.56.23",
         "flairjs-fabric-defaults": "^0.55.80",
         "pm2": "^3.4.0"
     }

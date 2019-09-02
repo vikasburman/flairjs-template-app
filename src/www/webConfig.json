@@ -69,8 +69,7 @@
         "view": {
             "transition": "",
             "static": {
-                "root": "./static/",
-                "handler": ""
+                "root": "./pages/"
             },
             "routes": {
                 "home": "myapp.feature1.views.home",

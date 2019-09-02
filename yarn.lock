@@ -2024,10 +2024,10 @@ flairjs-fabric-defaults@^0.55.80:
     showdown "^1.9.0"
     vue "^2.6.10"
 
-flairjs-fabric@^0.56.21:
-  version "0.56.21"
-  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.56.21.tgz#f91a9eaf2a883f3a6a89ddbe68d0c7dfbd59f7a7"
-  integrity sha512-7wnLPcvHLCHO24l8dQez9+52DStCyVHNsUluYwsDj5PlUEnsfjgoaCfCGXfsubwJwLagLnCQJJZ601xKKR/kZQ==
+flairjs-fabric@^0.56.23:
+  version "0.56.23"
+  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.56.23.tgz#c0f53700950848cade646e126a34fbab63991da2"
+  integrity sha512-Pq7vFiwbFtlh2uTeVSXUgTNuxtWOZOQvktNPVu/zmlXVi53BSh2M89f5g2PsGExaM3hurIq7QV/pYZXPZi2Aew==
   dependencies:
     node-env-file "^0.1.8"
     node-fetch "^2.6.0"
