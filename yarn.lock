@@ -1991,10 +1991,10 @@ find-up@^2.0.0, find-up@^2.1.0:
   dependencies:
     locate-path "^2.0.0"
 
-flairjs-cli@^0.56.1:
-  version "0.56.1"
-  resolved "https://registry.yarnpkg.com/flairjs-cli/-/flairjs-cli-0.56.1.tgz#f32611c4013e453c23ed2816ff3c14c22436a06c"
-  integrity sha512-xQ0cUhXGLa4/QvwWQufT9FwzDZ7BypW4+OxBzbzTJgIRjT2hitc7jEVIkjgFBR+wbrOnfQDnT6qjC8l7POlf3A==
+flairjs-cli@^0.56.2:
+  version "0.56.2"
+  resolved "https://registry.yarnpkg.com/flairjs-cli/-/flairjs-cli-0.56.2.tgz#ab4dd551263e0ac3d7994435be9a1f43bea2b81b"
+  integrity sha512-hktuZHR1Q6Ep9MucoeDU8oxjbv2erberiCHeEGSD95H0nIdnWWxDUl7lAN7kEFq0vWF3hg1a/XqAMq4WUNBGsQ==
   dependencies:
     clean-css "^4.2.1"
     copy-dir "^1.1.0"
@@ -2024,18 +2024,18 @@ flairjs-fabric-defaults@^0.55.80:
     showdown "^1.9.0"
     vue "^2.6.10"
 
-flairjs-fabric@^0.56.23:
-  version "0.56.23"
-  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.56.23.tgz#c0f53700950848cade646e126a34fbab63991da2"
-  integrity sha512-Pq7vFiwbFtlh2uTeVSXUgTNuxtWOZOQvktNPVu/zmlXVi53BSh2M89f5g2PsGExaM3hurIq7QV/pYZXPZi2Aew==
+flairjs-fabric@^0.56.25:
+  version "0.56.25"
+  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.56.25.tgz#0f0c60cbf5b8d8e7a361020b3d35b007db0ff7db"
+  integrity sha512-3IdisXdQFPzDzer9IqNo2knrrSfbb8zrvBDHnYA83LiQ91b/fMxktUDLWpoYsO6ZzjCBZmNJJPfYUPnBFJFDJw==
   dependencies:
     node-env-file "^0.1.8"
     node-fetch "^2.6.0"
 
-flairjs@^0.56.2:
-  version "0.56.2"
-  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.56.2.tgz#864e82571828bd714c280f19ab8fe1043472f261"
-  integrity sha512-9GCkhsWTcbPg1Wl+HgTfgPMQPbRTia4Y0ty7Ru+0iK04v7/kQQSo5O/Nq9nSHaZ4xLZVgBzdu/B71MTj88DhAg==
+flairjs@^0.56.5:
+  version "0.56.5"
+  resolved "https://registry.yarnpkg.com/flairjs/-/flairjs-0.56.5.tgz#ff9755db1c568ed3768c2d1d9a0c88d4440d468c"
+  integrity sha512-xLR0kulckaaX4qeHnSSCLVK8rhvzl2lrPYIMPwSz3qSJqDJjHNXADPN1tzJxodfWxOjmzjNf6fwHOANPcrIsVQ==
 
 flat-cache@^2.0.1:
   version "2.0.1"

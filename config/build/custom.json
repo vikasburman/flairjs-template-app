@@ -15,7 +15,7 @@
                 "app",
                 "features"
             ],
-            "plugins": ["copy_files", "node_modules", "write_flags", "create_bundle"],
+            "plugins": ["copy_files", "node_modules", "write_flags"],
             "copy": [
                 "private",
                 "appConfig.json",
@@ -28,16 +28,7 @@
                 "prod": {
                     "FLAIR_SYMBOLS": "PROD"
                 }
-            },
-            "bundles": [
-                { 
-                    "target": "./bundles/preambles/preamble.js", 
-                    "files": [
-                        "./app/preamble.js",
-                        "./features/preamble.js"
-                    ]
-                }
-            ]
+            }
         },
         "client": {
             "root": "www",
@@ -47,7 +38,7 @@
                 "app",
                 "features"
             ],
-            "plugins": ["copy_files", "web_modules", "minify_files", "write_flags", "create_bundle"],
+            "plugins": ["copy_files", "web_modules", "minify_files", "write_flags"],
             "copy": [
                 "assets",
                 "pages",
@@ -73,16 +64,7 @@
                 "prod": {
                     "FLAIR_SYMBOLS": "PROD"
                 }
-            },
-            "bundles": [
-                { 
-                    "target": "./bundles/preambles/preamble.js", 
-                    "files": [
-                        "./app/preamble.js",
-                        "./features/preamble.js"
-                    ]
-                }
-            ]            
+            }
         }
     }
 }

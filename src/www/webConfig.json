@@ -34,7 +34,8 @@
             "scripts": [
             ],
             "preambles": [
-                "./bundles/preambles"
+                "./app",
+                "./features"
             ],
             "ports": {
             },       
