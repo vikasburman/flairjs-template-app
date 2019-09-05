@@ -8,7 +8,7 @@ const ServerDateTime = await include('myapp.feature1.services.ServerDateTime');
 $$('ns', '(auto)');
 Class('(auto)', VueView, function() {
     this.i18n = 'titles, strings';
-    this.title = '@title.home | Home';
+    this.title = '@titles.home | Home';
     this.layout = 'myapp.shared.views.CommonLayout';
     this.html = true;
     this.style = true;

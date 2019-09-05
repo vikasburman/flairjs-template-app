@@ -4,7 +4,6 @@
         }
     },
 
-
     "flair.app": {
         "app": "myapp.main.App",
 
