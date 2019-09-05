@@ -47,7 +47,7 @@
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "flairjs": "^0.59.0",
-        "flairjs-fabric": "^0.59.0",
+        "flairjs-fabric": "^0.59.1",
         "http-shutdown": "^1.2.1",
         "pm2": "^3.5.1",
         "requirejs": "^2.3.6",

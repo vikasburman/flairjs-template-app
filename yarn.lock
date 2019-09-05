@@ -2012,10 +2012,10 @@ flairjs-cli@^0.59.0:
     stylelint "^10.1.0"
     uglify-es "^3.3.9"
 
-flairjs-fabric@^0.59.0:
-  version "0.59.0"
-  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.59.0.tgz#a201cf8c90f7ad3c982defb4e95a2ddea2509b71"
-  integrity sha512-f7KdpIIxXiDrcH/+2MvMW3dJ4jh6S0eYnyt+esn8i/O/8gGrQtRfBYqHTWWxNL+LfpA8U1uq7FIxSGc+2ci8Yg==
+flairjs-fabric@^0.59.1:
+  version "0.59.1"
+  resolved "https://registry.yarnpkg.com/flairjs-fabric/-/flairjs-fabric-0.59.1.tgz#21fddd299d70c038dc18d50b538405deeb0bc666"
+  integrity sha512-7G26eCkDAnR7UxBsrVGXOKpAuhdVIJtt5WgmTsgRr2etzxKRdYTpSp4uabCYBf+U5ilBuP/YAZ0XEmz++DyIHQ==
   dependencies:
     node-env-file "^0.1.8"
     node-fetch "^2.6.0"

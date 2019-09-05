@@ -1,3 +1,0 @@
-[
-    { "name": "about", "handler": "./about{.en}.xml", "mount": "main", "path": "/about" }
-]

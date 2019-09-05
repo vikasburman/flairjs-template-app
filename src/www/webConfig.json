@@ -64,9 +64,6 @@
     "flair.client": {
         "view": {
             "transition": "",
-            "static": {
-                "root": "./pages/"
-            },
             "routes": {
                 "home": "myapp.feature1.views.home",
                 "notfound": "myapp.feature1.views.notfound"
