@@ -14,12 +14,12 @@
                         "app",
                         "features"
                     ],
-                    "plugins": ["copy_files", "node_modules", "write_flags"],
                     "copy": [
                         "private",
                         "appConfig.json",
                         "~/node_modules/flairjs-fabric/flair.server/main.js >> ./main.js"
                     ],
+                    "modules": true,
                     "flags": {
                         "dev": {
                             "FLAIR_SYMBOLS": "DEV,DEBUG"
@@ -37,7 +37,6 @@
                         "app",
                         "features"
                     ],
-                    "plugins": ["copy_files", "web_modules", "minify_files", "write_flags"],
                     "copy": [
                         "assets",
                         "favicon.png",
