@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.59.0",
+    "version": "0.59.1",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -21,18 +21,18 @@
         "url": "yourapp giturl"
     },
     "scripts": {
-        "build": "flair build --options ./config/build/options.json",
-        "build-full": "flair build --options ./config/build/options.json --full",
-        "build-quick": "flair build --options ./config/build/options.json --quick",
-        "build-dev": "flair build --options ./config/build/options.json --flag dev",
-        "build-dev-full": "flair build --options ./config/build/options.json --full --flag dev",
-        "build-dev-quick": "flair build --options ./config/build/options.json --quick --flag dev",
-        "build-prod": "flair build --options ./config/build/options.json --flag prod",
-        "build-prod-full": "flair build --options ./config/build/options.json --full --flag prod",
-        "build-prod-quick": "flair build --options ./config/build/options.json --quick --flag prod",
-        "flag": "flair flag --options ./config/build/options.json",
-        "test": "flair test --options ./config/test/options.json",
-        "test-client": "flair test --options ./config/test/options.json --client",
+        "build": "flair build",
+        "build-full": "flair build --full",
+        "build-quick": "flair build --quick",
+        "build-dev": "flair build --flag dev",
+        "build-dev-full": "flair build --full --flag dev",
+        "build-dev-quick": "flair build --quick --flag dev",
+        "build-prod": "flair build --flag prod",
+        "build-prod-full": "flair build --full --flag prod",
+        "build-prod-quick": "flair build --quick --flag prod",
+        "flag": "flair flag",
+        "test": "flair test",
+        "test-client": "flair test --client",
         "serve": "nodemon --watch ./src --delay 5 --ext js,css,html,json,png,jpg,gif,xml --exec 'yarn build-quick && cd ./dist && node --inspect main.js'",
         "deploy": "cd ./dist && echo '** define deploy command **'",
         "start": "cd ./dist && pm2 start main.js",
@@ -40,7 +40,7 @@
         "refresh": "yarn remove flairjs-cli && yarn remove flairjs && yarn remove flairjs-fabric && yarn add flairjs-cli --dev && yarn add flairjs && yarn add flairjs-fabric"
     },
     "devDependencies": {
-        "flairjs-cli": "^0.59.0",
+        "flairjs-cli": "^0.60.1",
         "nodemon": "^1.19.2"
     },
     "dependencies": {
