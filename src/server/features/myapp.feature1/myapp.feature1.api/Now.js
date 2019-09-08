@@ -5,8 +5,7 @@ const CurrentTime = await include('myapp.feature1.CurrentTime');
  * @name Now
  * @description Now endpoint
  */
-$$('ns', '(auto)');
-Class('(auto)', RESTEndPoint, function() {
+Class('', RESTEndPoint, function() {
     $$('override');
     this.onGet = async (base, req, res) => { // eslint-disable-line no-unused-vars
         let curTime = new CurrentTime();

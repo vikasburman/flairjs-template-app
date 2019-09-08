@@ -4,8 +4,7 @@ const { App } = await ns('flair.app');
  * @name App
  * @description App
  */
-$$('ns', '(auto)');
-Class('(auto)', App, function() {
+Class('', App, function() {
     $$('override');
     this.onStart = async (base) => {
         base();

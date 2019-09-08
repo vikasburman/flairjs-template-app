@@ -4,8 +4,7 @@ const { VueComponent } = await ns('flair.ui');
  * @name CommonHeader
  * @description Common Header Component
  */
-$$('ns', '(auto)');
-Class('(auto)', VueComponent, function() {
+Class('', VueComponent, function() {
     this.data = {
         title: flair.info.title
     };

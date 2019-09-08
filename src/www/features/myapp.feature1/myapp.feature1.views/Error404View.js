@@ -4,8 +4,7 @@ const { VueView } = await ns('flair.ui');
  * @name Error404View
  * @description Default Error View
  */
-$$('ns', '(auto)');
-Class('(auto)', VueView, function() {
+Class('', VueView, function() {
     this.i18n = 'titles, strings';
     this.title = "@titles.notfound | Not Found";
     this.layout = "myapp.shared.views.CommonLayout";

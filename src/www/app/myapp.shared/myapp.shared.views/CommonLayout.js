@@ -4,8 +4,7 @@ const { VueLayout } = await ns('flair.ui');
  * @name CommonLayout
  * @description Common Layout
  */
-$$('ns', '(auto)');
-Class('(auto)', VueLayout, function() {
+Class('', VueLayout, function() {
 
     $$('override');
     this.construct = (base) => {

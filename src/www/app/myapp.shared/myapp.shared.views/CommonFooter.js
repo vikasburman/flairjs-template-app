@@ -4,8 +4,7 @@ const { VueComponent } = await ns('flair.ui');
  * @name CommonHeader
  * @description Common Header Component
  */
-$$('ns', '(auto)');
-Class('(auto)', VueComponent, function() {
+Class('', VueComponent, function() {
     let hostAsm = getAssembly(AppDomain.host());
     this.data = {
         poweredBy1: flair.info.name + ' ' + flair.info.version,
