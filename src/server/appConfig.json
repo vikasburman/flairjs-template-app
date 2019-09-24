@@ -1,53 +1,22 @@
 {
-    "global": {
-        "flair": {
-        }
-    },
-
     "flair.app": {
         "app": "myapp.main.App",
 
         "boot": {
             "env": {
                 "isExpress": true
-            },
+            },            
             "preambles": [
                 "./app",
-                "./features"
-            ],  
-            "ports": {
-            },       
-            "bootwares": [
-                "flair.boot.NodeEnv",
-                "flair.boot.Middlewares",
-                "flair.boot.ResHeaders",
-                "flair.boot.DIContainer",
-                "flair.boot.ServerRouter"
+                "./api"
             ]
-        },
-
-        "di": {
-            "container": {
-            }
         }
     },
     "worker:flair.app": {
         "boot": {
             "preambles": [
-                "./app",
-                "./features"
-            ],            
-            "bootwares": [
-                "flair.boot.DIContainer"
-            ]
-        }
-    },
-
-    "flair.server": {
-        "envVars": {
-            "vars": [
-                "./private/.env"
-            ]
+                "./app"
+            ]            
         }
     },
 
@@ -55,13 +24,11 @@
         "express": {
             "server-http": {
                 "enable": true,
-                "port": 8080,
-                "timeout": -1
+                "port": 8080
             },
             "server-https": {
                 "enable": true,
                 "port": 8443,
-                "timeout": -1,
                 "privateKey": "./private/key.pem",
                 "publicCert": "./private/cert.pem"
             }
@@ -70,57 +37,29 @@
         "routing": {
             "mounts": {
                 "main": "/",
-                "api": "/api/"
+                "api_v1": "/api/v1/"
             },
             "all": {
                 "before": {
                     "settings": [
                         { "name": "case sensitive routing", "value": false },
                         { "name": "strict routing", "value": false }
-                    ],
-                    "middlewares": [
-                        { "name": "cors", "args": [{ "origin": true }] }
-                    ],  
-                    "interceptors": [
-                    ],
-                    "resHeaders": [
-                    ]                    
+                    ]
                 },
                 "after": {
-                    "settings": [
-                    ],
-                    "middlewares": [
-                    ],  
-                    "interceptors": [
-                    ],                    
                     "resHeaders": [
+                        { "name": "X-Api-Version", "value": "1" },
                         { "name": "X-Built-On", "value": "flairjs" }
                     ]
                 }
             },
-            "main": {
-                "params": "",
-                "settings": [
-                ],
-                "middlewares": [
-                    { "name": "express", "func": "static", "args": ["www"] }
-                ],  
-                "interceptors": [
-                ],          
-                "resHeaders": [
-                ]
-            },
             "api": {
-                "params": "/:version",
-                "settings": [
-                ],
                 "middlewares": [
-                ],  
-                "interceptors": [
-                ],
+                    { "name": "cors", "args": [{ "origin": true }] }
+                ], 
                 "resHeaders": [
-                    { "name": "Access-Control-Allow-Origin", "value": "*" }
-                ]
+                    { "name": "Access-Control-Allow-Origin", "value": "*" }                
+                ]                         
             }
         }
     }

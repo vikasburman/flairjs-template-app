@@ -12,7 +12,7 @@
                     "skipMinify": true,
                     "build": [
                         "app",
-                        "features"
+                        "api"
                     ],
                     "copy": [
                         "private",
@@ -34,8 +34,7 @@
                     "dest": "@server",
                     "omitRoot": true,
                     "build": [
-                        "app",
-                        "features"
+                        "app"
                     ],
                     "copy": [
                         "assets",
