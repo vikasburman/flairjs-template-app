@@ -1,0 +1,4 @@
+[
+    { "name": "home", "handler": "myapp.views.Home", "mount": "main", "path": "/" },
+    { "name": "notfound", "handler": "myapp.views.404", "mount": "main", "path": "/404" }
+]

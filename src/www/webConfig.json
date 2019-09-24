@@ -1,25 +1,4 @@
 {
-    "global": {
-        "flair": {
-            "api": {
-                "connections": {
-                    "connection1": {
-                        "R": {
-                            "local": "http://localhost:8080",
-                            "dev": "http://localhost:8080",
-                            "test": "",
-                            "prod": ""
-                        },
-                        "V": "",
-                        "L": "",
-                        "P": "",
-                        "G": ""
-                    }
-                }
-            }             
-        }
-    },
-
     "flair.app": {
         "app": "myapp.main.App",
 
@@ -31,42 +10,46 @@
                 { "rel": "stylesheet", "href": "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" },
                 { "rel": "stylesheet", "href": "./assets/css/styles.css" }
             ],            
-            "scripts": [
-            ],
             "preambles": [
-                "./app",
-                "./features"
-            ],
-            "ports": {
-            },       
-            "bootwares": [
-                "flair.boot.DIContainer",
-                "flair.boot.VueSetup",
-                "flair.boot.ClientRouter"
-            ],
-            "assemblies": [
+                "./app"
             ]
         },
 
-        "di": {
-            "container": {
+        "api": {
+            "connections": {
+                "app-server": {
+                    "url": "http://localhost:8080/api/v1/",
+                    "options": {
+                        "get-json": {
+                            "method": "GET",
+                            "mode": "cors",
+                            "headers": {
+                                "Content-Type": "application/json"
+                            }                            
+                        },
+                        "post-json": {
+                            "method": "POST",
+                            "mode": "cors",
+                            "cache": "no-cache",
+                            "credentials": "same-origin",
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "redirect": "follow",
+                            "referrer": "no-referrer"
+                        }
+                    }
+                }
             }
-        }
-    },
-    "worker:flair.app": {
-        "boot": {
-            "bootwares": [
-                "flair.boot.DIContainer"
-            ]
-        }
+        }        
     },
 
     "flair.client": {
         "view": {
-            "transition": "",
+            "layout": "./assets/layouts/default.html",
             "routes": {
-                "home": "myapp.feature1.views.home",
-                "notfound": "myapp.feature1.views.notfound"
+                "home": "myapp.views.home",
+                "notfound": "myapp.views.notfound"
             }
         }, 
 
@@ -90,29 +73,9 @@
                         { "name": "hashbang", "value": false },
                         { "name": "lang", "value": false },
                         { "name": "sensitive", "value": false }
-                    ],
-                    "interceptors": [
-                    ]
-                },
-                "after": {
-                    "settings": [
-                    ],
-                    "interceptors": [
                     ]
                 }
-            },
-            "main": {
-                "settings": [
-                ],
-                "interceptors": [
-                ]
             }
-        }
-    },
-
-    "flair.client.vue": {
-        "vue": {
-            "extensions": []
         }
     }
 }

@@ -99,6 +99,7 @@
                 }
             },
             "main": {
+                "params": "",
                 "settings": [
                 ],
                 "middlewares": [
@@ -110,6 +111,7 @@
                 ]
             },
             "api": {
+                "params": "/:version",
                 "settings": [
                 ],
                 "middlewares": [

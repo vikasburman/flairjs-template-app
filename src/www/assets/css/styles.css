@@ -4,3 +4,7 @@ html, body {
   background: #f2f2f2;
   font-family: Abel, Arial, Verdana, sans-serif;
 }
+
+[v-cloak] {
+  display: none;
+}

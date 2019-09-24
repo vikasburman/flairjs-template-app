@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html title="@titles.home | Home">
+    <style src="./css/common{.min}.css"></style>
+    <data>
+        { "now": "loading..." }
+    </data>
+    <body>
+        <div v-cloak class="center">
+            <div class="card">  
+                <img class="center-img" width="50" height="50" src="~/assets/images/logo.png"/>
+                <p></p>
+                <h1>{{ i18n('@strings.hello | Hello World!') }}</h1>
+                <h4>Current Client Time</h4>
+                <h2>{{ now }}</h2>
+            </div>
+        </div>
+    </body>
+</html>

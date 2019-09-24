@@ -3,7 +3,7 @@
     "title": "yourapp name",
     "description": "yourapp description",
     "copyright": "yourapp copyright",
-    "version": "0.59.5",
+    "version": "0.59.11",
     "author": "yourapp author <yourapp@yourhost.domain>",
     "keywords": [
         "flairjs",
@@ -40,14 +40,14 @@
         "refresh": "yarn remove flairjs-cli && yarn remove flairjs && yarn remove flairjs-fabric && yarn add flairjs-cli --dev && yarn add flairjs && yarn add flairjs-fabric"
     },
     "devDependencies": {
-        "flairjs-cli": "^0.60.4",
+        "flairjs-cli": "^0.62.2",
         "nodemon": "^1.19.2"
     },
     "dependencies": {
         "cors": "^2.8.5",
         "express": "^4.17.1",
-        "flairjs": "^0.59.0",
-        "flairjs-fabric": "^0.59.1",
+        "flairjs": "^0.59.62",
+        "flairjs-fabric": "^0.60.0",
         "http-shutdown": "^1.2.1",
         "pm2": "^3.5.1",
         "requirejs": "^2.3.6",
