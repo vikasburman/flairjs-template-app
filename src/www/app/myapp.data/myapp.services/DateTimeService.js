@@ -7,7 +7,8 @@ Class('', function() {
     $$('cache', 10000);
     $$('fetch', 'app-server', 'get-json', '/now');
     this.now = async (api) => {
-        let result = await api() || { now: 'Could not connect to server.' };
-        return result.now;
+        let result = await api();
+        if (!result.isError) { return result.data.now; }
+        return 'Could not connect to server.';
     };
 });
