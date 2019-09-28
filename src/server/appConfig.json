@@ -3,9 +3,6 @@
         "app": "myapp.main.App",
 
         "boot": {
-            "env": {
-                "isExpress": true
-            },            
             "preambles": [
                 "./app",
                 "./api"
@@ -47,19 +44,25 @@
                     ]
                 },
                 "after": {
-                    "resHeaders": [
-                        { "name": "X-Api-Version", "value": "1" },
-                        { "name": "X-Built-On", "value": "flairjs" }
-                    ]
+                    "middlewares": [
+                        { "name": "flair.server.mw.ResHeaders", "args": [
+                            { "name": "X-Api-Version", "value": "1" }
+                        ]}
+                    ]                    
                 }
+            },
+            "main": {
+                "middlewares": [
+                    { "name": "express", "func": "static", "args": ["www"] }
+                ]
             },
             "api": {
                 "middlewares": [
-                    { "name": "cors", "args": [{ "origin": true }] }
-                ], 
-                "resHeaders": [
-                    { "name": "Access-Control-Allow-Origin", "value": "*" }                
-                ]                         
+                    { "name": "cors", "args": [{ "origin": true }] },
+                    { "name": "flair.server.mw.ResHeaders", "args": [
+                        { "name": "Access-Control-Allow-Origin", "value": "*" } 
+                    ]}                    
+                ]
             }
         }
     }
