@@ -5,7 +5,7 @@
 $$('static');
 Class('', function() {
 
-    // $$('cache', 10000);
+    // $$('cache', 10);
     // this.now = async (type = 'ms') => {
     //     // pure client way of keeping data logic separate 
     //     // on an app that connects to server it can fetch data from server
@@ -20,7 +20,7 @@ Class('', function() {
     //     return result;
     // };
 
-    $$('cache', 10000);
+    $$('cache', 10);
     $$('fetch', 'api-server', 'get', 'json', '/now/:format?');
     this.now = async (api, format = 'ms') => {
         let args = {
