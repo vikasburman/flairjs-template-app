@@ -51,7 +51,7 @@
         "http-shutdown": "^1.2.1",
         "pm2": "^3.5.1",
         "requirejs": "^2.3.6",
-        "showdown": "^1.9.0",
+        "showdown": "^1.9.1",
         "vue": "^2.6.10"
     }
 }
