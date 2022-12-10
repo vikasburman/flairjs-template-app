@@ -45,7 +45,7 @@
     },
     "dependencies": {
         "cors": "^2.8.5",
-        "express": "^4.17.1",
+        "express": "^4.17.3",
         "flairjs": "^0.59.75",
         "flairjs-fabric": "^0.60.22",
         "http-shutdown": "^1.2.1",
